@@ -1,13 +1,13 @@
 # 🎮 Game Changer
 
-A React-based **PC game discovery web app** powered by the [IGDB API](https://api-docs.igdb.com/) and [GamePower API](https://gamepower.io/).  
+A React-based **PC game discovery web app** powered by the [IGDB API](https://api-docs.igdb.com/) and [GamerPower API](https://www.gamerpower.com/api-read).  
 Browse popular, upcoming, and free games with detailed filters and game insights.
 
 ---
 
 ## 🚀 Features
 - 📌 **Browse Games**
-  - Popular, Upcoming, and Free-to-play (fetched from GamePower API)
+  - Popular, Upcoming, and Free-to-play (fetched from GamerPower API)
 - 🏷️ **Filter Options**
   - By **Genre**, **Theme**, and **Game Mode** (Single Player, Multiplayer, Co-op, etc.)
 - 🎮 **Game Details**
