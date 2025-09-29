@@ -166,7 +166,7 @@ function GameDetails() {
         {language_supports && <TabButton name="Supported languages" />}
       </div>
 
-      <div className="relative z-10 mx-4 mt-0 pb-20 sm:mx-12">
+      <div className="relative mx-4 mt-0 pb-20 sm:mx-12">
         {/* Data */}
         <div
           id="Overview"
