@@ -21,7 +21,7 @@ function AuthFormField({ field, validations, register, formState }) {
         type={
           field === "email"
             ? "email"
-            : field === "password"
+            : field.includes("password")
               ? "password"
               : "text"
         }
