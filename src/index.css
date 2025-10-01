@@ -118,7 +118,7 @@
 
 @theme {
   --color-bg-primary: oklch(0.235 0 0);
-  --color-bg-secondary: #282f3e;
+  --color-bg-secondary: oklch(37.3% 0.034 259.733);
   --color-accent-primary: oklch(0.9072 0.2474 130.87);
   --color-accent-secondary: oklch(0.4327 0.2329 292.5);
   --color-text-general: oklch(0.9067 0 0);

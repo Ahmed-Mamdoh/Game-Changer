@@ -9,6 +9,8 @@ import RouteErrorFallback from "./pages/RouteErrorFallback";
 import Home from "./pages/Home";
 import UpcomingGames from "./pages/UpcomingGames";
 import ScrollToTop from "./ui/ScrollToTop";
+import Auth from "./pages/Auth";
+import { Toaster } from "./../node_modules/react-hot-toast/src/components/toaster";
 
 function App() {
   const queryClient = new QueryClient({
@@ -44,6 +46,10 @@ function App() {
         {
           path: "/upcomingGames",
           element: <UpcomingGames />,
+        },
+        {
+          path: "/auth",
+          element: <Auth />,
         },
       ],
     },
