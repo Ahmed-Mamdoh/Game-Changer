@@ -10,7 +10,7 @@ export function useGetFreeGamesToShow() {
   // ex. inscryption (steam) xxxxxxx
   // gets only inscryption
   let gamesCleanNames = freeGamesNames?.map(
-    (game) => game.title.split(" (")[0],
+    (game) => game.title.split(" (")[0].split(":")[0],
   );
 
   // gets the data (id,cover,name) of each game name in the gamesCleanNames array from the IGDb api
