@@ -1,14 +1,19 @@
-import { FaArrowAltCircleDown } from "react-icons/fa";
+import { FaArrowAltCircleDown, FaGamepad } from "react-icons/fa";
 import Background from "./Background";
 import background from "../assets/image.png";
+import { useNavigate } from "react-router-dom";
+import { LogIn, LogInIcon } from "lucide-react";
 
 function HeroSection({ sectionId }) {
+  const navigate = useNavigate();
+
   function handleScroll(id) {
     const section = document.getElementById(id);
     if (section) {
       section.scrollIntoView({ behavior: "smooth" });
     }
   }
+
   return (
     <>
       {/* <Background className="hidden md:block" /> */}
@@ -24,12 +29,21 @@ function HeroSection({ sectionId }) {
         <h1 className="font-heading text-center text-5xl font-bold text-white md:text-nowrap">
           Game Changer
         </h1>
-        <button>
-          <FaArrowAltCircleDown
-            className="text-accent-primary cursor-pointer text-5xl"
+        <div className="flex w-full items-center justify-between gap-3">
+          <button
+            className="bg-accent-primary flex w-full cursor-pointer items-center justify-center gap-2 rounded-md px-2 py-2 text-xl font-black text-gray-950 transition-all hover:rounded-xl"
+            onClick={() => navigate("/auth")}
+          >
+            <FaGamepad className="h-7 w-7" />
+            <span>Sign Up</span>
+          </button>
+          <button
+            className="bg-bg-secondary w-full cursor-pointer rounded-md px-2 py-2 text-lg text-nowrap text-gray-100 transition-all hover:rounded-xl"
             onClick={() => handleScroll(sectionId)}
-          />
-        </button>
+          >
+            Continue as Guest
+          </button>
+        </div>
       </div>
     </>
   );

@@ -127,8 +127,6 @@
   /* secondary */
   --color-text-muted: oklch(0.60 0 0);
   /* tertiary */
-  --color-component-bg: #282f3e;
-  /* A more distinct, lighter dark background for components */
 
   --font-heading: 'Orbitron', sans-serif;
   --font-body: 'Roboto', sans-serif;
@@ -137,6 +135,10 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+  }
+
+  html {
+    @apply scroll-smooth;
   }
 
   body {
