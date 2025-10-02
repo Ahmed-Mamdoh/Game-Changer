@@ -1,6 +1,5 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
-import { useForm } from "react-hook-form";
 
 function AuthFormField({ field, validations, register, formState }) {
   const { errors } = formState;
