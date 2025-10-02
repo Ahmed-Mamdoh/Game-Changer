@@ -21,7 +21,6 @@ function LoginForm() {
           const response = await logIn({
             email: formData.email,
             password: formData.password,
-            username: formData.username,
           });
           if (response.error) {
             throw new Error(response.error.message);
@@ -30,7 +29,7 @@ function LoginForm() {
         },
         {
           loading: "Loading",
-          success: "Account Created Successfully",
+          success: "Login Successful",
           error: (error) => error.message,
         },
       )

@@ -8,7 +8,7 @@ function HeroSection({ sectionId }) {
   const navigate = useNavigate();
 
   const supabaseToken =
-    localStorage.getItem("sb-kapovyqqncfsoangqppi-auth-token") || {};
+    localStorage.getItem("sb-kapovyqqncfsoangqppi-auth-token") || "{}";
 
   const userName = JSON.parse(supabaseToken)?.user?.user_metadata?.username;
 
@@ -46,7 +46,7 @@ function HeroSection({ sectionId }) {
                 onClick={() => navigate("/auth")}
               >
                 <FaGamepad className="h-7 w-7" />
-                <span>Sign Up</span>
+                <span>Login</span>
               </button>
               <button
                 className="bg-bg-secondary w-full cursor-pointer rounded-md px-2 py-2 text-lg text-nowrap text-gray-100 transition-all hover:rounded-xl"

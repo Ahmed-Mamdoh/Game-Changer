@@ -34,6 +34,7 @@ import {
 import { useEffect, useState } from "react";
 import GameDetailsCarousel from "@/features/games/GameDetailsCarousel";
 import { useGetTimeToBeat } from "@/features/games/useGetTimeToBeat";
+import AddGameModal from "@/features/games/AddGameModal";
 
 const ESRB_RATINGS = {
   6: { rating: "Rating Pending", badgeVariant: "outline" },
@@ -119,6 +120,7 @@ function GameDetails() {
 
   //destruct data
   const {
+    id,
     name,
     first_release_date: releaseDate,
     summary,
@@ -181,16 +183,19 @@ function GameDetails() {
             />
           </div>
           <div className="flex h-4/5 flex-col items-center gap-y-6 lg:items-start">
-            <div className="flex flex-col items-center gap-x-4 gap-y-2 md:flex-row">
-              <h1 className="text-center text-2xl font-semibold md:text-start md:text-5xl">
-                {name}
-              </h1>
-              <Badge
-                variant={badgeVariant}
-                className="h-fit w-fit px-4 py-1 text-sm"
-              >
-                {ageRating}
-              </Badge>
+            <div className="flex w-full flex-col items-center justify-between gap-y-2 md:flex-row">
+              <div className="flex items-center gap-x-4">
+                <h1 className="text-center text-2xl font-semibold md:text-start md:text-5xl">
+                  {name}
+                </h1>
+                <Badge
+                  variant={badgeVariant}
+                  className="h-fit w-fit px-4 py-1 text-sm"
+                >
+                  {ageRating}
+                </Badge>
+              </div>
+              <AddGameModal game_id={id} releaseDate={releaseDate} />
             </div>
 
             {releaseDate && (

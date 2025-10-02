@@ -36,6 +36,15 @@ function Header() {
           >
             <FaSearch />
           </button>
+          <button
+            className="btn text-bg-primary bg-accent-primary text-md hidden border-none shadow-xl transition-all duration-300 hover:rounded-3xl md:block"
+            onClick={() => {
+              localStorage.removeItem("sb-kapovyqqncfsoangqppi-auth-token");
+              navigate("/");
+            }}
+          >
+            Logout
+          </button>
           <Drawer />
           <label
             htmlFor="my-drawer-4"

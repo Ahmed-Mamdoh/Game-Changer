@@ -20,3 +20,17 @@ export async function logIn({ email, password }) {
 
   return { data, error };
 }
+
+export async function addGame({
+  user_id,
+  status,
+  hours_played,
+  date_finished,
+  game_id,
+}) {
+  const { data, error } = await supabase
+    .from("user_games")
+    .insert([{ user_id, status, hours_played, date_finished, game_id }])
+    .select();
+  return { data, error };
+}
