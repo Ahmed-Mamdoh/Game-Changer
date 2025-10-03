@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 
-function Tab({ to, sectionName, lineStartAnimation }) {
+function Tab({ to, sectionName }) {
   return (
     <NavLink
       to={to}
@@ -15,7 +15,7 @@ function Tab({ to, sectionName, lineStartAnimation }) {
         <div>
           {sectionName}
           <hr
-            className={`bg-base-content h-[1px] origin-${lineStartAnimation} scale-x-0 border-0 transition-transform duration-200 group-hover:scale-x-100 ${isActive ? "scale-x-100" : ""}`}
+            className={`bg-base-content h-[1px] scale-x-0 border-0 transition-transform duration-200 group-hover:scale-x-100 ${isActive ? "scale-x-100" : ""}`}
           />
         </div>
       )}

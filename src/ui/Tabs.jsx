@@ -1,7 +1,10 @@
-import { NavLink } from "react-router-dom";
 import Tab from "./Tab";
 
 function Tabs() {
+  const supabaseToken = localStorage.getItem(
+    "sb-kapovyqqncfsoangqppi-auth-token",
+  );
+
   return (
     <div className="hidden items-center justify-center gap-x-3 md:flex">
       <Tab to="/allGames" sectionName="All" lineStartAnimation="left" />
@@ -11,6 +14,9 @@ function Tabs() {
         sectionName="Upcoming"
         lineStartAnimation="right"
       />
+      {supabaseToken && (
+        <Tab to="/account" sectionName="Account" lineStartAnimation="right" />
+      )}
     </div>
   );
 }

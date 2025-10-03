@@ -9,6 +9,9 @@ import { Menu } from "lucide-react";
 function Header() {
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
+  const supabaseToken = localStorage.getItem(
+    "sb-kapovyqqncfsoangqppi-auth-token",
+  );
 
   function handleSearch() {
     if (!search) return;
@@ -31,20 +34,24 @@ function Header() {
             className="bg-base-200 text-base-content placeholder:text-base-content/60 focus:ring-primary/50 active:ring-primary/70 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:outline-none active:ring-2 md:text-base"
           />
           <button
-            className="btn text-primary-content bg-primary text-md hidden border-none shadow-xl transition-all duration-300 hover:rounded-3xl md:block"
+            className="btn text-primary-content bg-primary text-md hidden border-none shadow-xl transition-all duration-300 md:block"
             onClick={handleSearch}
           >
             <FaSearch />
           </button>
-          <button
-            className="btn text-primary-content bg-primary text-md hidden border-none shadow-xl transition-all duration-300 hover:rounded-3xl md:block"
-            onClick={() => {
-              localStorage.removeItem("sb-kapovyqqncfsoangqppi-auth-token");
-              navigate("/");
-            }}
-          >
-            Logout
-          </button>
+
+          {!supabaseToken && (
+            <button
+              className="btn text-primary-content bg-primary text-md hidden border-none shadow-xl transition-all duration-300 md:block"
+              onClick={() => {
+                localStorage.removeItem("sb-kapovyqqncfsoangqppi-auth-token");
+                navigate("/auth");
+              }}
+            >
+              Login
+            </button>
+          )}
+
           <Drawer />
           <label
             htmlFor="my-drawer-4"

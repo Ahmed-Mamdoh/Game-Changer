@@ -13,7 +13,10 @@ function RouteErrorFallback() {
             routeError.error.message ||
             "Unexpected error occurred"}
         </p>
-        <Link className="btn bg-accent-primary border-0 font-bold" to="/">
+        <Link
+          className="btn bg-primary text-primary-content border-0 font-bold"
+          to="/"
+        >
           Back to Home
         </Link>
       </div>

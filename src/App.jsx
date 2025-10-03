@@ -11,6 +11,7 @@ import UpcomingGames from "./pages/UpcomingGames";
 import ScrollToTop from "./ui/ScrollToTop";
 import Auth from "./pages/Auth";
 import { Toaster } from "./../node_modules/react-hot-toast/src/components/toaster";
+import Account from "./pages/Account";
 
 function App() {
   const queryClient = new QueryClient({
@@ -50,6 +51,10 @@ function App() {
         {
           path: "/auth",
           element: <Auth />,
+        },
+        {
+          path: "/account",
+          element: <Account />,
         },
       ],
     },
