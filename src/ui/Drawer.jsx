@@ -21,7 +21,7 @@ function Drawer() {
               aria-label="close sidebar"
               className="drawer-overlay"
             ></label>
-            <ul className="menu text-text-general min-h-full w-60 bg-gray-900 p-4">
+            <ul className="menu base-content min-h-full w-60 bg-gray-900 p-4">
               {/* Sidebar content here */}
               <li className="rounded-md text-xl hover:bg-gray-700">
                 <Link to="/allGames">All</Link>

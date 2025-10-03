@@ -42,7 +42,7 @@ export function Combobox({ options, paramName }) {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
-        className="hover:bg-bg-primary hover:text-text-general font-semibold"
+        className="hover:bg-base-200 hover:base-content font-semibold"
         asChild
       >
         <Button
@@ -59,13 +59,13 @@ export function Combobox({ options, paramName }) {
       </PopoverTrigger>
 
       <PopoverContent className="w-48 p-0">
-        <Command className="bg-bg-secondary text-text-general">
+        <Command className="bg-bg-secondary base-content">
           <CommandInput
-            className="placeholder:text-text-general"
+            className="placeholder:base-content"
             placeholder={`Search ${paramName}...`}
           />
           <CommandList className="bg-bg-secondary">
-            <CommandEmpty className="text-text-general p-4">
+            <CommandEmpty className="base-content p-4">
               No option found.
             </CommandEmpty>
             <CommandGroup>
@@ -73,7 +73,7 @@ export function Combobox({ options, paramName }) {
                 <CommandItem
                   key={option.id}
                   value={option.id}
-                  className="text-text-general font-medium"
+                  className="base-content font-medium"
                   onSelect={() => {
                     if (option.id == value) {
                       setValue("");
@@ -92,7 +92,7 @@ export function Combobox({ options, paramName }) {
                     className={cn(
                       "mr-2 h-4 w-4",
                       value == option.id
-                        ? "text-text-general opacity-100"
+                        ? "base-content opacity-100"
                         : "opacity-0",
                     )}
                   />

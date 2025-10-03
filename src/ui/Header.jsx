@@ -28,7 +28,7 @@ function Header() {
             placeholder="Search"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="bg-bg-secondary rounded-lg px-4 py-2 text-sm text-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-violet-400 focus:outline-none active:ring-2 active:ring-violet-500 md:text-base"
+            className="bg-base-200 rounded-lg px-4 py-2 text-sm text-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-violet-400 focus:outline-none active:ring-2 active:ring-violet-500 md:text-base"
           />
           <button
             className="btn text-bg-primary bg-accent-primary text-md hidden border-none shadow-xl transition-all duration-300 hover:rounded-3xl md:block"

@@ -6,16 +6,16 @@ export function AuthForm() {
   return (
     <div className="mx-auto flex w-full max-w-md flex-col gap-6 py-5">
       <Tabs defaultValue="login">
-        <TabsList className="bg-bg-secondary text-text-general w-full">
+        <TabsList className="bg-base-300 base-content w-full">
           <TabsTrigger
-            className="text-text-general data-[state=active]:bg-gray-600"
+            className="base-content data-[state=active]:bg-gray-600"
             value="login"
           >
             Log In
           </TabsTrigger>
           <TabsTrigger
             value="signup"
-            className="text-text-general data-[state=active]:bg-gray-600"
+            className="base-content data-[state=active]:bg-gray-600"
           >
             Sign Up
           </TabsTrigger>

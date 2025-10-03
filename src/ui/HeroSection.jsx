@@ -47,7 +47,7 @@ function HeroSection({ sectionId }) {
                 <span>Login</span>
               </button>
               <button
-                className="bg-bg-secondary w-full cursor-pointer rounded-md px-2 py-2 text-lg text-nowrap text-gray-100 transition-all hover:rounded-xl"
+                className="bg-base-100 w-full cursor-pointer rounded-md px-2 py-2 text-lg text-nowrap text-gray-100 transition-all hover:rounded-xl"
                 onClick={() => handleScroll(sectionId)}
               >
                 Continue as Guest

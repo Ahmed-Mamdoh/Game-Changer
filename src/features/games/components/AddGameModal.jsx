@@ -114,7 +114,7 @@ function AddGameModal({ game_id, releaseDate }) {
             </div>
             <DialogFooter className="pt-4">
               <DialogClose asChild>
-                <Button className="text-text-general cursor-pointer border bg-transparent hover:bg-transparent">
+                <Button className="base-content cursor-pointer border bg-transparent hover:bg-transparent">
                   Cancel
                 </Button>
               </DialogClose>

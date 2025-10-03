@@ -19,7 +19,7 @@ function GameDetailsMedia({ data }) {
           >
             <h2 className="text-center">Media</h2>
           </div>
-          <div className="bg-bg-secondary container mx-auto rounded-sm py-12">
+          <div className="bg-base-100 container mx-auto rounded-sm py-12">
             <Carousel className="mx-auto w-11/12 md:w-9/12">
               <CarouselContent>
                 {screenshots?.map((screenshot) => {

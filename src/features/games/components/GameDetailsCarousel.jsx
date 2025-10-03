@@ -13,7 +13,7 @@ function GameDetailsCarousel({ sectionName, data }) {
       <div className="font-heading flex items-center justify-center pt-12 pb-3 text-4xl md:text-6xl">
         <h2 className="text-center">{sectionName}</h2>
       </div>
-      <div className="bg-bg-secondary container mx-auto rounded-sm py-10">
+      <div className="bg-base-100 container mx-auto rounded-sm py-10">
         <Carousel
           opts={{
             loop: false,

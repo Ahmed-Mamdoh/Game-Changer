@@ -47,7 +47,7 @@ function GameItem({ game }) {
             className="h-full w-full rounded-xl border border-gray-700 object-cover transition-all duration-300 hover:scale-105 hover:shadow-xl"
           />
         ) : (
-          <div className="bg-bg-secondary flex h-full w-full items-center justify-center rounded-lg font-medium">
+          <div className="bg-base-100 flex h-full w-full items-center justify-center rounded-lg font-medium">
             ❌ image not found
           </div>
         )}

@@ -29,7 +29,7 @@ function TabButton({ name }) {
   }
   return (
     <button
-      className="text-text-muted hover:text-text-general text-md cursor-pointer font-semibold tracking-wide transition-colors duration-200"
+      className="text-text-muted hover:base-content text-md cursor-pointer font-semibold tracking-wide transition-colors duration-200"
       onClick={() => handleScroll(name)}
     >
       {name}

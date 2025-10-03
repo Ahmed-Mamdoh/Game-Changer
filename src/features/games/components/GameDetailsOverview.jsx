@@ -65,7 +65,7 @@ function GameDetailsOverview({ data }) {
   return (
     <div
       id="Overview"
-      className="bg-bg-secondary/80 container mx-auto flex h-full flex-col items-center gap-x-12 gap-y-6 rounded-sm px-6 py-12 md:gap-y-12 md:px-12 lg:flex-row lg:items-start lg:gap-y-0"
+      className="bg-base-100 container mx-auto flex h-full flex-col items-center gap-x-12 gap-y-6 rounded-sm px-6 py-12 md:gap-y-12 md:px-12 lg:flex-row lg:items-start lg:gap-y-0"
     >
       <div className="max-w-96 flex-shrink-0">
         <img
@@ -160,12 +160,12 @@ function GameDetailsOverview({ data }) {
         )}
 
         <p className="text-text-subtle text-md text-start leading-8 font-medium text-wrap md:w-10/12 md:text-center md:text-lg lg:w-full lg:text-start xl:w-3/4">
-          <span className="text-text-general md:text-lg">Description: </span>
+          <span className="base-content md:text-lg">Description: </span>
           {summary}
         </p>
 
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-          <span className="text-text-general text-lg">Rating: </span>
+          <span className="base-content text-lg">Rating: </span>
           <Rating bgColor="bg-accent-primary" rating={rating} />
 
           <div className="flex items-center gap-1">
@@ -180,7 +180,7 @@ function GameDetailsOverview({ data }) {
 
         {timeToBeat?.[0]?.hastily ? (
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1 md:gap-x-4 md:text-lg">
-            <span className="text-text-general">Time To Beat:</span>
+            <span className="base-content">Time To Beat:</span>
 
             <p>Main Story: {(timeToBeat[0].hastily / 60 / 60).toFixed(0)}h</p>
             <span>|</span>
@@ -199,7 +199,7 @@ function GameDetailsOverview({ data }) {
 
         {companies?.length > 0 && (
           <div className="flex flex-wrap items-center gap-x-2 gap-y-2">
-            <span className="text-text-general text-lg">Developers:</span>
+            <span className="base-content text-lg">Developers:</span>
             {companies.map((company) => (
               <Badge
                 variant="default"
@@ -213,7 +213,7 @@ function GameDetailsOverview({ data }) {
         )}
 
         <div className="flex flex-wrap items-center gap-x-2 gap-y-2">
-          <span className="text-text-general text-lg">Get the game:</span>
+          <span className="base-content text-lg">Get the game:</span>
           {external_games?.map((link) => {
             if (link?.url?.includes("steam"))
               return (

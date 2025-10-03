@@ -87,7 +87,7 @@ function GameDetailsLangTable({ data }) {
         <div className="font-heading flex items-center justify-center pt-9 pb-4 text-4xl md:text-6xl">
           <h2 className="text-center">Language Support</h2>
         </div>
-        <Table className="bg-bg-secondary rounded-sm px-4 py-8">
+        <Table className="bg-base-100 rounded-sm px-4 py-8">
           <TableHeader>
             <TableRow className="border-text-muted">
               <TableHead></TableHead>
@@ -95,7 +95,7 @@ function GameDetailsLangTable({ data }) {
               {LANGUAGES.map((language, i) => (
                 <TableHead
                   key={language.id}
-                  className={`text-text-general border-text-muted border-x py-4 text-center ${i === LANGUAGES.length - 1 ? "border-r-0" : ""}`}
+                  className={`base-content border-text-muted border-x py-4 text-center ${i === LANGUAGES.length - 1 ? "border-r-0" : ""}`}
                 >
                   {language.native_name}
                 </TableHead>
@@ -150,13 +150,13 @@ function GameDetailsLangTable({ data }) {
         <div className="font-heading flex items-center justify-center pt-9 pb-4 text-4xl md:text-6xl">
           <h2 className="text-center">Language Support</h2>
         </div>
-        <Table className="bg-bg-secondary rounded-sm px-4 py-8">
+        <Table className="bg-base-100 rounded-sm px-4 py-8">
           <TableHeader>
             <TableRow className="border-text-muted">
               <TableHead></TableHead>
               {LANGUAGES_TYPES.map((type, i) => (
                 <TableHead
-                  className={`text-text-general border-text-muted border-x py-4 text-center ${i === LANGUAGES_TYPES.length - 1 ? "border-r-0" : ""}`}
+                  className={`base-content border-text-muted border-x py-4 text-center ${i === LANGUAGES_TYPES.length - 1 ? "border-r-0" : ""}`}
                 >
                   {type.name}
                 </TableHead>

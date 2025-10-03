@@ -6,7 +6,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @plugin "daisyui" {
-  themes: light --default
+  themes: sunset --default;
 }
 
 @theme inline {
@@ -142,7 +142,7 @@
   }
 
   body {
-    @apply bg-gradient-to-b from-gray-900 via-gray-950 to-gray-900 text-text-general font-body min-h-screen;
+    @apply bg-gradient-to-b from-base-100 via-base-300 to-base-100 font-body min-h-screen;
   }
 
 }

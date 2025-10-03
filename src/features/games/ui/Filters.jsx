@@ -23,7 +23,7 @@ function Filters({
 
   if (isLoadingGenres || isLoadingThemes || isLoadingGameModes) return null;
   return (
-    <div className="mx-auto mt-4 w-3/4 rounded-2xl bg-gray-700/50 px-2 py-4 shadow-md">
+    <div className="bg-base-200 mx-auto mt-4 w-3/4 rounded-2xl px-2 py-4 shadow-md">
       <div className="container flex flex-col flex-wrap items-start justify-between gap-x-8 gap-y-4 px-2 sm:flex-row">
         {showGenres && (
           <div className="flex w-full items-center justify-between gap-x-2 sm:w-fit sm:justify-center">
