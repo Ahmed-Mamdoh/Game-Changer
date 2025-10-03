@@ -1,4 +1,4 @@
-import GamesGallary from "@/features/games/GamesGallary";
+import GamesGallary from "@/features/games/ui/GamesGallary";
 import { Link } from "react-router-dom";
 
 function HomeSection({ sectionName, data, isLoading, route, id }) {

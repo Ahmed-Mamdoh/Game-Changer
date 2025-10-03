@@ -1,5 +1,5 @@
-import GamesGallary from "@/features/games/GamesGallary";
-import { useGetFreeGamesToShow } from "@/features/games/useGetFreeGamesToShow";
+import GamesGallary from "@/features/games/ui/GamesGallary";
+import { useGetFreeGamesToShow } from "@/features/games/hooks/useGetFreeGamesToShow";
 
 function FreeGames() {
   const { dataToShow, isLoadingFreeGamesIgdbData, isLoadingFreeGamesNames } =

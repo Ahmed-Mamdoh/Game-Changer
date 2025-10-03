@@ -1,7 +1,4 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import AuthFormCard from "./ui/AuthFormCard";
-import { useForm } from "react-hook-form";
-import AuthFormField from "./ui/AuthFormField";
 import SignupForm from "./SignupForm";
 import LoginForm from "./LoginForm";
 

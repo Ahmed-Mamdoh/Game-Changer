@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { getGameModes } from "../../api/igdbApi";
+import { getThemes } from "../../../api/igdbApi";
 
-export function useGetGameModes() {
+export function useGetThemes() {
   const { data, isLoading, error } = useQuery({
-    queryKey: ["GameModes"],
-    queryFn: getGameModes,
+    queryKey: ["themes"],
+    queryFn: getThemes,
   });
   return { data, isLoading, error };
 }

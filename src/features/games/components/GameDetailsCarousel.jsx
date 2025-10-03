@@ -5,7 +5,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import GameItem from "./GameItem";
+import GameItem from "./../ui/GameItem";
 
 function GameDetailsCarousel({ sectionName, data }) {
   return (

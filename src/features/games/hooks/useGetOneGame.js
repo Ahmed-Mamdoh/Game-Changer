@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getOneGame } from "../../api/igdbApi";
+import { getOneGame } from "../../../api/igdbApi";
 import { useParams } from "react-router-dom";
 export function useGetOneGame() {
   const { gameId } = useParams();

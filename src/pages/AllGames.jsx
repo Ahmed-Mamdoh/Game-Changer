@@ -1,7 +1,7 @@
 import Filters from "@/features/games/ui/Filters";
-import GamesGallary from "../features/games/GamesGallary";
+import GamesGallary from "../features/games/ui/GamesGallary";
 import FullPagination from "../features/games/ui/FullPagination";
-import { useGetAllGames } from "@/features/games/useGetAllGames";
+import { useGetAllGames } from "@/features/games/hooks/useGetAllGames";
 
 function AllGames() {
   const { data, isLoading } = useGetAllGames();

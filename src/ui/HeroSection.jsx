@@ -1,8 +1,6 @@
 import { FaArrowAltCircleDown, FaGamepad } from "react-icons/fa";
-import Background from "./Background";
 import background from "../assets/image.png";
 import { useNavigate } from "react-router-dom";
-import { LogIn, LogInIcon } from "lucide-react";
 
 function HeroSection({ sectionId }) {
   const navigate = useNavigate();

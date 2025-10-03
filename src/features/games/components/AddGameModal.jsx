@@ -11,8 +11,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import ModalSelect from "./ui/ModalSelect";
-import ModalDate from "./ui/ModalDate";
+import ModalSelect from "../ui/ModalSelect";
+import ModalDate from "../ui/ModalDate";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { addGame } from "@/api/supabase";
@@ -68,7 +68,7 @@ function AddGameModal({ game_id, releaseDate }) {
             <div className="grid gap-4">
               <div className="grid gap-3">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="status">Status</Label>
+                  <Label htmlFor="status">Status *</Label>
                   {errors["status"] && (
                     <p className="text-destructive text-sm">
                       {errors["status"].message}
@@ -79,7 +79,7 @@ function AddGameModal({ game_id, releaseDate }) {
               </div>
               <div className="grid gap-3">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="hours_played">Hours Played</Label>
+                  <Label htmlFor="hours_played">Hours Played *</Label>
                   {errors["hours_played"] && (
                     <p className="text-destructive text-sm">
                       {errors["hours_played"].message}
@@ -90,7 +90,7 @@ function AddGameModal({ game_id, releaseDate }) {
                   id="hours_played"
                   name="hours_played"
                   type="number"
-                  min={0}
+                  min={1}
                   {...register("hours_played", {
                     required: "Hours played is required",
                   })}

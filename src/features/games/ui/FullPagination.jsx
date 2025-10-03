@@ -8,7 +8,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { useGetNumberOfResults } from "@/features/games/useGetNumberOfResults";
+import { useGetNumberOfResults } from "@/features/games/hooks/useGetNumberOfResults";
 import { LIMIT } from "@/constants/constant";
 
 const NUM_PAGE_BUTTONS = 5;

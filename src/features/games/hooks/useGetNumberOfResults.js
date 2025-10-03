@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getNumberOfResults } from "../../api/igdbApi";
+import { getNumberOfResults } from "../../../api/igdbApi";
 import { useSearchParams } from "react-router-dom";
 export function useGetNumberOfResults(path) {
   const [searchParams] = useSearchParams();

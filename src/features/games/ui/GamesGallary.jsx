@@ -1,5 +1,5 @@
 import GameItem from "./GameItem";
-import Spinner from "./../../ui/Spinner";
+import Spinner from "../../../ui/Spinner";
 
 function GamesGallary({ data, isLoading }) {
   if (isLoading) return <Spinner />;

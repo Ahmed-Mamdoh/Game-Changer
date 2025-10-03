@@ -1,4 +1,4 @@
-import { getAllGames } from "../../api/igdbApi";
+import { getAllGames } from "../../../api/igdbApi";
 import { useQuery } from "@tanstack/react-query";
 
 export function useGetGameSection(sortBy, limit) {

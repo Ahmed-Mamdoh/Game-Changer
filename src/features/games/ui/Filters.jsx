@@ -1,9 +1,9 @@
 import { useSearchParams } from "react-router-dom";
 import { Combobox } from "@/components/ui/combobox";
 import { FaUndoAlt } from "react-icons/fa";
-import { useGetGenres } from "../useGetGenres";
-import { useGetThemes } from "../useGetThemes";
-import { useGetGameModes } from "../useGetGameModes";
+import { useGetGenres } from "../hooks/useGetGenres";
+import { useGetThemes } from "../hooks/useGetThemes";
+import { useGetGameModes } from "../hooks/useGetGameModes";
 
 function Filters({
   showGenres = true,

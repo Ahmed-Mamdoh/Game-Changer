@@ -1,6 +1,6 @@
-import { useGetFreeGamesToShow } from "@/features/games/useGetFreeGamesToShow";
-import { useGetGameSection } from "@/features/games/useGetGameSection";
-import { useGetUpcomingGames } from "@/features/games/useGetUpcomingGames";
+import { useGetFreeGamesToShow } from "@/features/games/hooks/useGetFreeGamesToShow";
+import { useGetGameSection } from "@/features/games/hooks/useGetGameSection";
+import { useGetUpcomingGames } from "@/features/games/hooks/useGetUpcomingGames";
 import HeroSection from "@/ui/HeroSection";
 import HomeSection from "@/ui/HomeSection";
 

@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getAllGames } from "../../api/igdbApi";
+import { getAllGames } from "../../../api/igdbApi";
 import { useSearchParams } from "react-router-dom";
 export function useGetAllGames() {
   const queryClient = useQueryClient();
