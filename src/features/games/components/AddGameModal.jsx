@@ -56,7 +56,7 @@ function AddGameModal({ game_id, releaseDate }) {
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="bg-bg-secondary border-0 sm:max-w-[425px]">
+      <DialogContent className="bg-base-200 border-0 sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Add Game</DialogTitle>
           <DialogDescription className="text-text-subtle">

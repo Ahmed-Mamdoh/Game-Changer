@@ -10,7 +10,7 @@ import {
 
 function AuthFormCard({ title, description, children, btnText }) {
   return (
-    <Card className="base-content bg-base-300 border-base-300">
+    <Card className="base-content bg-base-100 border-base-300">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription className="text-text-subtle">

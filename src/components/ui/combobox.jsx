@@ -49,7 +49,7 @@ export function Combobox({ options, paramName }) {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="bg-bg-secondary w-8/12 justify-between overflow-hidden sm:w-48"
+          className="bg-neutral w-8/12 justify-between overflow-hidden sm:w-48"
         >
           {value
             ? options.find((option) => option.id == value)?.name
@@ -59,12 +59,12 @@ export function Combobox({ options, paramName }) {
       </PopoverTrigger>
 
       <PopoverContent className="w-48 p-0">
-        <Command className="bg-bg-secondary base-content">
+        <Command className="bg-neutral base-content">
           <CommandInput
             className="placeholder:base-content"
             placeholder={`Search ${paramName}...`}
           />
-          <CommandList className="bg-bg-secondary">
+          <CommandList className="bg-neutral">
             <CommandEmpty className="base-content p-4">
               No option found.
             </CommandEmpty>

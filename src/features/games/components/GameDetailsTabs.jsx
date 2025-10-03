@@ -8,7 +8,7 @@ function GameDetailsTabs({ data }) {
     videos,
   } = data[0];
   return (
-    <div className="sticky top-0 z-10 flex w-full flex-wrap items-center justify-center gap-x-3 gap-y-2 bg-black/80 py-3 md:gap-x-6">
+    <div className="bg-base-300/80 sticky top-0 z-10 flex w-full flex-wrap items-center justify-center gap-x-3 gap-y-2 py-3 md:gap-x-6">
       <TabButton name="Overview" />
       {(screenshots || videos) && <TabButton name="Media" />}
       {dlcs && <TabButton name="DLCs" />}
