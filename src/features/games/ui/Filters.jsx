@@ -61,7 +61,7 @@ function Filters({
             newParams.delete("sortBy");
             setSearchParams(newParams);
           }}
-          className="bg-accent-secondary group cursor-pointer rounded-sm font-extrabold transition-all duration-200 hover:rounded-lg"
+          className="bg-secondary text-secondary-content group cursor-pointer rounded-sm font-extrabold transition-all duration-200 hover:rounded-lg"
         >
           <div className="flex items-center gap-x-2 px-4 py-2">
             <FaUndoAlt className="transition-transform duration-200 group-hover:-rotate-90" />

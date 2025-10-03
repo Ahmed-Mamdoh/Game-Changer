@@ -44,15 +44,15 @@ function GameItem({ game }) {
           <img
             src={imageUrl}
             alt=""
-            className="h-full w-full rounded-xl border border-gray-700 object-cover transition-all duration-300 hover:scale-105 hover:shadow-xl"
+            className="border-base-300 h-full w-full rounded-xl border object-cover transition-all duration-300 hover:scale-105 hover:shadow-xl"
           />
         ) : (
-          <div className="bg-base-100 flex h-full w-full items-center justify-center rounded-lg font-medium">
+          <div className="bg-base-300 flex h-full w-full items-center justify-center rounded-lg font-medium">
             ❌ image not found
           </div>
         )}
       </div>
-      <div className="peer-hover:text-accent-primary w-72 cursor-default text-center text-lg font-medium text-wrap transition-colors duration-300 md:h-12 md:w-48 md:text-base">
+      <div className="peer-hover:text-primary w-72 cursor-default text-center text-lg font-medium text-wrap transition-colors duration-300 md:h-12 md:w-48 md:text-base">
         <Link
           to={`/game/${game.id}`}
           className="hover:text-accent-primary cursor-pointer"

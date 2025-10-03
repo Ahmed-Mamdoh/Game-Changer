@@ -73,7 +73,7 @@ export function Combobox({ options, paramName }) {
                 <CommandItem
                   key={option.id}
                   value={option.id}
-                  className="base-content font-medium"
+                  className="base-content data-[selected=true]:bg-base-300 font-medium"
                   onSelect={() => {
                     if (option.id == value) {
                       setValue("");

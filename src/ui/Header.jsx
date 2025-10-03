@@ -16,7 +16,7 @@ function Header() {
   }
 
   return (
-    <div className="from-accent-secondary/20 to-accent-secondary/40 z-50 flex w-full items-center justify-center border-b border-white/20 bg-linear-to-b shadow-md backdrop-blur-md">
+    <div className="from-secondary/20 to-secondary/40 border-base-100/20 z-50 flex w-full items-center justify-center border-b bg-linear-to-b shadow-md backdrop-blur-md">
       <div className="md-px-0 container flex items-center justify-between px-5 py-3 lg:px-20 xl:px-40">
         <Logo />
         <Tabs />
@@ -28,16 +28,16 @@ function Header() {
             placeholder="Search"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="bg-base-200 rounded-lg px-4 py-2 text-sm text-gray-300 placeholder:text-gray-300 focus:ring-2 focus:ring-violet-400 focus:outline-none active:ring-2 active:ring-violet-500 md:text-base"
+            className="bg-base-200 text-base-content placeholder:text-base-content/60 focus:ring-primary/50 active:ring-primary/70 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:outline-none active:ring-2 md:text-base"
           />
           <button
-            className="btn text-bg-primary bg-accent-primary text-md hidden border-none shadow-xl transition-all duration-300 hover:rounded-3xl md:block"
+            className="btn text-primary-content bg-primary text-md hidden border-none shadow-xl transition-all duration-300 hover:rounded-3xl md:block"
             onClick={handleSearch}
           >
             <FaSearch />
           </button>
           <button
-            className="btn text-bg-primary bg-accent-primary text-md hidden border-none shadow-xl transition-all duration-300 hover:rounded-3xl md:block"
+            className="btn text-primary-content bg-primary text-md hidden border-none shadow-xl transition-all duration-300 hover:rounded-3xl md:block"
             onClick={() => {
               localStorage.removeItem("sb-kapovyqqncfsoangqppi-auth-token");
               navigate("/");
@@ -48,7 +48,7 @@ function Header() {
           <Drawer />
           <label
             htmlFor="my-drawer-4"
-            className="text-bg-primary bg-accent-primary text-md flex items-center justify-center rounded-xs border-none px-1 py-1 shadow-xl transition-all duration-300 md:hidden"
+            className="text-primary-content bg-primary text-md flex items-center justify-center rounded-xs border-none px-1 py-1 shadow-xl transition-all duration-300 md:hidden"
           >
             <Menu className="h-8 w-8" />
           </label>

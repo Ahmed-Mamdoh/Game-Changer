@@ -51,7 +51,7 @@ function AddGameModal({ game_id, releaseDate }) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="bg-accent-primary hover:bg-accent-primary cursor-pointer px-6 py-3 text-xl font-bold text-black hover:rounded-xl">
+        <Button className="bg-primary hover:bg-accent-primary cursor-pointer px-6 py-3 text-xl font-bold text-black hover:rounded-xl">
           Add Game
         </Button>
       </DialogTrigger>

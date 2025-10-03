@@ -166,7 +166,7 @@ function GameDetailsOverview({ data }) {
 
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
           <span className="base-content text-lg">Rating: </span>
-          <Rating bgColor="bg-accent-primary" rating={rating} />
+          <Rating bgColor="bg-primary" rating={rating} />
 
           <div className="flex items-center gap-1">
             <p className="text-text-subtle text-xl font-medium">

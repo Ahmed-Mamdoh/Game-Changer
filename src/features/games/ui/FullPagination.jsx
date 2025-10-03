@@ -29,7 +29,7 @@ function FullPagination() {
           <PaginationContent>
             <PaginationItem>
               <PaginationPrevious
-                className="hover:bg-accent-primary font-extrabold"
+                className="hover:bg-primary hover:text-primary-content cursor-pointer font-extrabold transition-colors"
                 onClick={() => {
                   const newParams = new URLSearchParams(searchParams);
                   if (currentPage > 1) {
@@ -53,8 +53,8 @@ function FullPagination() {
                     <PaginationLink
                       className={`${
                         i + currentPage - middleNumber === currentPage
-                          ? "bg-accent-primary hover:bg-accent-primary text-bg-primary font-extrabold"
-                          : "hover:bg-accent-primary cursor-pointer font-extrabold"
+                          ? "bg-primary hover:bg-primary text-primary-content font-extrabold"
+                          : "hover:bg-primary hover:text-primary-content cursor-pointer font-extrabold"
                       }`}
                       onClick={() => {
                         if (i === middleNumber) return;
@@ -76,7 +76,7 @@ function FullPagination() {
             ) : null}
             <PaginationItem>
               <PaginationNext
-                className="hover:bg-accent-primary font-extrabold"
+                className="hover:bg-primary hover:text-primary-content cursor-pointer font-extrabold"
                 onClick={() => {
                   if (currentPage === numberOfPages) return;
                   const newParams = new URLSearchParams(searchParams);
