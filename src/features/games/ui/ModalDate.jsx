@@ -35,16 +35,20 @@ function ModalDate({ name, control, minDate }) {
           <Button
             variant="outline"
             id="date"
-            className="w-full justify-between bg-transparent font-normal hover:bg-transparent hover:text-white"
+            className="hover:text-base-content w-full justify-between bg-transparent font-normal hover:bg-transparent"
           >
             {date ? date.toLocaleDateString() : "Select date"}
             <ChevronDownIcon />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+        <PopoverContent
+          className="bg-base-100 w-auto overflow-hidden p-0"
+          align="start"
+        >
           <Calendar
             mode="single"
             selected={field.value}
+            className="bg-base-100"
             captionLayout="dropdown"
             onSelect={(date) => {
               field.onChange(date);

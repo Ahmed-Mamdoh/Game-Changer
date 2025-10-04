@@ -7,7 +7,7 @@ import AddGameModal from "./AddGameModal";
 import Rating from "@/ui/Rating";
 import { Badge } from "@/components/ui/badge";
 import { useGetTimeToBeat } from "../hooks/useGetTimeToBeat";
-import { useGetUserGame } from "../../User/useGetUserGame";
+import { useGetUserGame } from "../../User/hooks/useGetUserGame";
 
 const ESRB_RATINGS = {
   6: { rating: "Rating Pending", badgeVariant: "outline" },
@@ -91,7 +91,12 @@ function GameDetailsOverview({ data }) {
           {userGame?.data?.length > 0 ? (
             <p>Game already added</p>
           ) : (
-            <AddGameModal game_id={id} releaseDate={releaseDate} />
+            <AddGameModal
+              game_id={id}
+              releaseDate={releaseDate}
+              genresData={genres}
+              themesData={themes}
+            />
           )}
         </div>
 
@@ -144,7 +149,7 @@ function GameDetailsOverview({ data }) {
         {themes?.length > 0 && (
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
             <p className="md:text-lg">Modes:</p>
-            {game_modes.map((mode) => (
+            {game_modes?.map((mode) => (
               <Badge
                 variant={mode.name}
                 className="h-fit w-fit cursor-pointer px-4 py-1 text-sm transition-all duration-300 hover:scale-105 hover:font-bold"

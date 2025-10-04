@@ -26,12 +26,18 @@ function ModalSelect({ control, name }) {
       <SelectTrigger className="w-full">
         <SelectValue placeholder="Status" />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className="bg-base-100">
         <SelectGroup>
           <SelectLabel>Status</SelectLabel>
-          <SelectItem value="Finished">Finished</SelectItem>
-          <SelectItem value="Playing">Playing</SelectItem>
-          <SelectItem value="Dropped">Dropped</SelectItem>
+          <SelectItem className="focus:bg-base-300" value="Finished">
+            Finished
+          </SelectItem>
+          <SelectItem className="focus:bg-base-300" value="Playing">
+            Playing
+          </SelectItem>
+          <SelectItem className="focus:bg-base-300" value="Dropped">
+            Dropped
+          </SelectItem>
         </SelectGroup>
       </SelectContent>
     </Select>

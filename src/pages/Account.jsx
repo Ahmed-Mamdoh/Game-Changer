@@ -1,17 +1,41 @@
 import { logoutUser, updateUser } from "@/api/supabase";
 import { Input } from "@/components/ui/input";
+import { useGetUserGames } from "@/features/User/hooks/useGetUserGames";
+import { ChartPieDonutActive } from "@/ui/ChartPieDonutActive";
+import Spinner from "@/ui/Spinner";
 import { useState } from "react";
 import { FaCheck, FaPen } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 function Account() {
   const navigate = useNavigate();
+
   const supabaseToken = localStorage.getItem(
     "sb-kapovyqqncfsoangqppi-auth-token",
   );
-
   const userData = JSON.parse(supabaseToken || "{}");
   const { username } = userData?.user?.user_metadata || {};
+  const user_id = userData?.user?.id;
+  const { data, isLoading } = useGetUserGames(user_id);
+  const user_games = data?.user_games || [];
+  let genres = [];
+  let genresCount = {};
+  let chartData;
+  if (!isLoading) {
+    genres = user_games?.map((game) => game.genres).flat();
+    genresCount = genres.reduce((acc, genre) => {
+      return { ...acc, [genre]: (acc[genre] || 0) + 1 };
+    }, {});
+    chartData = Object.entries(genresCount).map(([genre, count]) => ({
+      label: genre,
+      number: count,
+      fill: `#${Math.floor(Math.random() * 16777215)
+        .toString(16)
+        .padStart(6, "0")}`,
+    }));
+    chartData.sort((a, b) => b.number - a.number);
+  }
+
   function handleLogout() {
     Swal.fire({
       title: "Are you sure you want to log out?",
@@ -39,6 +63,10 @@ function Account() {
         >
           Log Out
         </button>
+      </div>
+      <div className="mx-auto my-6 flex w-11/12 items-center justify-between">
+        <div></div>
+        {!isLoading && <ChartPieDonutActive chartData={chartData} />}
       </div>
     </div>
   );

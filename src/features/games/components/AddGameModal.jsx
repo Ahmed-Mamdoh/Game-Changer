@@ -16,42 +16,59 @@ import ModalDate from "../ui/ModalDate";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { addGame } from "@/api/supabase";
+import { useQueryClient } from "@tanstack/react-query";
+import { useRef } from "react";
 
-function AddGameModal({ game_id, releaseDate }) {
+function AddGameModal({ game_id, releaseDate, genresData, themesData }) {
+  const queryClient = useQueryClient();
   const { register, handleSubmit, formState, control } = useForm();
   const { errors } = formState;
   const userToken = localStorage.getItem("sb-kapovyqqncfsoangqppi-auth-token");
   const user_id = JSON.parse(userToken || "{}")?.user?.id;
+  const genres = genresData.map((genre) => genre.name);
+  const themes = themesData.map((theme) => theme.name);
+  const isLoadingRef = useRef(false);
 
   function handleAddGame(data) {
+    if (isLoadingRef.current === true) return;
+    isLoadingRef.current = true;
     data.date_finished = new Date(data.date_finished)
       .toISOString()
       .split("T")[0];
-
-    toast.promise(
-      async () => {
-        const { error } = await addGame({
-          game_id,
-          user_id,
-          ...data,
+    toast
+      .promise(
+        async () => {
+          const { error } = await addGame({
+            game_id,
+            user_id,
+            genres,
+            themes,
+            ...data,
+          });
+          if (error) {
+            throw error;
+          }
+          return "Game added successfully";
+        },
+        {
+          loading: "Adding game...",
+          success: "Game added successfully",
+          error: (error) => error.message,
+        },
+      )
+      .finally(() => {
+        const gameId = String(game_id);
+        queryClient.invalidateQueries({
+          queryKey: ["user_game", user_id, gameId],
         });
-        if (error) {
-          throw error;
-        }
-        return "Game added successfully";
-      },
-      {
-        loading: "Adding game...",
-        success: "Game added successfully",
-        error: (error) => error.message,
-      },
-    );
+        isLoadingRef.current = false;
+      });
   }
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="bg-primary hover:bg-accent-primary cursor-pointer px-6 py-3 text-xl font-bold text-black hover:rounded-xl">
+        <Button className="bg-primary hover:bg-primary text-primary-content cursor-pointer px-6 py-3 text-xl font-bold hover:rounded-xl">
           Add Game
         </Button>
       </DialogTrigger>
@@ -59,7 +76,7 @@ function AddGameModal({ game_id, releaseDate }) {
       <DialogContent className="bg-base-200 border-0 sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Add Game</DialogTitle>
-          <DialogDescription className="text-text-subtle">
+          <DialogDescription className="text-base-content/80">
             Add a new game to your list.
           </DialogDescription>
         </DialogHeader>
@@ -70,7 +87,7 @@ function AddGameModal({ game_id, releaseDate }) {
                 <div className="flex items-center justify-between">
                   <Label htmlFor="status">Status *</Label>
                   {errors["status"] && (
-                    <p className="text-destructive text-sm">
+                    <p className="text-error text-sm">
                       {errors["status"].message}
                     </p>
                   )}
@@ -81,7 +98,7 @@ function AddGameModal({ game_id, releaseDate }) {
                 <div className="flex items-center justify-between">
                   <Label htmlFor="hours_played">Hours Played *</Label>
                   {errors["hours_played"] && (
-                    <p className="text-destructive text-sm">
+                    <p className="text-error text-sm">
                       {errors["hours_played"].message}
                     </p>
                   )}
@@ -100,7 +117,7 @@ function AddGameModal({ game_id, releaseDate }) {
                 <div className="flex items-center justify-between">
                   <Label htmlFor="date_finished">Date Finished</Label>
                   {errors["date_finished"] && (
-                    <p className="text-destructive text-sm">
+                    <p className="text-error text-sm">
                       {errors["date_finished"].message}
                     </p>
                   )}
@@ -120,7 +137,8 @@ function AddGameModal({ game_id, releaseDate }) {
               </DialogClose>
               <Button
                 type="submit"
-                className="bg-accent-primary hover:bg-accent-primary cursor-pointer font-extrabold text-black"
+                disabled={isLoadingRef.current}
+                className="bg-primary hover:bg-primary text-primary-content cursor-pointer font-extrabold"
               >
                 Add Game
               </Button>
