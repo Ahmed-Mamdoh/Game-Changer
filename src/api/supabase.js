@@ -43,3 +43,23 @@ export async function getUserGame(user_id, game_id) {
     .eq("game_id", game_id);
   return { data, error };
 }
+
+export async function updateUser({ email, password, username }) {
+  let dataToUpdate = {};
+  if (email) dataToUpdate.email = email;
+  if (password) dataToUpdate.password = password;
+  if (username) dataToUpdate.username = username;
+
+  const { data, error } = await supabase.auth.updateUser({
+    email: dataToUpdate.email,
+    password: dataToUpdate.password,
+    data: { username: dataToUpdate.username },
+  });
+
+  return { data, error };
+}
+
+export async function logoutUser() {
+  let { error } = await supabase.auth.signOut();
+  console.log(error);
+}
