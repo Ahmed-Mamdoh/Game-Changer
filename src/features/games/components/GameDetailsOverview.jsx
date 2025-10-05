@@ -96,6 +96,8 @@ function GameDetailsOverview({ data }) {
               releaseDate={releaseDate}
               genresData={genres}
               themesData={themes}
+              game_cover={cover}
+              game_name={name}
             />
           )}
         </div>

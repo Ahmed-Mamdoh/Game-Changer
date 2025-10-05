@@ -1,12 +1,11 @@
 "use client";
 
 import { TrendingDown, TrendingUp } from "lucide-react";
-import { Label, Pie, PieChart, Sector } from "recharts";
+import { Pie, PieChart, Sector } from "recharts";
 
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -19,18 +18,9 @@ import {
 
 export const description = "A donut chart with an active sector";
 
-const chartData = [
-  { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
-  { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
-  { browser: "firefox", visitors: 187, fill: "var(--color-firefox)" },
-  { browser: "edge", visitors: 173, fill: "var(--color-edge)" },
-  { browser: "other", visitors: 90, fill: "var(--color-other)" },
-];
-
 const chartConfig = {};
 
 export function ChartPieDonutActive({ chartData, field }) {
-  console.log(chartData);
   return (
     <Card className="bg-base-300 flex min-w-[300px] flex-col gap-y-0 border-0">
       <CardHeader className="items-center pb-0">
@@ -65,19 +55,19 @@ export function ChartPieDonutActive({ chartData, field }) {
       <CardFooter className="flex flex-col items-center gap-2 text-sm">
         <div className="flex flex-col items-center gap-1">
           <p className="text-base-content/80">
-            Top Played {field}:{" "}
+            Top Played:{" "}
             <span className="font-extrabold">{chartData[0]?.label}</span> (
-            {chartData[0]?.number} games){" "}
+            {chartData[0]?.number}){" "}
             <TrendingUp className="text-success inline h-4 w-4" />
           </p>
         </div>
         <div className="flex flex-col items-center gap-1">
           <p className="text-base-content/80">
-            Least Played {field}:{" "}
+            Least Played:{" "}
             <span className="font-extrabold">
               {chartData[chartData.length - 1]?.label}
             </span>{" "}
-            ({chartData[chartData.length - 1]?.number} games){" "}
+            ({chartData[chartData.length - 1]?.number}){" "}
             <TrendingDown className="text-error inline h-4 w-4" />
           </p>
         </div>

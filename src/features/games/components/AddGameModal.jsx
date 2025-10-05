@@ -19,7 +19,14 @@ import { addGame } from "@/api/supabase";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRef } from "react";
 
-function AddGameModal({ game_id, releaseDate, genresData, themesData }) {
+function AddGameModal({
+  game_id,
+  releaseDate,
+  genresData,
+  themesData,
+  game_name,
+  game_cover,
+}) {
   const queryClient = useQueryClient();
   const { register, handleSubmit, formState, control } = useForm();
   const { errors } = formState;
@@ -43,6 +50,8 @@ function AddGameModal({ game_id, releaseDate, genresData, themesData }) {
             user_id,
             genres,
             themes,
+            game_name,
+            game_cover: game_cover.url,
             ...data,
           });
           if (error) {
@@ -60,6 +69,9 @@ function AddGameModal({ game_id, releaseDate, genresData, themesData }) {
         const gameId = String(game_id);
         queryClient.invalidateQueries({
           queryKey: ["user_game", user_id, gameId],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["user_games", user_id],
         });
         isLoadingRef.current = false;
       });

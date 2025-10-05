@@ -8,7 +8,7 @@ function UpcomingGames() {
 
   return (
     <div className="container mx-auto">
-      <Filters showSortBy={false} />
+      <Filters showSortBy={false} className="mt-4 w-3/4" />
       <GamesGallary data={data} isLoading={isLoading} />
       <FullPagination />
     </div>

@@ -27,13 +27,25 @@ export async function addGame({
   hours_played,
   date_finished,
   game_id,
+  game_name,
+  game_cover,
   genres,
   themes,
 }) {
   const { data, error } = await supabase
     .from("user_games")
     .insert([
-      { user_id, status, hours_played, date_finished, game_id, genres, themes },
+      {
+        user_id,
+        status,
+        hours_played,
+        date_finished,
+        game_id,
+        game_name,
+        game_cover,
+        genres,
+        themes,
+      },
     ])
     .select();
   return { data, error };
@@ -49,12 +61,10 @@ export async function getUserGame(user_id, game_id) {
 }
 
 export async function getUserGames(user_id) {
-  console.log(user_id);
   let { data: user_games, error } = await supabase
     .from("user_games")
     .select("*")
     .eq("user_id", user_id);
-  console.log(user_games, error);
   return { user_games, error };
 }
 
@@ -75,5 +85,5 @@ export async function updateUser({ email, password, username }) {
 
 export async function logoutUser() {
   let { error } = await supabase.auth.signOut();
-  console.log(error);
+  return { error };
 }

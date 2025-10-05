@@ -8,7 +8,7 @@ function AllGames() {
 
   return (
     <div className="container mx-auto">
-      <Filters />
+      <Filters className="mt-4 w-3/4" />
       <GamesGallary data={data} isLoading={isLoading} />
       <FullPagination />
     </div>
