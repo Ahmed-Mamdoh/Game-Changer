@@ -7,6 +7,23 @@ import { useState } from "react";
 import { FaCheck, FaPen } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+
+function prepareChartData({ user_games, field }) {
+  const data = user_games?.map((game) => game[field]).flat();
+  const dataCount = data.reduce((acc, item) => {
+    return { ...acc, [item]: (acc[item] || 0) + 1 };
+  }, {});
+  const chartData = Object.entries(dataCount).map(([item, count]) => ({
+    label: item,
+    number: count,
+    fill: `#${Math.floor(Math.random() * 16777215)
+      .toString(16)
+      .padStart(6, "0")}`,
+  }));
+  chartData.sort((a, b) => b.number - a.number);
+  return chartData;
+}
+
 function Account() {
   const navigate = useNavigate();
 
@@ -18,22 +35,11 @@ function Account() {
   const user_id = userData?.user?.id;
   const { data, isLoading } = useGetUserGames(user_id);
   const user_games = data?.user_games || [];
-  let genres = [];
-  let genresCount = {};
-  let chartData;
+  let genresData;
+  let themesData;
   if (!isLoading) {
-    genres = user_games?.map((game) => game.genres).flat();
-    genresCount = genres.reduce((acc, genre) => {
-      return { ...acc, [genre]: (acc[genre] || 0) + 1 };
-    }, {});
-    chartData = Object.entries(genresCount).map(([genre, count]) => ({
-      label: genre,
-      number: count,
-      fill: `#${Math.floor(Math.random() * 16777215)
-        .toString(16)
-        .padStart(6, "0")}`,
-    }));
-    chartData.sort((a, b) => b.number - a.number);
+    genresData = prepareChartData({ user_games, field: "genres" });
+    themesData = prepareChartData({ user_games, field: "themes" });
   }
 
   function handleLogout() {
@@ -64,9 +70,16 @@ function Account() {
           Log Out
         </button>
       </div>
-      <div className="mx-auto my-6 flex w-11/12 items-center justify-between">
+      <div className="mx-auto mt-6 flex w-11/12 items-center justify-between">
         <div></div>
-        {!isLoading && <ChartPieDonutActive chartData={chartData} />}
+        <div className="bg-base-300 mb-12 flex flex-col gap-2 rounded-xl border">
+          {!isLoading && (
+            <ChartPieDonutActive chartData={genresData} field="Genre" />
+          )}
+          {!isLoading && (
+            <ChartPieDonutActive chartData={themesData} field="Theme" />
+          )}
+        </div>
       </div>
     </div>
   );

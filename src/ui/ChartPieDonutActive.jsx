@@ -29,13 +29,12 @@ const chartData = [
 
 const chartConfig = {};
 
-export function ChartPieDonutActive({ chartData }) {
+export function ChartPieDonutActive({ chartData, field }) {
   console.log(chartData);
   return (
-    <Card className="bg-base-300 flex min-w-[300px] flex-col">
+    <Card className="bg-base-300 flex min-w-[300px] flex-col gap-y-0 border-0">
       <CardHeader className="items-center pb-0">
-        <CardTitle>Stats</CardTitle>
-        <CardDescription>Genres you played</CardDescription>
+        <CardTitle className="text-center">{field}s You Played</CardTitle>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer
@@ -65,31 +64,21 @@ export function ChartPieDonutActive({ chartData }) {
       </CardContent>
       <CardFooter className="flex flex-col items-center gap-2 text-sm">
         <div className="flex flex-col items-center gap-1">
-          <p className="text-base-content/80">Most played genre is</p>
-          <p className="flex items-center gap-1">
-            <span className="text-base-content font-extrabold">
-              {chartData[0]?.label}
-            </span>
-            <span className="text-base-content/70">with</span>
-            <span className="text-base-content font-extrabold">
-              {chartData[0]?.number}
-            </span>
-            <span className="text-base-content/70">games</span>
-            <TrendingUp className="text-success h-4 w-4" />
+          <p className="text-base-content/80">
+            Top Played {field}:{" "}
+            <span className="font-extrabold">{chartData[0]?.label}</span> (
+            {chartData[0]?.number} games){" "}
+            <TrendingUp className="text-success inline h-4 w-4" />
           </p>
         </div>
         <div className="flex flex-col items-center gap-1">
-          <p className="text-base-content/80">and least played genre is</p>
-          <p className="flex items-center gap-1">
-            <span className="text-base-content font-extrabold">
+          <p className="text-base-content/80">
+            Least Played {field}:{" "}
+            <span className="font-extrabold">
               {chartData[chartData.length - 1]?.label}
-            </span>
-            <span className="text-base-content/70">with</span>
-            <span className="text-base-content font-extrabold">
-              {chartData[chartData.length - 1]?.number}
-            </span>
-            <span className="text-base-content/70">games</span>
-            <TrendingDown className="text-error h-4 w-4" />
+            </span>{" "}
+            ({chartData[chartData.length - 1]?.number} games){" "}
+            <TrendingDown className="text-error inline h-4 w-4" />
           </p>
         </div>
       </CardFooter>
