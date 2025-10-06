@@ -10,14 +10,26 @@ function Filters({
   showThemes = true,
   showSortBy = true,
   showGameModes = true,
+  showStatus = false,
+  isAccount = false,
   className = "",
 }) {
   const { data: genres, isLoading: isLoadingGenres } = useGetGenres();
   const { data: themes, isLoading: isLoadingThemes } = useGetThemes();
   const { data: gameModes, isLoading: isLoadingGameModes } = useGetGameModes();
-  const sortBy = [
-    { id: "first_release_date", name: "Release Date" },
-    { id: "total_rating_count", name: "Popularity" },
+  const sortBy = isAccount
+    ? [
+        { id: "hours_played", name: "Hours Played" },
+        { id: "date_finished", name: "Date Finished" },
+      ]
+    : [
+        { id: "first_release_date", name: "Release Date" },
+        { id: "total_rating_count", name: "Popularity" },
+      ];
+  const status = [
+    { id: "finished", name: "Finished" },
+    { id: "playing", name: "Playing" },
+    { id: "dropped", name: "Dropped" },
   ];
   const [searchParams, setSearchParams] = useSearchParams();
   const search = searchParams.get("search");
@@ -49,6 +61,13 @@ function Filters({
           </div>
         )}
 
+        {showStatus && (
+          <div className="flex w-full items-center justify-between gap-x-2 sm:w-fit sm:justify-center">
+            <label className="text-lg">Status:</label>
+            <Combobox options={status} paramName="status" />
+          </div>
+        )}
+
         {!search && showSortBy && (
           <div className="flex w-full items-center justify-between gap-x-2 sm:w-fit sm:justify-center">
             <label className="text-lg">Sort By:</label>
@@ -58,10 +77,7 @@ function Filters({
 
         <button
           onClick={() => {
-            const newParams = new URLSearchParams(searchParams);
-            newParams.delete("genre");
-            newParams.delete("theme");
-            newParams.delete("sortBy");
+            const newParams = new URLSearchParams();
             setSearchParams(newParams);
           }}
           className="bg-secondary text-secondary-content group cursor-pointer rounded-sm font-extrabold transition-all duration-200 hover:rounded-lg"

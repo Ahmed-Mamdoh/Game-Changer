@@ -29,13 +29,13 @@ function ModalSelect({ control, name }) {
       <SelectContent className="bg-base-100">
         <SelectGroup>
           <SelectLabel>Status</SelectLabel>
-          <SelectItem className="focus:bg-base-300" value="Finished">
+          <SelectItem className="focus:bg-base-300" value="finished">
             Finished
           </SelectItem>
-          <SelectItem className="focus:bg-base-300" value="Playing">
+          <SelectItem className="focus:bg-base-300" value="playing">
             Playing
           </SelectItem>
-          <SelectItem className="focus:bg-base-300" value="Dropped">
+          <SelectItem className="focus:bg-base-300" value="dropped">
             Dropped
           </SelectItem>
         </SelectGroup>

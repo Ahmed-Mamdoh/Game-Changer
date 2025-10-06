@@ -1,6 +1,7 @@
 import { formatDate, intervalToDuration } from "date-fns";
+import { Clock } from "lucide-react";
 import { useEffect, useState } from "react";
-import { FaBell, FaHourglass } from "react-icons/fa";
+import { FaBell, FaClock, FaHourglass, FaRegClock } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 
 function GameItem({ game }) {
@@ -37,7 +38,7 @@ function GameItem({ game }) {
   return (
     <div className="flex flex-col items-center justify-center gap-3">
       <div
-        className="peer w-3/4 cursor-pointer md:h-64 md:w-48"
+        className="peer relative w-3/4 cursor-pointer md:h-64 md:w-48"
         onClick={() => navigate(`/game/${game.id}`)}
       >
         {imageUrl ? (
@@ -49,6 +50,24 @@ function GameItem({ game }) {
         ) : (
           <div className="bg-base-300 flex h-full w-full items-center justify-center rounded-lg font-medium">
             ❌ image not found
+          </div>
+        )}
+        {game?.status && (
+          <div className="bg-base-300 absolute top-2 right-2 flex items-center justify-center gap-x-2 rounded-full px-2">
+            {game.status === "playing" ? (
+              <div className="status status-primary animate-bounce"></div>
+            ) : game.status === "finished" ? (
+              <div className="status status-secondary animate-none"></div>
+            ) : (
+              <div className="status status-error animate-none"></div>
+            )}
+            <p className="text-sm">{game.status}</p>
+          </div>
+        )}
+        {game?.hoursPlayed && (
+          <div className="bg-base-300 absolute bottom-2 left-2 flex items-center justify-center gap-x-2 rounded-full px-2">
+            <FaRegClock />
+            <p className="text-sm">{game.hoursPlayed}h</p>
           </div>
         )}
       </div>
