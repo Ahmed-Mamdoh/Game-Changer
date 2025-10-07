@@ -50,7 +50,9 @@ function Account() {
       if (sortByParam === "hours_played")
         return b.hours_played - a.hours_played;
       if (sortByParam === "date_finished")
-        return new Date(b.date_finished) - new Date(a.date_finished);
+        return (
+          new Date(b.date_finished) - new Date(a.date_finished || Date.now())
+        );
       const getStatusRank = (status) => {
         if (status === "playing") return 1;
         if (status === "finished") return 2;
@@ -70,6 +72,7 @@ function Account() {
         cover: { url: game.game_cover },
         status: game.status,
         hoursPlayed: game.hours_played,
+        dateFinished: game.date_finished,
       };
     });
 

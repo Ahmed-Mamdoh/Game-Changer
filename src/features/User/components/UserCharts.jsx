@@ -1,5 +1,6 @@
 import { ChartPieDonutActive } from "@/ui/ChartPieDonutActive";
 import { useGetUserGames } from "../hooks/useGetUserGames";
+import { memo } from "react";
 
 function prepareChartData({ user_games, field }) {
   const data = user_games?.map((game) => game[field]).flat();
@@ -37,4 +38,4 @@ function UserCharts({ user_games, isLoading }) {
   );
 }
 
-export default UserCharts;
+export default memo(UserCharts);

@@ -20,8 +20,9 @@ import {
 } from "@/components/ui/popover";
 import { useSearchParams } from "react-router-dom";
 import { useEffect } from "react";
+import { memo } from "react";
 
-export function Combobox({ options, paramName }) {
+export const Combobox = memo(function Combobox({ options, paramName }) {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState("");
 
@@ -30,6 +31,7 @@ export function Combobox({ options, paramName }) {
   function handleSelect(newValue) {
     const newParams = new URLSearchParams(searchParams);
     newParams.set(paramName, newValue);
+    newParams.delete("page");
     setSearchParams(newParams);
   }
 
@@ -105,4 +107,4 @@ export function Combobox({ options, paramName }) {
       </PopoverContent>
     </Popover>
   );
-}
+});

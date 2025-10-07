@@ -4,6 +4,7 @@ import { FaUndoAlt } from "react-icons/fa";
 import { useGetGenres } from "../hooks/useGetGenres";
 import { useGetThemes } from "../hooks/useGetThemes";
 import { useGetGameModes } from "../hooks/useGetGameModes";
+import { memo } from "react";
 
 function Filters({
   showGenres = true,
@@ -92,4 +93,4 @@ function Filters({
   );
 }
 
-export default Filters;
+export default memo(Filters);

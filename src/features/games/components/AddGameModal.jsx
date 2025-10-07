@@ -28,12 +28,14 @@ function AddGameModal({
   game_cover,
 }) {
   const queryClient = useQueryClient();
-  const { register, handleSubmit, formState, control } = useForm();
+  const { register, handleSubmit, formState, control, watch } = useForm();
   const { errors } = formState;
   const userToken = localStorage.getItem("sb-kapovyqqncfsoangqppi-auth-token");
   const user_id = JSON.parse(userToken || "{}")?.user?.id;
   const genres = genresData.map((genre) => genre.name);
   const themes = themesData.map((theme) => theme.name);
+  const status = watch("status");
+  console.log(status);
   const isLoadingRef = useRef(false);
 
   function handleAddGame(data) {
@@ -125,21 +127,23 @@ function AddGameModal({
                   })}
                 />
               </div>
-              <div className="grid gap-3">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="date_finished">Date Finished</Label>
-                  {errors["date_finished"] && (
-                    <p className="text-error text-sm">
-                      {errors["date_finished"].message}
-                    </p>
-                  )}
+              {status !== "playing" && (
+                <div className="grid gap-3">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="date_finished">Date {status}</Label>
+                    {errors["date_finished"] && (
+                      <p className="text-error text-sm">
+                        {errors["date_finished"].message}
+                      </p>
+                    )}
+                  </div>
+                  <ModalDate
+                    name="date_finished"
+                    control={control}
+                    minDate={releaseDate}
+                  />
                 </div>
-                <ModalDate
-                  name="date_finished"
-                  control={control}
-                  minDate={releaseDate}
-                />
-              </div>
+              )}
             </div>
             <DialogFooter className="pt-4">
               <DialogClose asChild>

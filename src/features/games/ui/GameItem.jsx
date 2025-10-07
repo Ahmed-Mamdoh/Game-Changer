@@ -1,7 +1,15 @@
 import { formatDate, intervalToDuration } from "date-fns";
 import { Clock } from "lucide-react";
 import { useEffect, useState } from "react";
-import { FaBell, FaClock, FaHourglass, FaRegClock } from "react-icons/fa";
+import {
+  FaBell,
+  FaCalendar,
+  FaCalendarAlt,
+  FaCalendarCheck,
+  FaClock,
+  FaHourglass,
+  FaRegClock,
+} from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 
 function GameItem({ game }) {
@@ -38,14 +46,14 @@ function GameItem({ game }) {
   return (
     <div className="flex flex-col items-center justify-center gap-3">
       <div
-        className="peer relative w-3/4 cursor-pointer md:h-64 md:w-48"
+        className="peer relative w-3/4 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl md:h-64 md:w-48"
         onClick={() => navigate(`/game/${game.id}`)}
       >
         {imageUrl ? (
           <img
             src={imageUrl}
             alt=""
-            className="border-base-300 h-full w-full rounded-xl border object-cover transition-all duration-300 hover:scale-105 hover:shadow-xl"
+            className="border-base-300 h-full w-full rounded-xl border object-cover"
           />
         ) : (
           <div className="bg-base-300 flex h-full w-full items-center justify-center rounded-lg font-medium">
@@ -68,6 +76,14 @@ function GameItem({ game }) {
           <div className="bg-base-300 absolute bottom-2 left-2 flex items-center justify-center gap-x-2 rounded-full px-2">
             <FaRegClock />
             <p className="text-sm">{game.hoursPlayed}h</p>
+          </div>
+        )}
+        {game?.dateFinished && (
+          <div className="bg-base-300 absolute right-2 bottom-2 flex items-center justify-center gap-x-2 rounded-full px-2">
+            <p className="text-sm">
+              {formatDate(new Date(game.dateFinished), "dd/MM/yyyy")}
+            </p>
+            {/* <FaCalendarCheck /> */}
           </div>
         )}
       </div>
