@@ -62,6 +62,15 @@ export async function updateUserGame({ game_id, user_id, ...formData }) {
   return { data, error };
 }
 
+export async function deleteUserGame({ game_id, user_id }) {
+  const { error } = await supabase
+    .from("user_games")
+    .delete()
+    .eq("game_id", game_id)
+    .eq("user_id", user_id);
+  return { error };
+}
+
 export async function getUserGame(user_id, game_id) {
   let { data, error } = await supabase
     .from("user_games")

@@ -1,5 +1,5 @@
 import { formatDate } from "date-fns";
-import { FaCalendarAlt } from "react-icons/fa";
+import { FaCalendarAlt, FaTrash, FaTrashAlt } from "react-icons/fa";
 import { FaSteam } from "react-icons/fa";
 import { SiEpicgames, SiGogdotcom } from "react-icons/si";
 import { useNavigate } from "react-router-dom";
@@ -9,6 +9,11 @@ import { Badge } from "@/components/ui/badge";
 import { useGetTimeToBeat } from "../hooks/useGetTimeToBeat";
 import { useGetUserGame } from "../../User/hooks/useGetUserGame";
 import Spinner from "@/ui/Spinner";
+import { Button } from "@/components/ui/button";
+import Swal from "sweetalert2";
+import toast from "react-hot-toast";
+import { deleteUserGame } from "@/api/supabase";
+import { useQueryClient } from "@tanstack/react-query";
 
 const ESRB_RATINGS = {
   6: { rating: "Rating Pending", badgeVariant: "outline" },
@@ -37,6 +42,8 @@ function GameDetailsOverview({ data }) {
     external_games,
   } = data[0];
 
+  const queryClient = useQueryClient();
+
   const userToken = localStorage.getItem("sb-kapovyqqncfsoangqppi-auth-token");
   const user_id = JSON.parse(userToken || "{}")?.user?.id;
 
@@ -64,6 +71,46 @@ function GameDetailsOverview({ data }) {
 
   const navigate = useNavigate();
   if (isLoadingUserGame) return <Spinner />;
+
+  const handleDeleteGame = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "oklch(63% 0.237 25.331)",
+      background: "oklch(22% 0.019 237.69)",
+      color: "oklch(77.383% 0.043 245.096)",
+      cancelButtonColor: "oklch(26% 0.019 237.69)",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // delete game logic
+        toast
+          .promise(
+            async () => {
+              const { error } = await deleteUserGame({ game_id: id, user_id });
+              if (error) throw error;
+            },
+            {
+              loading: "Deleting game...",
+              success: "Game deleted successfully",
+              error: (error) => error.message,
+            },
+          )
+          .finally(() => {
+            const gameId = String(id);
+            queryClient.invalidateQueries({
+              queryKey: ["user_game", user_id, gameId],
+            });
+            queryClient.invalidateQueries({
+              queryKey: ["user_games", user_id],
+            });
+          });
+      }
+    });
+  };
+
   return (
     <div
       id="Overview"
@@ -91,12 +138,21 @@ function GameDetailsOverview({ data }) {
             </Badge>
           </div>
           {userGame?.data?.length > 0 ? (
-            <AddGameModal
-              isUpdate={true}
-              game_id={id}
-              releaseDate={releaseDate}
-              userGame={userGame.data[0]}
-            />
+            <div className="flex flex-col items-center gap-3">
+              <AddGameModal
+                isUpdate={true}
+                game_id={id}
+                releaseDate={releaseDate}
+                userGame={userGame.data[0]}
+              />
+              <Button
+                onClick={handleDeleteGame}
+                className="bg-error/70 hover:bg-error/70 text-secondary-content w-full cursor-pointer px-6 py-3 text-xl font-bold"
+              >
+                <FaTrash />
+                <span>Delete Game</span>
+              </Button>
+            </div>
           ) : (
             <AddGameModal
               game_id={id}
