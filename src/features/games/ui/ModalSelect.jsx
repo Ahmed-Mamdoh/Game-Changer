@@ -11,18 +11,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-function ModalSelect({ control, name }) {
+function ModalSelect({ control, name, defaultValue }) {
   const { field } = useController({
     name,
     control,
-    defaultValue: "",
+    defaultValue: defaultValue,
     rules: {
       required: "Status is required",
     },
   });
-
   return (
-    <Select value={field.value} onValueChange={field.onChange}>
+    <Select
+      value={field.value}
+      onValueChange={field.onChange}
+      defaultValue={defaultValue}
+    >
       <SelectTrigger className="w-full">
         <SelectValue placeholder="Status" />
       </SelectTrigger>

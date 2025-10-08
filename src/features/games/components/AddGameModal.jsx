@@ -15,9 +15,10 @@ import ModalSelect from "../ui/ModalSelect";
 import ModalDate from "../ui/ModalDate";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { addGame } from "@/api/supabase";
+import { addGame, updateUserGame } from "@/api/supabase";
 import { useQueryClient } from "@tanstack/react-query";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { FaEdit, FaPen, FaPlus, FaRegEdit } from "react-icons/fa";
 
 function AddGameModal({
   game_id,
@@ -26,17 +27,20 @@ function AddGameModal({
   themesData,
   game_name,
   game_cover,
+  isUpdate = false,
+  userGame,
 }) {
   const queryClient = useQueryClient();
   const { register, handleSubmit, formState, control, watch } = useForm();
   const { errors } = formState;
   const userToken = localStorage.getItem("sb-kapovyqqncfsoangqppi-auth-token");
   const user_id = JSON.parse(userToken || "{}")?.user?.id;
-  const genres = genresData.map((genre) => genre.name);
-  const themes = themesData.map((theme) => theme.name);
-  const status = watch("status");
-  console.log(status);
+
+  const genres = genresData?.map((genre) => genre.name) || [];
+  const themes = themesData?.map((theme) => theme.name) || [];
+  const status = watch("status") || userGame?.status;
   const isLoadingRef = useRef(false);
+  const [open, setOpen] = useState(false);
 
   function handleAddGame(data) {
     if (isLoadingRef.current === true) return;
@@ -79,23 +83,70 @@ function AddGameModal({
       });
   }
 
+  function handleUpdateGame(data) {
+    if (isLoadingRef.current === true) return;
+    isLoadingRef.current = true;
+    data.date_finished = new Date(data.date_finished)
+      .toISOString()
+      .split("T")[0];
+    toast
+      .promise(
+        async () => {
+          const { error } = await updateUserGame({
+            game_id,
+            user_id,
+            ...data,
+            date_finished: status === "playing" ? null : data.date_finished,
+          });
+          if (error) {
+            throw error;
+          }
+          return "Game updated successfully";
+        },
+        {
+          loading: "Updating game...",
+          success: "Game updated successfully",
+          error: (error) => error.message,
+        },
+      )
+      .finally(() => {
+        const gameId = String(game_id);
+        queryClient.invalidateQueries({
+          queryKey: ["user_game", user_id, gameId],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["user_games", user_id],
+        });
+        isLoadingRef.current = false;
+        setOpen(false);
+      });
+  }
+
+  const btnStyle = isUpdate
+    ? "bg-secondary hover:bg-secondary text-secondary-content"
+    : "bg-primary hover:bg-primary text-primary-content";
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-primary hover:bg-primary text-primary-content cursor-pointer px-6 py-3 text-xl font-bold hover:rounded-xl">
-          Add Game
+        <Button
+          className={`${btnStyle} cursor-pointer px-6 py-3 text-xl font-bold hover:rounded-xl`}
+        >
+          {isUpdate ? <FaPen /> : <FaPlus />}
+          {isUpdate ? "Update Game" : "Add Game"}
         </Button>
       </DialogTrigger>
 
       <DialogContent className="bg-base-200 border-0 sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Add Game</DialogTitle>
+          <DialogTitle>{isUpdate ? "Update Game" : "Add Game"}</DialogTitle>
           <DialogDescription className="text-base-content/80">
-            Add a new game to your list.
+            {isUpdate ? "Update game details" : "Add a new game to your list."}
           </DialogDescription>
         </DialogHeader>
         {user_id ? (
-          <form onSubmit={handleSubmit((data) => handleAddGame(data))}>
+          <form
+            onSubmit={handleSubmit(isUpdate ? handleUpdateGame : handleAddGame)}
+          >
             <div className="grid gap-4">
               <div className="grid gap-3">
                 <div className="flex items-center justify-between">
@@ -106,7 +157,11 @@ function AddGameModal({
                     </p>
                   )}
                 </div>
-                <ModalSelect control={control} name="status" />
+                <ModalSelect
+                  control={control}
+                  name="status"
+                  defaultValue={userGame?.status || ""}
+                />
               </div>
               <div className="grid gap-3">
                 <div className="flex items-center justify-between">
@@ -122,12 +177,13 @@ function AddGameModal({
                   name="hours_played"
                   type="number"
                   min={1}
+                  defaultValue={userGame?.hours_played || ""}
                   {...register("hours_played", {
                     required: "Hours played is required",
                   })}
                 />
               </div>
-              {status !== "playing" && (
+              {status !== "playing" && status !== undefined && (
                 <div className="grid gap-3">
                   <div className="flex items-center justify-between">
                     <Label htmlFor="date_finished">Date {status}</Label>
@@ -141,6 +197,7 @@ function AddGameModal({
                     name="date_finished"
                     control={control}
                     minDate={releaseDate}
+                    defaultValue={userGame?.date_finished || null}
                   />
                 </div>
               )}
@@ -151,12 +208,13 @@ function AddGameModal({
                   Cancel
                 </Button>
               </DialogClose>
+
               <Button
                 type="submit"
                 disabled={isLoadingRef.current}
                 className="bg-primary hover:bg-primary text-primary-content cursor-pointer font-extrabold"
               >
-                Add Game
+                {isUpdate ? "Update Game" : "Add Game"}
               </Button>
             </DialogFooter>
           </form>

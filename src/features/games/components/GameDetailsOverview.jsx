@@ -8,6 +8,7 @@ import Rating from "@/ui/Rating";
 import { Badge } from "@/components/ui/badge";
 import { useGetTimeToBeat } from "../hooks/useGetTimeToBeat";
 import { useGetUserGame } from "../../User/hooks/useGetUserGame";
+import Spinner from "@/ui/Spinner";
 
 const ESRB_RATINGS = {
   6: { rating: "Rating Pending", badgeVariant: "outline" },
@@ -62,6 +63,7 @@ function GameDetailsOverview({ data }) {
       : "outline";
 
   const navigate = useNavigate();
+  if (isLoadingUserGame) return <Spinner />;
   return (
     <div
       id="Overview"
@@ -89,7 +91,12 @@ function GameDetailsOverview({ data }) {
             </Badge>
           </div>
           {userGame?.data?.length > 0 ? (
-            <p>Game already added</p>
+            <AddGameModal
+              isUpdate={true}
+              game_id={id}
+              releaseDate={releaseDate}
+              userGame={userGame.data[0]}
+            />
           ) : (
             <AddGameModal
               game_id={id}

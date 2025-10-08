@@ -11,13 +11,15 @@ import {
 import { useState } from "react";
 import { useController } from "react-hook-form";
 
-function ModalDate({ name, control, minDate }) {
+function ModalDate({ name, control, minDate, defaultValue }) {
   const [open, setOpen] = useState(false);
-  const [date, setDate] = useState(null);
+  const [date, setDate] = useState(
+    defaultValue ? new Date(defaultValue) : null,
+  );
   const { field } = useController({
     name,
     control,
-    defaultValue: null,
+    defaultValue: defaultValue ? new Date(defaultValue) : null,
     rules: {
       validate: (value) =>
         new Date(value) >= new Date()
@@ -47,7 +49,7 @@ function ModalDate({ name, control, minDate }) {
         >
           <Calendar
             mode="single"
-            selected={field.value}
+            selected={defaultValue || field.value}
             className="bg-base-100"
             captionLayout="dropdown"
             onSelect={(date) => {

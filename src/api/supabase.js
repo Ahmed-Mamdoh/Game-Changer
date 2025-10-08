@@ -51,6 +51,17 @@ export async function addGame({
   return { data, error };
 }
 
+export async function updateUserGame({ game_id, user_id, ...formData }) {
+  console.log(formData);
+  const { data, error } = await supabase
+    .from("user_games")
+    .update(formData)
+    .eq("game_id", game_id)
+    .eq("user_id", user_id)
+    .select();
+  return { data, error };
+}
+
 export async function getUserGame(user_id, game_id) {
   let { data, error } = await supabase
     .from("user_games")
