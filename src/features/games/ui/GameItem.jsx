@@ -87,6 +87,11 @@ function GameItem({ game }) {
             {/* <FaCalendarCheck /> */}
           </div>
         )}
+        {game?.isFavorite && (
+          <div className="bg-base-300 absolute top-2 left-2 flex items-center justify-center gap-x-2 rounded-full px-2 py-1">
+            <FaHeart className="text-error" />
+          </div>
+        )}
       </div>
       <div className="peer-hover:text-primary w-72 cursor-default text-center text-lg font-medium text-wrap transition-colors duration-300 md:h-12 md:w-48 md:text-base">
         <Link
