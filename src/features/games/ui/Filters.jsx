@@ -13,6 +13,7 @@ function Filters({
   showGameModes = true,
   showStatus = false,
   isAccount = false,
+  showFavorite = false,
   className = "",
 }) {
   const { data: genres, isLoading: isLoadingGenres } = useGetGenres();
@@ -73,6 +74,25 @@ function Filters({
           <div className="flex w-full items-center justify-between gap-x-2 sm:w-fit sm:justify-center">
             <label className="text-lg">Sort By:</label>
             <Combobox options={sortBy} paramName="sortBy" />
+          </div>
+        )}
+
+        {showFavorite && (
+          <div className="flex w-full items-center justify-between gap-x-2 sm:w-fit sm:justify-center">
+            <label className="text-lg">Favorites:</label>
+            <input
+              type="checkbox"
+              className="toggle toggle-error"
+              checked={searchParams.get("isFavorite") === "true"}
+              onChange={(e) => {
+                if (e.target.checked) {
+                  searchParams.set("isFavorite", "true");
+                } else {
+                  searchParams.delete("isFavorite");
+                }
+                setSearchParams(searchParams);
+              }}
+            />
           </div>
         )}
 

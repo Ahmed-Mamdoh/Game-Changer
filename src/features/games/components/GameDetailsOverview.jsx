@@ -1,5 +1,13 @@
 import { formatDate } from "date-fns";
-import { FaCalendarAlt, FaTrash, FaTrashAlt } from "react-icons/fa";
+import {
+  FaBookmark,
+  FaCalendarAlt,
+  FaHeart,
+  FaRegBookmark,
+  FaRegHeart,
+  FaTrash,
+  FaTrashAlt,
+} from "react-icons/fa";
 import { FaSteam } from "react-icons/fa";
 import { SiEpicgames, SiGogdotcom } from "react-icons/si";
 import { useNavigate } from "react-router-dom";
@@ -12,7 +20,7 @@ import Spinner from "@/ui/Spinner";
 import { Button } from "@/components/ui/button";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
-import { deleteUserGame } from "@/api/supabase";
+import { deleteUserGame, updateUserGame } from "@/api/supabase";
 import { useQueryClient } from "@tanstack/react-query";
 
 const ESRB_RATINGS = {
@@ -72,7 +80,7 @@ function GameDetailsOverview({ data }) {
   const navigate = useNavigate();
   if (isLoadingUserGame) return <Spinner />;
 
-  const handleDeleteGame = () => {
+  function handleDeleteGame() {
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -109,7 +117,25 @@ function GameDetailsOverview({ data }) {
           });
       }
     });
-  };
+  }
+
+  async function handleFavoriteChange(e) {
+    const isFavorite = e.target.checked;
+
+    const { error } = await updateUserGame({
+      game_id: id,
+      user_id,
+      is_favorite: isFavorite,
+    });
+    if (error) throw error;
+
+    queryClient.invalidateQueries({
+      queryKey: ["user_games", user_id],
+    });
+    queryClient.invalidateQueries({
+      queryKey: ["user_game", user_id, String(id)],
+    });
+  }
 
   return (
     <div
@@ -138,30 +164,60 @@ function GameDetailsOverview({ data }) {
             </Badge>
           </div>
           {userGame?.data?.length > 0 ? (
-            <div className="flex flex-col items-center gap-3">
-              <AddGameModal
-                isUpdate={true}
-                game_id={id}
-                releaseDate={releaseDate}
-                userGame={userGame.data[0]}
-              />
+            <div className="flex flex-col items-end gap-3">
+              <div className="flex items-center gap-x-4">
+                <label className="swap tooltip" data-tip="Add to Favorites">
+                  <input
+                    type="checkbox"
+                    defaultChecked={userGame.data[0].is_favorite}
+                    onChange={handleFavoriteChange}
+                  />
+                  <div className="swap-on text-error text-3xl">
+                    <FaHeart />
+                  </div>
+                  <div className="swap-off text-3xl">
+                    <FaRegHeart />
+                  </div>
+                </label>
+                <AddGameModal
+                  isUpdate={true}
+                  game_id={id}
+                  releaseDate={releaseDate}
+                  userGame={userGame.data[0]}
+                />
+              </div>
               <Button
                 onClick={handleDeleteGame}
-                className="bg-error/70 hover:bg-error/70 text-secondary-content w-full cursor-pointer px-6 py-3 text-xl font-bold"
+                className="bg-error/70 hover:bg-error/70 text-secondary-content cursor-pointer px-6 py-3 text-xl font-bold"
               >
                 <FaTrash />
                 <span>Delete Game</span>
               </Button>
             </div>
           ) : (
-            <AddGameModal
-              game_id={id}
-              releaseDate={releaseDate}
-              genresData={genres}
-              themesData={themes}
-              game_cover={cover}
-              game_name={name}
-            />
+            <div className="flex items-center gap-x-2">
+              <label className="swap tooltip" data-tip="Add to Wishlist">
+                <input
+                  type="checkbox"
+                  defaultChecked={userGame.data[0]?.is_favorite}
+                  onChange={handleFavoriteChange}
+                />
+                <div className="swap-on text-warning text-3xl">
+                  <FaBookmark />
+                </div>
+                <div className="swap-off text-3xl">
+                  <FaRegBookmark />
+                </div>
+              </label>
+              <AddGameModal
+                game_id={id}
+                releaseDate={releaseDate}
+                genresData={genres}
+                themesData={themes}
+                game_cover={cover}
+                game_name={name}
+              />
+            </div>
           )}
         </div>
 

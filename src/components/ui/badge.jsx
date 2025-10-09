@@ -16,10 +16,10 @@ const badgeVariants = cva(
         secondary:
           "border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90",
         destructive:
-          "border-transparent bg-destructive text-white [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
+          "border-transparent bg-error text-white [a&]:hover:bg-error/90 focus-visible:ring-error/20 dark:focus-visible:ring-error/40 dark:bg-error/60",
         outline:
-          " base-content[a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
-        violet: "border-transparent bg-accent-secondary base-content",
+          " base-content [a&]:hover:bg-secondary [a&]:hover:text-secondary-foreground",
+        violet: "border-transparent bg-secondary text-secondary-content",
 
         "Point-and-click": `${defaultStyles} bg-slate-900`,
         Fighting: `${defaultStyles} bg-red-900`,
@@ -29,7 +29,7 @@ const badgeVariants = cva(
         Puzzle: `${defaultStyles} bg-teal-900`,
         Racing: `${defaultStyles} bg-yellow-900`,
         "Real Time Strategy (RTS)": `${defaultStyles} bg-purple-900`,
-        "Role-playing (RPG)": `${defaultStyles}  bg-accent-secondary`,
+        "Role-playing (RPG)": `${defaultStyles} bg-violet-900`,
         Simulator: `${defaultStyles} bg-cyan-900`,
         Sport: `${defaultStyles} bg-lime-900`,
         Strategy: `${defaultStyles} bg-violet-900`,

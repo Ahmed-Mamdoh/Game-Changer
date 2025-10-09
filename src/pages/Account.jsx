@@ -14,6 +14,7 @@ function Account() {
   const themeParam = searchParams.get("theme");
   const statusParam = searchParams.get("status");
   const sortByParam = searchParams.get("sortBy");
+  const isFavoriteParam = searchParams.get("isFavorite");
 
   const supabaseToken = localStorage.getItem(
     "sb-kapovyqqncfsoangqppi-auth-token",
@@ -46,6 +47,10 @@ function Account() {
       if (!statusParam) return true;
       return game?.status === statusParam;
     })
+    .filter((game) => {
+      if (!isFavoriteParam) return true;
+      return game.is_favorite === true;
+    })
     .sort((a, b) => {
       if (sortByParam === "hours_played")
         return b.hours_played - a.hours_played;
@@ -73,6 +78,7 @@ function Account() {
         status: game.status,
         hoursPlayed: game.hours_played,
         dateFinished: game.date_finished,
+        isFavorite: game.is_favorite,
       };
     });
 
@@ -85,6 +91,7 @@ function Account() {
             showGameModes={false}
             showStatus={true}
             isAccount={true}
+            showFavorite={true}
             className="bg-base-300 mt-0 w-full"
           />
           <GamesGallary data={GallaryData} isLoading={isLoading} />
