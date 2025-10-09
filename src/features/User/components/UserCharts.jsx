@@ -27,7 +27,7 @@ function UserCharts({ user_games, isLoading }) {
   }
 
   return (
-    <div className="bg-base-300 mb-12 flex flex-col gap-2 rounded-xl border">
+    <div className="bg-base-300 mb-12 hidden flex-col gap-2 rounded-xl border lg:flex">
       {!isLoading && (
         <ChartPieDonutActive chartData={genresData} field="Genre" />
       )}

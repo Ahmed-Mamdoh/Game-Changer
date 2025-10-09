@@ -44,43 +44,56 @@ function Filters({
       <div className="container flex flex-col flex-wrap items-start justify-between gap-x-8 gap-y-4 px-2 sm:flex-row">
         {showGenres && (
           <div className="flex w-full items-center justify-between gap-x-2 sm:w-fit sm:justify-center">
-            <label className="text-lg">Genres:</label>
-            <Combobox options={genres} paramName="genre" />
+            <label htmlFor="genre" className="text-lg">
+              Genres:
+            </label>
+            <Combobox id="genre" options={genres} paramName="genre" />
           </div>
         )}
 
         {showThemes && (
           <div className="flex w-full items-center justify-between gap-x-2 sm:w-fit sm:justify-center">
-            <label className="text-lg">Themes:</label>
-            <Combobox options={themes} paramName="theme" />
+            <label htmlFor="theme" className="text-lg">
+              Themes:
+            </label>
+            <Combobox id="theme" options={themes} paramName="theme" />
           </div>
         )}
 
         {showGameModes && (
           <div className="flex w-full items-center justify-between gap-x-2 sm:w-fit sm:justify-center">
-            <label className="text-lg">Mode:</label>
-            <Combobox options={gameModes} paramName="gameMode" />
+            <label htmlFor="gameMode" className="text-lg">
+              Mode:
+            </label>
+            <Combobox id="gameMode" options={gameModes} paramName="gameMode" />
           </div>
         )}
 
         {showStatus && (
           <div className="flex w-full items-center justify-between gap-x-2 sm:w-fit sm:justify-center">
-            <label className="text-lg">Status:</label>
-            <Combobox options={status} paramName="status" />
+            <label htmlFor="status" className="text-lg">
+              Status:
+            </label>
+            <Combobox id="status" options={status} paramName="status" />
           </div>
         )}
 
         {!search && showSortBy && (
           <div className="flex w-full items-center justify-between gap-x-2 sm:w-fit sm:justify-center">
-            <label className="text-lg">Sort By:</label>
-            <Combobox options={sortBy} paramName="sortBy" />
+            <label htmlFor="sortBy" className="text-lg">
+              Sort By:
+            </label>
+            <Combobox id="sortBy" options={sortBy} paramName="sortBy" />
           </div>
         )}
 
         {showFavorite && (
-          <div className="flex w-full items-center justify-between gap-x-2 sm:w-fit sm:justify-center">
-            <label className="text-lg">Favorites:</label>
+          <div className="flex w-5/12 items-center justify-start gap-x-2">
+            <label htmlFor="isFavorite" className="text-lg">
+              Favorites:
+            </label>
             <input
+              id="isFavorite"
               type="checkbox"
               className="toggle toggle-error"
               checked={searchParams.get("isFavorite") === "true"}

@@ -1,5 +1,5 @@
 import { FaArrowAltCircleDown, FaGamepad } from "react-icons/fa";
-import background from "../assets/image.png";
+import background from "../assets/image.webp";
 import { useNavigate } from "react-router-dom";
 
 function HeroSection({ sectionId }) {
@@ -24,14 +24,15 @@ function HeroSection({ sectionId }) {
           src={background}
           alt="background"
           className="h-[91vh] w-full object-cover object-top"
+          fetchPriority="high"
         />
         <div className="absolute inset-0 bg-black/60" />
       </div>
       <div className="absolute top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 transform flex-col items-center gap-y-8">
         {userName ? (
           <div className="font-heading text-base-content flex flex-col gap-2 text-center font-semibold">
-            <span className="text-3xl">Welcome Back</span>
-            <span className="text-6xl">{userName}</span>
+            <span className="text-2xl sm:text-3xl">Welcome Back</span>
+            <span className="text-5xl sm:text-7xl">{userName}</span>
           </div>
         ) : (
           <>

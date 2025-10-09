@@ -106,6 +106,8 @@ function DataField({ label, value }) {
       <Input
         value={inputValue}
         type="text"
+        id={`${label.toLowerCase()}`}
+        autoComplete={`${label.toLowerCase()}`}
         disabled={!isEditing}
         className="w-full max-w-3xs"
         onChange={(e) => setInputValue(e.target.value)}

@@ -32,6 +32,9 @@ function Drawer() {
               <li className="rounded-md text-xl hover:bg-gray-700">
                 <Link to="/upcomingGames">Upcoming</Link>
               </li>
+              <li className="rounded-md text-xl hover:bg-gray-700">
+                <Link to="/account"> Account</Link>
+              </li>
             </ul>
           </div>
         </div>,

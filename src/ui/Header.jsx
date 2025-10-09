@@ -30,8 +30,9 @@ function Header() {
             onKeyDown={(e) => e.key === "Enter" && handleSearch()}
             placeholder="Search"
             value={search}
+            id="search"
             onChange={(e) => setSearch(e.target.value)}
-            className="bg-base-200 text-base-content placeholder:text-base-content/60 focus:ring-primary/50 active:ring-primary/70 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:outline-none active:ring-2 md:text-base"
+            className="bg-base-200 text-base-content placeholder:text-base-content/60 focus:ring-primary/50 active:ring-primary/70 w-full rounded-lg px-4 py-2 text-sm focus:ring-2 focus:outline-none active:ring-2 md:text-base"
           />
           <button
             className="btn text-primary-content bg-primary text-md hidden border-none shadow-xl transition-all duration-300 md:block"
@@ -55,7 +56,7 @@ function Header() {
           <Drawer />
           <label
             htmlFor="my-drawer-4"
-            className="text-primary-content bg-primary text-md flex items-center justify-center rounded-xs border-none px-1 py-1 shadow-xl transition-all duration-300 md:hidden"
+            className="text-primary-content bg-primary text-md flex items-center justify-center rounded-md border-none px-1 py-1 shadow-xl transition-all duration-300 lg:hidden"
           >
             <Menu className="h-8 w-8" />
           </label>

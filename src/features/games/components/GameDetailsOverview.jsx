@@ -195,29 +195,14 @@ function GameDetailsOverview({ data }) {
               </Button>
             </div>
           ) : (
-            <div className="flex items-center gap-x-2">
-              <label className="swap tooltip" data-tip="Add to Wishlist">
-                <input
-                  type="checkbox"
-                  defaultChecked={userGame.data[0]?.is_favorite}
-                  onChange={handleFavoriteChange}
-                />
-                <div className="swap-on text-warning text-3xl">
-                  <FaBookmark />
-                </div>
-                <div className="swap-off text-3xl">
-                  <FaRegBookmark />
-                </div>
-              </label>
-              <AddGameModal
-                game_id={id}
-                releaseDate={releaseDate}
-                genresData={genres}
-                themesData={themes}
-                game_cover={cover}
-                game_name={name}
-              />
-            </div>
+            <AddGameModal
+              game_id={id}
+              releaseDate={releaseDate}
+              genresData={genres}
+              themesData={themes}
+              game_cover={cover}
+              game_name={name}
+            />
           )}
         </div>
 

@@ -6,7 +6,7 @@ function Tabs() {
   );
 
   return (
-    <div className="hidden items-center justify-center gap-x-3 md:flex">
+    <div className="hidden items-center justify-center gap-x-3 lg:flex">
       <Tab to="/allGames" sectionName="All" lineStartAnimation="left" />
       <Tab to="/freeGames" sectionName="Free" lineStartAnimation="center" />
       <Tab
