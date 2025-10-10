@@ -11,6 +11,8 @@ Game Changer is a full-stack gaming platform that helps players track, discover,
 - Popular games section  
 - Upcoming and Free Now games  
 
+---
+
 ### 🎮 Game Pages
 - Game details (cover, release date, genres, themes, description, ratings, time to beat, etc.)  
 - Embedded media: screenshots and YouTube videos  
@@ -20,22 +22,30 @@ Game Changer is a full-stack gaming platform that helps players track, discover,
   - Date finished  
   - Favorite status  
 
+---
+
 ### 👤 Account Page
 - Displays user info  
 - Gallery of games added by the user  
 - Filters: status, favorites, sorting by hours or date finished  
 - Two charts:  
   - Genre distribution  
-  - Theme distribution  
+  - Theme distribution
+
+ ---
 
 ### 🌐 All Games, Upcoming Games, Free Games
 - **All Games:** full library with filters and pagination  
 - **Upcoming Games:** unreleased titles only  
 - **Free Games:** integrated with GamerPower API + IGDB for rich game info  
 
+---
+
 ### 🔐 Authentication
 - Sign up / Login via Supabase  
 - Secure session management is handled automatically  
+
+---
 
 ### ⚙️ Tech Stack
 
@@ -76,16 +86,15 @@ Game Changer is a full-stack gaming platform that helps players track, discover,
 ---
 
 ## 📸 Screenshots
-![image](https://github.com/user-attachments/assets/0aba2cc0-eff1-4f26-999f-f18859d41d03)
-##
-![image (1)](https://github.com/user-attachments/assets/d573b6b7-d705-42e2-8b09-12c1cf77dce9)
-##
-![image (2)](https://github.com/user-attachments/assets/14c1b159-cf0c-49c7-955e-da2d6d11b82d)
-##
-![image (3)](https://github.com/user-attachments/assets/f9aa334b-e8bb-42cc-8684-0e7a73cc95e5)
-##
-![image (4)](https://github.com/user-attachments/assets/4c40f9a8-5daa-4e81-a775-4ca8ef6761b3)
-##
+![image](https://github.com/user-attachments/assets/cd947bf9-86a3-4d86-980e-68efc642e723)
+![image (1)](https://github.com/user-attachments/assets/20a63cb9-9ea2-4065-a546-bb2fa1b1dc9d)
+![image (2)](https://github.com/user-attachments/assets/973e69b4-b124-4a2e-b184-b459a339b935)
+![image (3)](https://github.com/user-attachments/assets/3b205c2a-b65f-4956-8135-1e45e2dc690f)
+![image (4)](https://github.com/user-attachments/assets/7838fbd9-33ed-460f-a4a6-53da2afcec32)
+![image (5)](https://github.com/user-attachments/assets/061f0c2d-89cb-49b4-aa29-b735b429115c)
+![image (6)](https://github.com/user-attachments/assets/7e2dcc1a-2dd5-47ab-b09f-013bfcc23240)
+![image (7)](https://github.com/user-attachments/assets/314cc1ac-1fc2-4658-8c9e-f91608d0c432)
+
 
 
 ---
