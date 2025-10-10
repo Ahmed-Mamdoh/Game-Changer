@@ -87,12 +87,19 @@ Game Changer is a full-stack gaming platform that helps players track, discover,
 
 ## 📸 Screenshots
 ![image](https://github.com/user-attachments/assets/cd947bf9-86a3-4d86-980e-68efc642e723)
+---
 ![image (1)](https://github.com/user-attachments/assets/20a63cb9-9ea2-4065-a546-bb2fa1b1dc9d)
+---
 ![image (2)](https://github.com/user-attachments/assets/973e69b4-b124-4a2e-b184-b459a339b935)
+---
 ![image (3)](https://github.com/user-attachments/assets/3b205c2a-b65f-4956-8135-1e45e2dc690f)
+---
 ![image (4)](https://github.com/user-attachments/assets/7838fbd9-33ed-460f-a4a6-53da2afcec32)
+---
 ![image (5)](https://github.com/user-attachments/assets/061f0c2d-89cb-49b4-aa29-b735b429115c)
+---
 ![image (6)](https://github.com/user-attachments/assets/7e2dcc1a-2dd5-47ab-b09f-013bfcc23240)
+---
 ![image (7)](https://github.com/user-attachments/assets/314cc1ac-1fc2-4658-8c9e-f91608d0c432)
 
 
@@ -101,5 +108,3 @@ Game Changer is a full-stack gaming platform that helps players track, discover,
 
 ## 🌐 Live Demo
 [Live Preview](https://game-changer-gg.vercel.app/)
-
----
