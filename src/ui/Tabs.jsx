@@ -6,7 +6,10 @@ function Tabs() {
   );
 
   return (
-    <div className="hidden items-center justify-center gap-x-3 lg:flex">
+    <nav
+      role="tablist"
+      className="hidden items-center justify-center gap-x-3 lg:flex"
+    >
       <Tab to="/allGames" sectionName="All" lineStartAnimation="left" />
       <Tab to="/freeGames" sectionName="Free" lineStartAnimation="center" />
       <Tab
@@ -17,7 +20,7 @@ function Tabs() {
       {supabaseToken && (
         <Tab to="/account" sectionName="Account" lineStartAnimation="right" />
       )}
-    </div>
+    </nav>
   );
 }
 

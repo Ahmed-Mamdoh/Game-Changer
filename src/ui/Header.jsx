@@ -37,6 +37,7 @@ function Header() {
           <button
             className="btn text-primary-content bg-primary text-md hidden border-none shadow-xl transition-all duration-300 md:block"
             onClick={handleSearch}
+            name="search-button"
           >
             <FaSearch />
           </button>
