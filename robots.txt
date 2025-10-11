@@ -1,0 +1,11 @@
+# Allow all search engines to crawl the website
+User-agent: *
+
+# Allow all pages
+Allow: /
+
+# Disallow private or non-production routes
+Disallow: /api/
+Disallow: /account/
+Disallow: /auth/
+Disallow: /admin/

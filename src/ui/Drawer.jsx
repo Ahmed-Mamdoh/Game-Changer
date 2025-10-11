@@ -12,7 +12,7 @@ function Drawer() {
 
   return mounted
     ? createPortal(
-        <div className="drawer drawer-end z-50">
+        <div className="drawer drawer-end z-50 lg:hidden">
           <input id="my-drawer-4" type="checkbox" className="drawer-toggle" />
           <div className="drawer-content">{/* Page content here */}</div>
           <div className="drawer-side">

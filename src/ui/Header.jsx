@@ -38,6 +38,10 @@ function Header() {
             className="btn text-primary-content bg-primary text-md hidden border-none shadow-xl transition-all duration-300 md:block"
             onClick={handleSearch}
             name="search-button"
+            role="button"
+            aria-label="Search"
+            id="search-button"
+            aria-labelledby="search-button"
           >
             <FaSearch />
           </button>
@@ -49,6 +53,11 @@ function Header() {
                 localStorage.removeItem("sb-kapovyqqncfsoangqppi-auth-token");
                 navigate("/auth");
               }}
+              aria-label="Login"
+              aria-labelledby="login-button"
+              id="login-button"
+              name="login-button"
+              role="button"
             >
               Login
             </button>
