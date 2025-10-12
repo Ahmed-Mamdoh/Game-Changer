@@ -33,6 +33,9 @@ function UserHeader() {
       <DataField label="Username" value={username} />
       <button
         className="btn bg-secondary text-secondary-content"
+        aria-label="Log out"
+        aria-labelledby="logout-btn"
+        name="logout"
         onClick={() => {
           handleLogout();
         }}
@@ -111,10 +114,17 @@ function DataField({ label, value }) {
         disabled={!isEditing}
         className="w-full max-w-3xs"
         onChange={(e) => setInputValue(e.target.value)}
+        aria-label={`${label.toLowerCase()}-input`}
+        aria-labelledby={`${label.toLowerCase()}-input`}
+        name={`${label.toLowerCase()}`}
+        aria-describedby={`${label.toLowerCase()}-input`}
       />
       <button
         className="btn bg-secondary text-secondary-content"
         onClick={handleUpdate}
+        name="update"
+        aria-label={isEditing ? "Save changes" : "Edit field"}
+        aria-labelledby="update-btn"
       >
         {isEditing ? <FaCheck /> : <FaPen />}
       </button>
