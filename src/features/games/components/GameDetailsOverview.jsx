@@ -60,9 +60,9 @@ function GameDetailsOverview({ data }) {
   const { data: userGame, isLoading: isLoadingUserGame } =
     useGetUserGame(user_id);
 
-  // gets the 1080p image instead of low quality
+  // gets the 720p image instead of low quality
   const imageUrl = cover?.url
-    ? cover.url.replace("t_thumb", "t_1080p").replace("jpg", "webp")
+    ? cover.url.replace("t_thumb", "t_720p").replace("jpg", "webp")
     : null;
 
   // find the esrb rating among age_ratings
