@@ -61,7 +61,9 @@ function GameDetailsOverview({ data }) {
     useGetUserGame(user_id);
 
   // gets the 1080p image instead of low quality
-  const imageUrl = cover?.url ? cover.url.replace("t_thumb", "t_1080p") : null;
+  const imageUrl = cover?.url
+    ? cover.url.replace("t_thumb", "t_1080p").replace("jpg", "webp")
+    : null;
 
   // find the esrb rating among age_ratings
   const EsrbRating = age_ratings?.find((rating) => rating?.category === 1);
@@ -342,7 +344,7 @@ function GameDetailsOverview({ data }) {
               return (
                 <a
                   href={link.url}
-                  className="bg- flex items-center gap-x-2 rounded-full bg-[#722b75] px-4 py-2 text-lg"
+                  className="flex items-center gap-x-2 rounded-full bg-[#5100DC] px-4 py-2 text-lg"
                   target="_blank"
                   rel="noopener noreferrer"
                 >

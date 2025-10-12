@@ -26,7 +26,9 @@ function GameDetailsMedia({ data }) {
                   return (
                     <CarouselItem key={screenshot.id}>
                       <img
-                        src={screenshot.url.replace("t_thumb", "t_1080p")}
+                        src={screenshot.url
+                          .replace("t_thumb", "t_1080p")
+                          .replace("jpg", "webp")}
                         alt=""
                         className="cursor-grab rounded-2xl select-none active:cursor-grabbing"
                       />

@@ -72,6 +72,8 @@ export async function deleteUserGame({ game_id, user_id }) {
 }
 
 export async function getUserGame(user_id, game_id) {
+  if (!user_id || !game_id) return { data: null, error: null };
+
   let { data, error } = await supabase
     .from("user_games")
     .select("*")
