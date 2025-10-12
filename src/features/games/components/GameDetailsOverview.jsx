@@ -344,7 +344,7 @@ function GameDetailsOverview({ data }) {
               return (
                 <a
                   href={link.url}
-                  className="flex items-center gap-x-2 rounded-full bg-[#5100DC] px-4 py-2 text-lg"
+                  className="flex items-center gap-x-2 rounded-full bg-[#310E76] px-4 py-2 text-lg"
                   target="_blank"
                   rel="noopener noreferrer"
                 >

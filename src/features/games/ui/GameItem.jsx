@@ -14,11 +14,30 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 
 function GameItem({ game }) {
-  // get 720p image instead of low quality
-  const imageUrl = game.cover?.url
-    ? game.cover.url.replace("t_thumb", "t_720p").replace("jpg", "webp")
-    : null;
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
 
+  //check if the screen size changed and set isSmall screen if the size < 1024
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setIsSmallScreen(true);
+      } else {
+        setIsSmallScreen(false);
+      }
+    };
+    handleResize();
+
+    // Add event listener
+    window.addEventListener("resize", handleResize);
+
+    // Cleanup
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+  // get 720p image instead of low quality
+  let imageUrl = game.cover?.url ? game.cover.url.replace("jpg", "webp") : null;
+  imageUrl = isSmallScreen
+    ? imageUrl.replace("t_thumb", "t_720p")
+    : imageUrl.replace("t_thumb", "t_cover_big");
   const navigate = useNavigate();
 
   const [countDown, setCountDown] = useState(() =>
