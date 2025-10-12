@@ -50,6 +50,8 @@ export const Combobox = memo(function Combobox({ options, paramName }) {
         <Button
           variant="outline"
           role="combobox"
+          aria-label={`Select ${paramName}`}
+          aria-labelledby={`Select ${paramName}`}
           aria-expanded={open}
           className="bg-neutral w-8/12 justify-between overflow-hidden sm:w-48"
         >

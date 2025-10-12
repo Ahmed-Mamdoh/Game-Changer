@@ -1,17 +1,16 @@
+import React, { lazy } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import AllGames from "./pages/AllGames";
 import AppLayout from "./pages/AppLayout";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import GameDetails from "./pages/GameDetails";
-import FreeGames from "./pages/FreeGames";
+const AllGames = lazy(() => import("./pages/AllGames"));
+const GameDetails = lazy(() => import("./pages/GameDetails"));
+const FreeGames = lazy(() => import("./pages/FreeGames"));
+const UpcomingGames = lazy(() => import("./pages/UpcomingGames"));
+const Home = lazy(() => import("./pages/Home"));
+const Auth = lazy(() => import("./pages/Auth"));
+const Account = lazy(() => import("./pages/Account"));
 import RouteErrorFallback from "./pages/RouteErrorFallback";
-import Home from "./pages/Home";
-import UpcomingGames from "./pages/UpcomingGames";
-import ScrollToTop from "./ui/ScrollToTop";
-import Auth from "./pages/Auth";
-import { Toaster } from "./../node_modules/react-hot-toast/src/components/toaster";
-import Account from "./pages/Account";
 
 function App() {
   const queryClient = new QueryClient({
