@@ -16,7 +16,7 @@ import { Link, useNavigate } from "react-router-dom";
 function GameItem({ game }) {
   // get 720p image instead of low quality
   const imageUrl = game.cover?.url
-    ? game.cover.url.replace("t_thumb", "t_720p")
+    ? game.cover.url.replace("t_thumb", "t_720p").replace("jpg", "webp")
     : null;
 
   const navigate = useNavigate();
