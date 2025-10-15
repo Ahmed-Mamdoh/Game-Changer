@@ -34,10 +34,12 @@ function GameItem({ game }) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
   // get 720p image instead of low quality
-  let imageUrl = game.cover?.url ? game.cover.url.replace("jpg", "webp") : null;
+  let imageUrl = game.cover?.url
+    ? game.cover?.url?.replace("jpg", "webp")
+    : null;
   imageUrl = isSmallScreen
-    ? imageUrl.replace("t_thumb", "t_720p")
-    : imageUrl.replace("t_thumb", "t_cover_big");
+    ? imageUrl?.replace("t_thumb", "t_720p")
+    : imageUrl?.replace("t_thumb", "t_cover_big");
   const navigate = useNavigate();
 
   const [countDown, setCountDown] = useState(() =>
