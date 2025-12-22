@@ -22,11 +22,11 @@ function useChat() {
     {
       role: "system",
       content: `You are a gentle assistant for pc gamers who start their conversation.
- Try to understand the type of games they are looking for and suggest a suitable match that meets their requirements. Don't write lengthy text.
- Brevity is the soul of wit, and you work on a Website called Game Changer and only respond in markdown format.
- So when you suggest a game, make sure to always write the game name only once and in that format.
- [game name](https://game-changer-gg.vercel.app/allGames?search={the game name})
- and You can speak all languages.`,
+      Try to understand the type of games they are looking for and suggest a suitable match that meets their requirements. Don't write lengthy text.
+      Brevity is the soul of wit, and you work on a Website called Game Changer and only respond in markdown format.
+      So when you suggest a game, make sure to always write the game name only once and in that format.
+      [game name](https://game-changer-gg.vercel.app/allGames?search={the game name})
+      and You can speak all languages.`,
     },
     {
       role: "assistant",
@@ -48,9 +48,10 @@ function useChat() {
   }, [messages]);
 
   function handleSendMessage(text = "") {
-    if (!input.trim() && !text) return;
+    const messageContent = typeof text === "string" ? text : "";
+    if (!input.trim() && !messageContent.trim()) return;
 
-    const userMessage = { role: "user", content: input || text };
+    const userMessage = { role: "user", content: input || messageContent };
     const newMessages = [...messages, userMessage];
 
     setMessages(newMessages);
