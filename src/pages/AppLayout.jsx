@@ -4,6 +4,7 @@ import ScrollToTop from "@/ui/ScrollToTop";
 import { Toaster } from "react-hot-toast";
 import { Suspense } from "react";
 import Spinner from "../ui/Spinner";
+import ChatBot from "@/features/ChatBot/ChatBot";
 
 function AppLayout() {
   const location = useLocation();
@@ -13,6 +14,7 @@ function AppLayout() {
       <Toaster />
       <ScrollToTop />
       <Header />
+      <ChatBot />
       <Suspense fallback={<Spinner />} key={location.pathname}>
         <Outlet />
       </Suspense>
