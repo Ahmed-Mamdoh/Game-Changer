@@ -1,7 +1,7 @@
 import Markdown from "react-markdown";
 import { Link } from "react-router-dom";
 
-function MessageList({ messages, messagesRef }) {
+function MessageList({ messages, messagesRef, isLoading }) {
   return (
     <div
       ref={messagesRef}
@@ -60,6 +60,13 @@ function MessageList({ messages, messagesRef }) {
           );
         }
       })}
+      {isLoading && (
+        <div className="chat chat-end">
+          <div className="chat-bubble bg-primary/70 text-primary-content">
+            <span className="loading loading-dots loading-xs"></span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

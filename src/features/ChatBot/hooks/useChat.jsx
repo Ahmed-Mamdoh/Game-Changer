@@ -3,34 +3,6 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function useChat() {
-  const [messages, setMessages] = useState([
-    {
-      role: "system",
-      content: `You are a gentle assistant for pc gamers who start their conversation.
- Try to understand the type of games they are looking for and suggest a suitable match that meets their requirements. Don't write lengthy text.
- Brevity is the soul of wit, and you work on a Website called Game Changer and only respond in markdown format.
- So when you suggest a game, make sure to always not just write the game name but also write it in that format.
- [game name](https://game-changer-gg.vercel.app/allGames?search={the game name})
- You can speak all languages.`,
-    },
-    {
-      role: "assistant",
-      content: "Hello, How can I help you?",
-    },
-  ]);
-  const navigate = useNavigate();
-  const [input, setInput] = useState("");
-
-  const messagesRef = useRef(null);
-
-  useEffect(() => {
-    // Scroll to the bottom of the messages container
-    messagesRef?.current?.scrollTo({
-      top: messagesRef.current.scrollHeight,
-
-      behavior: "smooth",
-    });
-  }, [messages]);
   const models = [
     "openai/gpt-oss-safeguard-20b", // Oct 2025
     "moonshotai/kimi-k2-instruct-0905", // Sept 2025
@@ -46,15 +18,44 @@ function useChat() {
     "llama-3.3-70b-versatile", // Dec 2024
     "llama-3.1-8b-instant", // Sept 2023
   ];
+  const [messages, setMessages] = useState([
+    {
+      role: "system",
+      content: `You are a gentle assistant for pc gamers who start their conversation.
+ Try to understand the type of games they are looking for and suggest a suitable match that meets their requirements. Don't write lengthy text.
+ Brevity is the soul of wit, and you work on a Website called Game Changer and only respond in markdown format.
+ So when you suggest a game, make sure to always write the game name only once and in that format.
+ [game name](https://game-changer-gg.vercel.app/allGames?search={the game name})
+ and You can speak all languages.`,
+    },
+    {
+      role: "assistant",
+      content: "Hello, How can I help you?",
+    },
+  ]);
+  const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const messagesRef = useRef(null);
+  const navigate = useNavigate();
   const modelNumber = useRef(0);
-  function handleSendMessage() {
-    if (!input.trim()) return;
 
-    const userMessage = { role: "user", content: input };
+  useEffect(() => {
+    // Scroll to the bottom of the messages container
+    messagesRef?.current?.scrollTo({
+      top: messagesRef.current.scrollHeight,
+      behavior: "smooth",
+    });
+  }, [messages]);
+
+  function handleSendMessage(text = "") {
+    if (!input.trim() && !text) return;
+
+    const userMessage = { role: "user", content: input || text };
     const newMessages = [...messages, userMessage];
 
     setMessages(newMessages);
     setInput("");
+    setIsLoading(true);
 
     chatWithGroq({
       model: models[modelNumber.current],
@@ -84,9 +85,19 @@ function useChat() {
       })
       .catch((err) => {
         console.error(err);
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   }
-  return { messages, input, setInput, handleSendMessage, messagesRef };
+  return {
+    messages,
+    input,
+    setInput,
+    handleSendMessage,
+    messagesRef,
+    isLoading,
+  };
 }
 
 export default useChat;
