@@ -1,12 +1,9 @@
 import { formatDate, intervalToDuration } from "date-fns";
-import { Clock } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
+  FaArrowLeft,
   FaBell,
-  FaCalendar,
-  FaCalendarAlt,
-  FaCalendarCheck,
-  FaClock,
   FaHeart,
   FaHourglass,
   FaRegClock,
@@ -81,6 +78,19 @@ function GameItem({ game }) {
           <div className="bg-base-300 flex h-full w-full items-center justify-center rounded-lg font-medium">
             ❌ image not found
           </div>
+        )}
+        {game?.giveAwayLink && (
+          <a
+            onClick={(e) => e.stopPropagation()}
+            href={game.giveAwayLink}
+            target="_blank"
+            rel="noreferrer"
+            className="absolute bottom-2 left-2 cursor-pointer"
+          >
+            <button className="bg-primary text-primary-content flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 text-sm font-bold">
+              Get It From Here <FaArrowLeft />
+            </button>
+          </a>
         )}
         {game?.status && (
           <div className="bg-base-300 absolute top-2 right-2 flex items-center justify-center gap-x-2 rounded-full px-2">

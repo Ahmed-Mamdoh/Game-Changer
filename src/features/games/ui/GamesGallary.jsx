@@ -10,9 +10,10 @@ function GamesGallary({ data, isLoading }) {
         <span className="text-3xl font-bold">🔍 No Games Found</span>
       )}
 
-      {data?.map((game) => (
-        <GameItem key={game.id} game={game} />
-      ))}
+      {data?.map((game) => {
+        if (!game.id) return null;
+        return <GameItem key={game.id} game={game} />;
+      })}
     </div>
   );
 }
