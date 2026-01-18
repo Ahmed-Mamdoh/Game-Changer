@@ -73,36 +73,37 @@ export const Combobox = memo(function Combobox({ options, paramName }) {
               No option found.
             </CommandEmpty>
             <CommandGroup>
-              {options.map((option) => (
-                <CommandItem
-                  key={option.id}
-                  value={option.id}
-                  className="base-content data-[selected=true]:bg-base-300 font-medium"
-                  onSelect={() => {
-                    if (option.id == value) {
-                      setValue("");
-                      const newParams = new URLSearchParams(searchParams);
-                      newParams.delete(paramName);
-                      setSearchParams(newParams);
-                      setOpen(false);
-                    } else {
-                      setOpen(false);
-                      handleSelect(option.id);
-                      setValue(option.id);
-                    }
-                  }}
-                >
-                  <CheckIcon
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      value == option.id
-                        ? "base-content opacity-100"
-                        : "opacity-0",
-                    )}
-                  />
-                  {option.name}
-                </CommandItem>
-              ))}
+              {options?.length > 0 &&
+                options?.map((option) => (
+                  <CommandItem
+                    key={option.id}
+                    value={option.id}
+                    className="base-content data-[selected=true]:bg-base-300 font-medium"
+                    onSelect={() => {
+                      if (option.id == value) {
+                        setValue("");
+                        const newParams = new URLSearchParams(searchParams);
+                        newParams.delete(paramName);
+                        setSearchParams(newParams);
+                        setOpen(false);
+                      } else {
+                        setOpen(false);
+                        handleSelect(option.id);
+                        setValue(option.id);
+                      }
+                    }}
+                  >
+                    <CheckIcon
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        value == option.id
+                          ? "base-content opacity-100"
+                          : "opacity-0",
+                      )}
+                    />
+                    {option.name}
+                  </CommandItem>
+                ))}
             </CommandGroup>
           </CommandList>
         </Command>

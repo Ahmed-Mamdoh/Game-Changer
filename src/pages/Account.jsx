@@ -29,10 +29,12 @@ function Account() {
 
   if (isLoading || isLoadingGenres || isLoadingThemes) return <Spinner />;
 
-  const genreName = genres.filter((genre) => genre?.id === +genreParam)[0]
-    ?.name;
-  const themeName = themes.filter((theme) => theme?.id === +themeParam)[0]
-    ?.name;
+  const genreName =
+    genres?.length > 0 &&
+    genres?.filter((genre) => genre?.id === +genreParam)[0]?.name;
+  const themeName =
+    themes?.length > 0 &&
+    themes?.filter((theme) => theme?.id === +themeParam)[0]?.name;
 
   const GallaryData = user_games
     .filter((game) => {

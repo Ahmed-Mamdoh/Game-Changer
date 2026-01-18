@@ -9,11 +9,20 @@ function GamesGallary({ data, isLoading }) {
       {data?.length === 0 && (
         <span className="text-3xl font-bold">🔍 No Games Found</span>
       )}
-
-      {data?.map((game) => {
-        if (!game.id) return null;
-        return <GameItem key={game.id} game={game} />;
-      })}
+      {data?.message && (
+        <span className="text-3xl font-bold text-red-500">{data?.message}</span>
+      )}
+      {data?.[0]?.message && (
+        <span className="text-3xl font-bold text-red-500">
+          {data?.[0]?.message}
+        </span>
+      )}
+      {data?.length > 0 &&
+        data[0]?.id &&
+        data?.map((game) => {
+          if (!game.id) return null;
+          return <GameItem key={game.id} game={game} />;
+        })}
     </div>
   );
 }

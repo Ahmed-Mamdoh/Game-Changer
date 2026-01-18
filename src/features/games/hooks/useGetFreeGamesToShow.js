@@ -25,6 +25,7 @@ export function useGetFreeGamesToShow() {
   );
 
   const dataToShow = freeGamesIgdbData?.map((searchResult, i) => {
+    if (!searchResult.length) return null;
     const intendedGame = searchResult.filter((game) => {
       return (
         game.name.toLowerCase().trim().replace(/['’]/g, "") ===
