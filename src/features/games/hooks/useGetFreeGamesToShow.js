@@ -24,24 +24,30 @@ export function useGetFreeGamesToShow() {
     (game) => game.title.match(/\(([^)]+)\)/)[1],
   );
 
-  const dataToShow = freeGamesIgdbData?.map((searchResult, i) => {
-    if (!searchResult.length) return null;
-    const intendedGame = searchResult.filter((game) => {
-      return (
-        game.name.toLowerCase().trim().replace(/['’]/g, "") ===
-          gamesCleanNames[i].toLowerCase().trim().replace(/['’]/g, "") ||
-        game.name.split(":")[0].toLowerCase().trim().replace(/['’]/g, "") ===
-          gamesCleanNames[i].toLowerCase().trim().replace(/['’]/g, "")
-      );
-    });
+  const dataToShow =
+    freeGamesIgdbData?.length > 0
+      ? freeGamesIgdbData?.map((searchResult, i) => {
+          const intendedGame = searchResult.filter((game) => {
+            return (
+              game.name.toLowerCase().trim().replace(/['’]/g, "") ===
+                gamesCleanNames[i].toLowerCase().trim().replace(/['’]/g, "") ||
+              game.name
+                .split(":")[0]
+                .toLowerCase()
+                .trim()
+                .replace(/['’]/g, "") ===
+                gamesCleanNames[i].toLowerCase().trim().replace(/['’]/g, "")
+            );
+          });
 
-    return {
-      ...intendedGame[0],
-      freeOn: freeOnPlatform[i],
-      endDate: freeGamesNames[i].end_date,
-      giveAwayLink: freeGamesNames[i].open_giveaway,
-    };
-  });
+          return {
+            ...intendedGame[0],
+            freeOn: freeOnPlatform[i],
+            endDate: freeGamesNames[i].end_date,
+            giveAwayLink: freeGamesNames[i].open_giveaway,
+          };
+        })
+      : [];
 
   return { dataToShow, isLoadingFreeGamesIgdbData, isLoadingFreeGamesNames };
 }
