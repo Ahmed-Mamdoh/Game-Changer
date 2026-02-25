@@ -14,7 +14,8 @@ function ChatInput({ handleSendMessage, input, setInput }) {
         value={input}
         onChange={(e) => setInput(e.target.value)}
         placeholder="Ask me anything..."
-        className="max-h-[10vh] min-h-6 w-full resize-none overflow-auto ring-transparent"
+        className="focus-within:border-primary/80 max-h-[10vh] min-h-6 w-full resize-none overflow-auto ring-transparent"
+        autoFocus
       />
       <button
         onClick={handleSendMessage}

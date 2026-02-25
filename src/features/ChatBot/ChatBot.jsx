@@ -16,7 +16,7 @@ export default function ChatBot() {
   return (
     <Popover>
       <ChatTrigger />
-      <PopoverContent className="bg-neutral max-h-[75vh] w-80 border-0">
+      <PopoverContent className="bg-base-100 max-h-[75vh] w-80 border-0">
         <div className="flex flex-col gap-2">
           <MessageList
             messages={messages}
