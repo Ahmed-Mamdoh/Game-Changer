@@ -20,16 +20,16 @@ function Header() {
   }
 
   return (
-    <nav className="z-50 flex w-full items-center justify-center bg-transparent shadow-md backdrop-blur-xl">
+    <nav className="absolute top-0 z-50 flex w-full items-center justify-center bg-transparent shadow-md backdrop-blur-xl">
       <div className="container flex items-center justify-between px-5 py-3 md:px-0 lg:px-20 xl:px-40">
         <Logo />
         <Tabs />
         <div className="flex items-center gap-x-3">
           <div
             className="text-text-primary border-obsidian-border focus-within:border-pulse-primary/80 
-            flex w-60 items-center gap-2 rounded-full
-          border-1 bg-[#2f2f3280] px-2 py-1.5
-          text-sm"
+            z-10 flex w-60 items-center gap-2 rounded-full border-1 
+          bg-[#2f2f3280] px-2 py-1.5 text-sm
+          transition-colors"
           >
             <IoIosSearch className="h-6 w-6" />
             <input
