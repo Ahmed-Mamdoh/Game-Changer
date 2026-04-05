@@ -43,8 +43,24 @@
 
 
 @theme {
-  /* --color-accent-primary: oklch(0.9072 0.2474 130.87);
-  --color-accent-secondary: oklch(0.4327 0.2329 292.5); */
+  /* Obsidian Surface Colors */
+  --color-obsidian-base: #000000;
+  --color-obsidian-surface: #0a0a0a;
+  --color-obsidian-card: rgba(18, 18, 18, 0.8);
+  --color-obsidian-muted: #1a1a1a;
+  --color-obsidian-border: rgba(255, 255, 255, 0.05);
+
+  /* Pulse Accent Colors */
+  --color-pulse-primary: #7c3aed;
+  --color-pulse-secondary: #5b21b6;
+  --color-pulse-accent: #a78bfa;
+  --color-pulse-glow: rgba(168, 85, 247, 0.1);
+
+  /* Typography Colors */
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #a1a1aa;
+  --color-text-muted: #71717a;
+  --color-text-dark: #18181b;
   --font-heading: 'Orbitron', sans-serif;
   --font-body: 'Roboto', sans-serif;
 }
@@ -59,4 +75,57 @@
     @apply bg-gradient-to-b from-base-100 via-base-300 to-base-100 text-base-content font-body min-h-screen;
   }
 
+  h1 {
+    font-size: 4rem;
+    letter-spacing: -0.05em;
+    font-weight: 700;
+  }
+
+  h2 {
+    font-size: 2rem;
+    letter-spacing: -0.025em;
+    font-weight: 600;
+  }
+
+  body {
+    font-size: 1rem;
+    line-height: 1.6;
+    font-weight: 400;
+  }
+
+  .label {
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+}
+
+@layer components {
+  .card-obsidian {
+    background: rgba(18, 18, 18, 0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .card-obsidian:hover {
+    transform: translateY(-4px);
+    border-color: rgba(168, 85, 247, 0.3);
+  }
+
+  .btn-pulse {
+    background: #a855f7;
+    color: white;
+    padding: 10px 24px;
+    border-radius: 9999px;
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+    transition: all 0.2s ease;
+  }
+
+  .btn-pulse:active {
+    transform: scale(0.95);
+  }
 }

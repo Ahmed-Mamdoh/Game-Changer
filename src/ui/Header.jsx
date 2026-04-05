@@ -1,7 +1,8 @@
 import { useState } from "react";
 import Logo from "./Logo";
 import { useNavigate } from "react-router-dom";
-import { FaSearch } from "react-icons/fa";
+import { IoIosSearch } from "react-icons/io";
+
 import Tabs from "./Tabs";
 import Drawer from "./Drawer";
 import { Menu } from "lucide-react";
@@ -19,36 +20,36 @@ function Header() {
   }
 
   return (
-    <div className="from-secondary/20 to-secondary/40 border-base-100/20 z-50 flex w-full items-center justify-center border-b bg-linear-to-b shadow-md backdrop-blur-md">
-      <div className="md-px-0 container flex items-center justify-between px-5 py-3 lg:px-20 xl:px-40">
+    <nav className="z-50 flex w-full items-center justify-center bg-transparent shadow-md backdrop-blur-xl">
+      <div className="container flex items-center justify-between px-5 py-3 md:px-0 lg:px-20 xl:px-40">
         <Logo />
         <Tabs />
         <div className="flex items-center gap-x-3">
-          <input
-            type="text"
-            autoComplete="search"
-            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-            placeholder="Search"
-            value={search}
-            id="search"
-            onChange={(e) => setSearch(e.target.value)}
-            className="bg-base-200 text-base-content placeholder:text-base-content/60 focus:ring-primary/50 active:ring-primary/70 w-full rounded-lg px-4 py-2 text-sm focus:ring-2 focus:outline-none active:ring-2 md:text-base"
-          />
-          <button
-            className="btn text-primary-content bg-primary text-md hidden border-none shadow-xl transition-all duration-300 md:block"
-            onClick={handleSearch}
-            name="search-button"
-            role="button"
-            aria-label="Search"
-            id="search-button"
-            aria-labelledby="search-button"
+          <div
+            className="text-text-primary border-obsidian-border focus-within:border-pulse-primary/80 
+            flex w-60 items-center gap-2 rounded-full
+          border-1 bg-[#2f2f3280] px-2 py-1.5
+          text-sm"
           >
-            <FaSearch />
-          </button>
+            <IoIosSearch className="h-6 w-6" />
+            <input
+              type="text"
+              autoComplete="search"
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+              placeholder="Search..."
+              value={search}
+              id="search"
+              onChange={(e) => setSearch(e.target.value)}
+              className="placeholder:text-text-secondary/60 border-0 focus:outline-none"
+            />
+          </div>
 
           {!supabaseToken && (
             <button
-              className="btn text-primary-content bg-primary text-md hidden border-none shadow-xl transition-all duration-300 md:block"
+              className="text-text-primary bg-pulse-secondary text-md
+              hover:bg-pulse-primary/80 hidden cursor-pointer rounded-full border-none px-4.5
+              py-1.5 text-nowrap shadow-xl transition-all
+              duration-300 md:block"
               onClick={() => {
                 localStorage.removeItem("sb-kapovyqqncfsoangqppi-auth-token");
                 navigate("/auth");
@@ -59,7 +60,7 @@ function Header() {
               name="login-button"
               role="button"
             >
-              Login
+              Join Now
             </button>
           )}
 
@@ -72,7 +73,7 @@ function Header() {
           </label>
         </div>
       </div>
-    </div>
+    </nav>
   );
 }
 
