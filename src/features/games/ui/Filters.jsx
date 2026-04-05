@@ -39,7 +39,7 @@ function Filters({
   if (isLoadingGenres || isLoadingThemes || isLoadingGameModes) return null;
   return (
     <div
-      className={`bg-base-300 mx-auto rounded-2xl px-2 py-4 shadow-md ${className}`}
+      className={`bg-obsidian-base/40 mx-auto rounded-xl px-2 py-4 shadow-md backdrop-blur-2xl ${className}`}
     >
       <div className="container flex flex-col flex-wrap items-start justify-between gap-x-8 gap-y-4 px-2 sm:flex-row">
         {showGenres && (

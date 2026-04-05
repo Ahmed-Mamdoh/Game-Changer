@@ -72,7 +72,7 @@
   }
 
   body {
-    @apply bg-gradient-to-b from-base-100 via-base-300 to-base-100 text-base-content font-body min-h-screen;
+    @apply text-text-primary font-body min-h-screen bg-obsidian-muted;
   }
 
   h1 {

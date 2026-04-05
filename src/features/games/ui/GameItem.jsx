@@ -1,13 +1,16 @@
 import { formatDate, intervalToDuration } from "date-fns";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, CalendarCheck, Clock } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   FaArrowLeft,
   FaBell,
+  FaCalendarCheck,
   FaHeart,
   FaHourglass,
   FaRegClock,
+  FaSteam,
 } from "react-icons/fa";
+import { SiEpicgames, SiGogdotcom } from "react-icons/si";
 import { Link, useNavigate } from "react-router-dom";
 
 function GameItem({ game }) {
@@ -63,9 +66,15 @@ function GameItem({ game }) {
   }, [game.endDate]);
 
   return (
-    <div className="flex flex-col items-center justify-center gap-3">
+    <div
+      className="border-obsidian-border flex
+    cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-1
+    bg-gradient-to-tl from-[#25212950] from-80% to-gray-200/30 to-100% p-2
+    backdrop-blur-xl transition-all duration-300 hover:scale-105 hover:rotate-z-1
+    hover:from-70% hover:shadow-xl"
+    >
       <div
-        className="peer relative w-3/4 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl md:h-64 md:w-48"
+        className="peer relative w-3/4  md:h-64 md:w-48"
         onClick={() => navigate(`/game/${game.id}`)}
       >
         {imageUrl ? (
@@ -78,19 +87,6 @@ function GameItem({ game }) {
           <div className="bg-base-300 flex h-full w-full items-center justify-center rounded-lg font-medium">
             ❌ image not found
           </div>
-        )}
-        {game?.giveAwayLink && (
-          <a
-            onClick={(e) => e.stopPropagation()}
-            href={game.giveAwayLink}
-            target="_blank"
-            rel="noreferrer"
-            className="absolute bottom-2 left-2 cursor-pointer"
-          >
-            <button className="bg-primary text-primary-content flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 text-sm font-bold">
-              Get It From Here <FaArrowLeft />
-            </button>
-          </a>
         )}
         {game?.status && (
           <div className="bg-base-300 absolute top-2 right-2 flex items-center justify-center gap-x-2 rounded-full px-2">
@@ -124,43 +120,61 @@ function GameItem({ game }) {
           </div>
         )}
       </div>
-      <div className="peer-hover:text-primary w-72 cursor-default text-center text-lg font-medium text-wrap transition-colors duration-300 md:h-12 md:w-48 md:text-base">
-        <Link
-          to={`/game/${game.id}`}
-          className="hover:text-accent-primary cursor-pointer"
-        >
+      <div
+        className="w-72 cursor-default text-center text-lg font-medium text-wrap
+      transition-colors duration-300 md:h-12 md:w-48 md:text-base"
+      >
+        <Link to={`/game/${game.id}`} className=" cursor-pointer">
           <div>
             <p>{game.name}</p>
-            {game.freeOn && <p>({game.freeOn})</p>}
-            {game?.endDate && (
-              <div className="flex flex-col items-center justify-center gap-x-1 text-red-400">
-                <div className="flex items-center justify-center gap-x-1 text-center">
-                  <FaBell className="h-4" />
-                  <p>Ends in</p>
-                </div>
-                <div className="flex gap-1">
-                  <p>({countDown?.days || 0}d</p>
-                  <p>{countDown?.hours || 0}h</p>
-                  <p>{countDown?.minutes || 0}m</p>
-                  <p>{countDown?.seconds || 0}s)</p>
-                </div>
-              </div>
-            )}
-            {game?.first_release_date &&
-              game?.first_release_date > Math.floor(Date.now() / 1000) && (
-                <div className="text-text-subtle flex items-center justify-center gap-x-1 text-sm">
-                  <FaHourglass />
-                  <p>
-                    {formatDate(
-                      new Date(game.first_release_date * 1000),
-                      "dd/MM/yyyy",
-                    )}
-                  </p>
-                </div>
-              )}
           </div>
         </Link>
       </div>
+      {game?.giveAwayLink && (
+        <div className="text-pulse-accent flex w-full items-center justify-between">
+          <a
+            onClick={(e) => e.stopPropagation()}
+            href={game.giveAwayLink}
+            target="_blank"
+            rel="noreferrer"
+            className=" flex cursor-pointer items-center justify-center gap-2"
+          >
+            {game.freeOn === "Steam" ? <FaSteam className="h-4 w-4" /> : null}
+            {game.freeOn === "Epic Games" ? (
+              <SiEpicgames className="h-4 w-4" />
+            ) : null}
+            {game.freeOn === "GOG" ? <SiGogdotcom className="h-4 w-4" /> : null}
+            {game.freeOn}
+          </a>
+
+          <div className="flex items-center justify-center gap-1">
+            <Clock className="h-4 w-4" />
+            <p>
+              {countDown.days
+                ? `${countDown.days}D`
+                : countDown?.hours
+                  ? `${countDown.hours}h`
+                  : countDown?.minutes
+                    ? `${countDown.minutes}m`
+                    : countDown?.seconds
+                      ? `${countDown.seconds}s`
+                      : null}
+            </p>
+          </div>
+        </div>
+      )}
+      {game?.first_release_date &&
+        game?.first_release_date > Math.floor(Date.now() / 1000) && (
+          <div className="text-pulse-accent flex items-center justify-center gap-x-1">
+            <p>
+              {formatDate(
+                new Date(game.first_release_date * 1000),
+                "dd/MM/yyyy",
+              )}
+            </p>
+            <CalendarCheck className="h-4 w-4" />
+          </div>
+        )}
     </div>
   );
 }

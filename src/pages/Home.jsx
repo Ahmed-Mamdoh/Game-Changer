@@ -19,8 +19,8 @@ function Home() {
   const { data: upcomingGames, isLoading: isLoadingUpcomingGames } =
     useGetUpcomingGames(10);
   return (
-    <>
-      <HeroSection sectionId="popular" />
+    <div className="from-obsidian-surface to-obsidian-muted bg-gradient-to-b from-15% to-30% pb-12">
+      <HeroSection />
       <HomeSection
         id="popular"
         sectionName="Popular Games"
@@ -40,7 +40,7 @@ function Home() {
         isLoading={isLoadingUpcomingGames}
         route="upcomingGames"
       />
-    </>
+    </div>
   );
 }
 
