@@ -15,13 +15,13 @@ export function useGetAllGames() {
     : searchParams.get("sortBy") || "total_rating_count";
   let filters = [];
   if (genre) {
-    filters.push(`genres = (${genre})`);
+    filters.push(`genres = [${genre.split("-")}]`);
   }
   if (themes) {
-    filters.push(`themes = (${themes})`);
+    filters.push(`themes = [${themes.split("-")}]`);
   }
   if (gameMode) {
-    filters.push(`game_modes = (${gameMode})`);
+    filters.push(`game_modes = (${gameMode.split("-")})`);
   }
 
   const { data, isLoading, error } = useQuery({

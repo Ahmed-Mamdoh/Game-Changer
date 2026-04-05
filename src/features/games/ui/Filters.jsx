@@ -5,6 +5,7 @@ import { useGetGenres } from "../hooks/useGetGenres";
 import { useGetThemes } from "../hooks/useGetThemes";
 import { useGetGameModes } from "../hooks/useGetGameModes";
 import { memo } from "react";
+import FilterButtons from "./FilterButtons";
 
 function Filters({
   showGenres = true,
@@ -39,88 +40,76 @@ function Filters({
   if (isLoadingGenres || isLoadingThemes || isLoadingGameModes) return null;
   return (
     <div
-      className={`bg-obsidian-base/40 mx-auto rounded-xl px-2 py-4 shadow-md backdrop-blur-2xl ${className}`}
+      className={`bg-obsidian-base/30 mx-auto rounded-xl px-2 py-4 shadow-md backdrop-blur-2xl ${className}`}
     >
       <div className="container flex flex-col flex-wrap items-start justify-between gap-x-8 gap-y-4 px-2 sm:flex-row">
-        {showGenres && (
-          <div className="flex w-full items-center justify-between gap-x-2 sm:w-fit sm:justify-center">
-            <label htmlFor="genre" className="text-lg">
-              Genres:
-            </label>
-            <Combobox id="genre" options={genres} paramName="genre" />
-          </div>
-        )}
+        <div className="flex flex-wrap items-center gap-x-10 gap-y-5">
+          {showGenres && (
+            <FilterButtons category={genres} name="Genres" paramName="genre" />
+          )}
 
-        {showThemes && (
-          <div className="flex w-full items-center justify-between gap-x-2 sm:w-fit sm:justify-center">
-            <label htmlFor="theme" className="text-lg">
-              Themes:
-            </label>
-            <Combobox id="theme" options={themes} paramName="theme" />
-          </div>
-        )}
+          {showThemes && (
+            <FilterButtons category={themes} name="Themes" paramName="theme" />
+          )}
 
-        {showGameModes && (
-          <div className="flex w-full items-center justify-between gap-x-2 sm:w-fit sm:justify-center">
-            <label htmlFor="gameMode" className="text-lg">
-              Mode:
-            </label>
-            <Combobox id="gameMode" options={gameModes} paramName="gameMode" />
-          </div>
-        )}
-
-        {showStatus && (
-          <div className="flex w-full items-center justify-between gap-x-2 sm:w-fit sm:justify-center">
-            <label htmlFor="status" className="text-lg">
-              Status:
-            </label>
-            <Combobox id="status" options={status} paramName="status" />
-          </div>
-        )}
-
-        {!search && showSortBy && (
-          <div className="flex w-full items-center justify-between gap-x-2 sm:w-fit sm:justify-center">
-            <label htmlFor="sortBy" className="text-lg">
-              Sort By:
-            </label>
-            <Combobox id="sortBy" options={sortBy} paramName="sortBy" />
-          </div>
-        )}
-
-        {showFavorite && (
-          <div className="flex w-5/12 items-center justify-start gap-x-2">
-            <label htmlFor="isFavorite" className="text-lg">
-              Favorites:
-            </label>
-            <input
-              id="isFavorite"
-              type="checkbox"
-              className="toggle toggle-error"
-              checked={searchParams.get("isFavorite") === "true"}
-              onChange={(e) => {
-                if (e.target.checked) {
-                  searchParams.set("isFavorite", "true");
-                } else {
-                  searchParams.delete("isFavorite");
-                }
-                setSearchParams(searchParams);
-              }}
+          {showGameModes && (
+            <FilterButtons
+              category={gameModes}
+              name="Mode"
+              paramName="gameMode"
             />
-          </div>
-        )}
+          )}
 
-        <button
-          onClick={() => {
-            const newParams = new URLSearchParams();
-            setSearchParams(newParams);
-          }}
-          className="bg-secondary text-secondary-content group cursor-pointer rounded-sm font-extrabold transition-all duration-200 hover:rounded-lg"
-        >
-          <div className="flex items-center gap-x-2 px-4 py-2">
-            <FaUndoAlt className="transition-transform duration-200 group-hover:-rotate-90" />
-            <span>Reset</span>
-          </div>
-        </button>
+          {showStatus && (
+            <FilterButtons category={status} name="Status" paramName="status" />
+          )}
+
+          {!search && showSortBy && (
+            <div className="flex flex-1 items-center justify-between">
+              <FilterButtons
+                category={sortBy}
+                name="Sort By"
+                paramName="sortBy"
+                or={true}
+                defaultValue={["total_rating_count"]}
+              />
+              <button
+                onClick={() => {
+                  const newParams = new URLSearchParams();
+                  setSearchParams(newParams);
+                }}
+                className="bg-pulse-secondary text-secondary-content group cursor-pointer rounded-full font-extrabold transition-all duration-200"
+              >
+                <div className="flex items-center gap-x-2 px-4 py-2">
+                  <FaUndoAlt className="transition-transform duration-200 group-hover:-rotate-90" />
+                  <span>Reset</span>
+                </div>
+              </button>
+            </div>
+          )}
+
+          {showFavorite && (
+            <div className="flex w-5/12 items-center justify-start gap-x-2">
+              <label htmlFor="isFavorite" className="text-lg">
+                Favorites:
+              </label>
+              <input
+                id="isFavorite"
+                type="checkbox"
+                className="toggle toggle-error"
+                checked={searchParams.get("isFavorite") === "true"}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    searchParams.set("isFavorite", "true");
+                  } else {
+                    searchParams.delete("isFavorite");
+                  }
+                  setSearchParams(searchParams);
+                }}
+              />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
