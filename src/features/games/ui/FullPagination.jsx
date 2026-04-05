@@ -11,7 +11,7 @@ import {
 import { useGetNumberOfResults } from "@/features/games/hooks/useGetNumberOfResults";
 import { LIMIT } from "@/constants/constant";
 
-const NUM_PAGE_BUTTONS = 5;
+const NUM_PAGE_BUTTONS = 10;
 const middleNumber = Math.floor(NUM_PAGE_BUTTONS / 2);
 function FullPagination() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -24,12 +24,12 @@ function FullPagination() {
   const numberOfPages = Math.ceil(data?.count / LIMIT);
   return (
     <div className="flex items-center justify-center select-none">
-      <div className="bg-base-200 mb-16 w-1/2 rounded-md py-5">
+      <div className="border-obsidian-border mb-16 w-5/8 rounded-full border-1 bg-[#25212950] py-4 backdrop-blur-2xl">
         <Pagination>
           <PaginationContent>
             <PaginationItem>
               <PaginationPrevious
-                className="hover:bg-primary hover:text-primary-content cursor-pointer font-extrabold transition-colors"
+                className="hover:bg-pulse-primary/50 hover:text-text-primary cursor-pointer rounded-full font-bold transition-colors"
                 onClick={() => {
                   const newParams = new URLSearchParams(searchParams);
                   if (currentPage > 1) {
@@ -53,8 +53,8 @@ function FullPagination() {
                     <PaginationLink
                       className={`${
                         i + currentPage - middleNumber === currentPage
-                          ? "bg-primary hover:bg-primary text-primary-content font-extrabold"
-                          : "hover:bg-primary hover:text-primary-content cursor-pointer font-extrabold"
+                          ? " hover:bg-pulse-primary/50  text-text-primary bg-pulse-primary/50 shadow-pulse-primary/60 rounded-full font-bold shadow-[0_0_10px_1px]"
+                          : "hover:bg-pulse-primary/50 hover:text-text-primary cursor-pointer rounded-full font-bold"
                       }`}
                       onClick={() => {
                         if (i === middleNumber) return;
@@ -76,7 +76,7 @@ function FullPagination() {
             ) : null}
             <PaginationItem>
               <PaginationNext
-                className="hover:bg-primary hover:text-primary-content cursor-pointer font-extrabold"
+                className="hover:bg-pulse-primary/50 hover:text-text-primary cursor-pointer rounded-full font-bold transition-colors"
                 onClick={() => {
                   if (currentPage === numberOfPages) return;
                   const newParams = new URLSearchParams(searchParams);
