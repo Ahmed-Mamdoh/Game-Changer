@@ -7,7 +7,7 @@ import HomeSection from "@/ui/HomeSection";
 function Home() {
   const { data: games, isLoading: isLoadingGames } = useGetGameSection(
     "total_rating_count",
-    10,
+    6,
   );
 
   const {
@@ -17,9 +17,9 @@ function Home() {
   } = useGetFreeGamesToShow();
 
   const { data: upcomingGames, isLoading: isLoadingUpcomingGames } =
-    useGetUpcomingGames(10);
+    useGetUpcomingGames(6);
   return (
-    <div className="from-obsidian-surface to-obsidian-muted bg-gradient-to-b from-15% to-30% pb-12">
+    <div className="from-obsidian-surface to-obsidian-muted bg-gradient-to-b pb-12">
       <HeroSection />
       <HomeSection
         id="popular"

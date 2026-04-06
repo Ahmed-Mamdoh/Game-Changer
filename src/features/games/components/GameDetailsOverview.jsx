@@ -18,6 +18,7 @@ function GameDetailsOverview({ data }) {
     name,
     first_release_date: releaseDate,
     summary,
+    cover,
     artworks,
     total_rating: rating,
     total_rating_count: ratingCount,
@@ -34,13 +35,20 @@ function GameDetailsOverview({ data }) {
   const user_id = JSON.parse(userToken || "{}")?.user?.id;
 
   const { data: timeToBeat } = useGetTimeToBeat();
-  const { data: userGame, isLoading: isLoadingUserGame } = useGetUserGame(user_id);
+  const { data: userGame, isLoading: isLoadingUserGame } =
+    useGetUserGame(user_id);
 
   //  gets the full quality image instead of low quality
-  const chosenArtwork = artworks.find(a => a.artwork_type === 2) ||
-    artworks.find(a => a.artwork_type === 3) || artworks.find(a => a.artwork_type === 1)
-    || artworks.find(a => a.artwork_type === 4) || artworks[0]
-  const imageUrl = chosenArtwork?.url?.replace("t_thumb", "t_1080p_2x")?.replace("jpg", "webp") || null;
+  const chosenArtwork =
+    artworks.find((a) => a.artwork_type === 2) ||
+    artworks.find((a) => a.artwork_type === 3) ||
+    artworks.find((a) => a.artwork_type === 1) ||
+    artworks.find((a) => a.artwork_type === 4) ||
+    artworks[0];
+  const imageUrl =
+    chosenArtwork?.url
+      ?.replace("t_thumb", "t_1080p_2x")
+      ?.replace("jpg", "webp") || null;
 
   if (isLoadingUserGame) return <Spinner />;
 
@@ -103,24 +111,17 @@ function GameDetailsOverview({ data }) {
 
   return (
     <>
-      <div className="relative h-[100vh] overflow-hidden w-full">
+      <div className="relative h-[100vh] w-full overflow-hidden">
         {/* Cover */}
-        <img
-          src={imageUrl}
-          className="h-full w-full object-cover"
-        />
+        <img src={imageUrl} className="h-full w-full object-cover" />
         <div className=" to-obsidian-muted pointer-events-none absolute inset-0 bg-gradient-to-b from-black/15" />
 
         {/* Content */}
-        <div className="absolute bottom-[25%] flex flex-col translate-y-1/2 left-1/2 -translate-x-1/2 w-9/10">
-
+        <div className="absolute bottom-[25%] left-1/2 flex w-9/10 -translate-x-1/2 translate-y-1/2 flex-col">
           {/* Row 1 */}
           <div className="flex items-center justify-between">
-
             {/* Name */}
-            <h1 className="font-heading">
-              {name}
-            </h1>
+            <h1 className="font-heading">{name}</h1>
             {/* Actions */}
             {userGame?.data?.length > 0 ? (
               <div className="flex flex-col items-end gap-3">
@@ -128,13 +129,12 @@ function GameDetailsOverview({ data }) {
                   <label className="swap tooltip" data-tip="Delete Game">
                     <button
                       onClick={handleDeleteGame}
-                      className="text-text-primary bg-transparent cursor-pointer text-2xl"
+                      className="text-text-primary cursor-pointer bg-transparent text-2xl"
                     >
                       <FaTrash />
                     </button>
                   </label>
                   <label className="swap tooltip" data-tip="Add to Favorites">
-
                     <input
                       type="checkbox"
                       defaultChecked={userGame.data[0].is_favorite}
@@ -152,8 +152,13 @@ function GameDetailsOverview({ data }) {
                     game_id={id}
                     releaseDate={releaseDate}
                     userGame={userGame.data[0]}
+                    game_cover={
+                      cover?.url
+                        ?.replace("t_thumb", "t_1080p_2x")
+                        ?.replace("jpg", "webp") || null
+                    }
+                    game_name={name}
                   />
-
                 </div>
               </div>
             ) : (
@@ -162,7 +167,11 @@ function GameDetailsOverview({ data }) {
                 releaseDate={releaseDate}
                 genresData={genres}
                 themesData={themes}
-                game_cover={imageUrl}
+                game_cover={
+                  cover?.url
+                    ?.replace("t_thumb", "t_1080p_2x")
+                    ?.replace("jpg", "webp") || null
+                }
                 game_name={name}
               />
             )}
@@ -172,14 +181,14 @@ function GameDetailsOverview({ data }) {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-x-3">
               {/* Release Date */}
-              <div className="flex flex-col text-xl text-text-secondary">
+              <div className="text-text-secondary flex flex-col text-xl">
                 <p>Release Date: </p>
                 <p>{formatDate(new Date(releaseDate * 1000), "dd/MM/yyyy")}</p>
               </div>
-              <div className="w-[1px] border-1 border-text-secondary/50 self-stretch"></div>
+              <div className="border-text-secondary/50 w-[1px] self-stretch border-1"></div>
 
               {/* Rating */}
-              <div className="flex flex-col text-xl text-text-secondary">
+              <div className="text-text-secondary flex flex-col text-xl">
                 <p>Rating:</p>
                 <div className="flex items-center gap-1">
                   <Rating bgColor="bg-pulse-primary" rating={rating} />
@@ -191,26 +200,37 @@ function GameDetailsOverview({ data }) {
                   </p>
                 </div>
               </div>
-              <div className="w-[1px] border-1 border-text-secondary/50 self-stretch"></div>
+              <div className="border-text-secondary/50 w-[1px] self-stretch border-1"></div>
 
               {/* Time To Beat */}
-              <div className="flex flex-col text-xl text-text-secondary">
+              <div className="text-text-secondary flex flex-col text-xl">
                 <span>Time To Beat:</span>
 
                 <div className="flex flex-wrap items-center gap-x-2 gap-y-1 md:gap-x-2 md:text-lg">
-
-                  <p>Main Story: {timeToBeat?.[0]?.hastily ? (timeToBeat[0]?.hastily / 60 / 60).toFixed(0) : "0"}h</p>
+                  <p>
+                    Main Story:{" "}
+                    {timeToBeat?.[0]?.hastily
+                      ? (timeToBeat[0]?.hastily / 60 / 60).toFixed(0)
+                      : "0"}
+                    h
+                  </p>
                   <span>|</span>
                   <p>
-                    Main + Extras: {timeToBeat?.[0]?.normally ? (timeToBeat[0]?.normally / 60 / 60).toFixed(0) : "0"}h
+                    Main + Extras:{" "}
+                    {timeToBeat?.[0]?.normally
+                      ? (timeToBeat[0]?.normally / 60 / 60).toFixed(0)
+                      : "0"}
+                    h
                   </p>
                   <span>|</span>
                   <p>
                     Completionist:
-                    {timeToBeat?.[0]?.completely ? (timeToBeat[0]?.completely / 60 / 60).toFixed(0) : "0"}h
+                    {timeToBeat?.[0]?.completely
+                      ? (timeToBeat[0]?.completely / 60 / 60).toFixed(0)
+                      : "0"}
+                    h
                   </p>
                 </div>
-
               </div>
             </div>
 
@@ -226,7 +246,7 @@ function GameDetailsOverview({ data }) {
                     return (
                       <a
                         href={link.url}
-                        className="bg- flex items-center gap-x-2 rounded-full bg-[#2a475e30] backdrop-blur-xs px-4 py-2 text-lg hover:scale-105 transition-all"
+                        className="bg- flex items-center gap-x-2 rounded-full bg-[#2a475e30] px-4 py-2 text-lg backdrop-blur-xs transition-all hover:scale-105"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -240,7 +260,7 @@ function GameDetailsOverview({ data }) {
                     return (
                       <a
                         href={link.url}
-                        className="flex items-center gap-x-2 rounded-full bg-[#310E7630] backdrop-blur-xs px-4 py-2 text-lg hover:scale-105 transition-all"
+                        className="flex items-center gap-x-2 rounded-full bg-[#310E7630] px-4 py-2 text-lg backdrop-blur-xs transition-all hover:scale-105"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -254,7 +274,7 @@ function GameDetailsOverview({ data }) {
                     return (
                       <a
                         href={link.url}
-                        className="flex items-center gap-x-2 rounded-full bg-black/30 backdrop-blur-xs  px-4 py-2 text-lg hover:scale-105 transition-all"
+                        className="flex items-center gap-x-2 rounded-full bg-black/30 px-4  py-2 text-lg backdrop-blur-xs transition-all hover:scale-105"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -265,18 +285,17 @@ function GameDetailsOverview({ data }) {
                 });
               })()}
             </div>
-
           </div>
 
           {/* Row 3 */}
-          <div className="flex items-center gap-x-5 pt-4  flex-wrap gap-y-4">
+          <div className="flex flex-wrap items-center gap-x-5  gap-y-4 pt-4">
             {/* Genres */}
             {genres?.length > 0 && (
               <div className="flex items-center gap-x-1.5 gap-y-2">
-                <p className="text-lg text-text-secondary">Genres:</p>
+                <p className="text-text-secondary text-lg">Genres:</p>
                 {genres.map((genre) => (
                   <button
-                    className="bg-gray-400/15 cursor-pointer backdrop-blur-md px-4 py-1 text-sm text-text-primary rounded-full hover:bg-gray-400/20 hover:scale-105 transition-all"
+                    className="text-text-primary cursor-pointer rounded-full bg-gray-400/15 px-4 py-1 text-sm backdrop-blur-md transition-all hover:scale-105 hover:bg-gray-400/20"
                     onClick={() => {
                       navigate(`/allGames?genre=${genre.id}`);
                     }}
@@ -285,15 +304,16 @@ function GameDetailsOverview({ data }) {
                     {genre.name}
                   </button>
                 ))}
-              </div>)}
+              </div>
+            )}
 
             {/* Themes */}
             {themes?.length > 0 && (
               <div className="flex items-center gap-x-1.5 gap-y-2">
-                <p className="text-lg text-text-secondary">Themes:</p>
+                <p className="text-text-secondary text-lg">Themes:</p>
                 {themes?.map((theme) => (
                   <button
-                    className="bg-gray-400/15 cursor-pointer backdrop-blur-md px-4 py-1 text-sm text-text-primary rounded-full hover:bg-gray-400/20 hover:scale-105 transition-all"
+                    className="text-text-primary cursor-pointer rounded-full bg-gray-400/15 px-4 py-1 text-sm backdrop-blur-md transition-all hover:scale-105 hover:bg-gray-400/20"
                     onClick={() => {
                       navigate(`/allGames?theme=${theme.id}`);
                     }}
@@ -308,10 +328,10 @@ function GameDetailsOverview({ data }) {
             {/* Modes */}
             {game_modes?.length > 0 && (
               <div className="flex items-center gap-x-1.5 gap-y-2">
-                <p className="text-lg text-text-secondary">Modes:</p>
+                <p className="text-text-secondary text-lg">Modes:</p>
                 {game_modes?.map((mode) => (
                   <button
-                    className="bg-gray-400/15 cursor-pointer backdrop-blur-md px-4 py-1 text-sm text-text-primary rounded-full hover:bg-gray-400/20 hover:scale-105 transition-all"
+                    className="text-text-primary cursor-pointer rounded-full bg-gray-400/15 px-4 py-1 text-sm backdrop-blur-md transition-all hover:scale-105 hover:bg-gray-400/20"
                     onClick={() => {
                       navigate(`/allGames?gameMode=${mode.id}`);
                     }}
@@ -322,14 +342,13 @@ function GameDetailsOverview({ data }) {
                 ))}
               </div>
             )}
-
           </div>
         </div>
-      </div >
+      </div>
 
       {/* Description */}
-      <div className="w-9/10 mx-auto">
-        <p className="text-xl pt-4 leading-8 text-text-secondary tracking-wide">
+      <div className="mx-auto w-9/10">
+        <p className="text-text-secondary text-xl leading-8 tracking-wide">
           {summary}
         </p>
       </div>

@@ -67,10 +67,10 @@ function GameItem({ game }) {
 
   return (
     <div
-      className="border-obsidian-border flex
-    cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-1
+      className="border-obsidian-border flex w-fit
+    cursor-pointer flex-col items-center justify-center gap-y-2 rounded-2xl border-1
     bg-gradient-to-tl from-[#25212950] from-80% to-gray-200/30 to-100% p-2
-    backdrop-blur-xl transition-all duration-300 hover:scale-105 hover:rotate-z-1
+    backdrop-blur-xs transition-all duration-300 hover:scale-105 hover:rotate-z-1
     hover:from-70% hover:shadow-xl"
     >
       <div
@@ -126,7 +126,10 @@ function GameItem({ game }) {
       >
         <Link to={`/game/${game.id}`} className=" cursor-pointer">
           <div>
-            <p>{game.name}</p>
+            <p>
+              {game.name?.substring(0, 40)}
+              {game.name?.length > 40 ? "..." : ""}
+            </p>
           </div>
         </Link>
       </div>

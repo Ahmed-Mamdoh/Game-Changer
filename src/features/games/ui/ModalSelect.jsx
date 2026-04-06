@@ -1,15 +1,6 @@
-import * as React from "react";
 import { useController } from "react-hook-form";
 
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { FaCheck } from "react-icons/fa";
 
 function ModalSelect({ control, name, defaultValue }) {
   const { field } = useController({
@@ -21,29 +12,22 @@ function ModalSelect({ control, name, defaultValue }) {
     },
   });
   return (
-    <Select
-      value={field.value}
-      onValueChange={field.onChange}
-      defaultValue={defaultValue}
-    >
-      <SelectTrigger className="w-full">
-        <SelectValue placeholder="Status" />
-      </SelectTrigger>
-      <SelectContent className="bg-base-100">
-        <SelectGroup>
-          <SelectLabel>Status</SelectLabel>
-          <SelectItem className="focus:bg-base-300" value="finished">
-            Finished
-          </SelectItem>
-          <SelectItem className="focus:bg-base-300" value="playing">
-            Playing
-          </SelectItem>
-          <SelectItem className="focus:bg-base-300" value="dropped">
-            Dropped
-          </SelectItem>
-        </SelectGroup>
-      </SelectContent>
-    </Select>
+    <div className="flex items-center gap-x-2">
+      {["playing", "completed", "dropped"].map((item) => (
+        <button
+          className={`border-obsidian-border hover:bg-pulse-primary/30
+            bg-myGray/70
+        hover:shadow-pulse-primary/60 flex cursor-pointer items-center gap-2 rounded-full border-2
+        px-3 py-1.5 text-sm font-medium tracking-wide transition-all duration-200 hover:scale-105
+        
+        ${field.value === item ? "bg-pulse-primary/50 shadow-pulse-primary/20 " : ""}`}
+          onClick={() => field.onChange(item)}
+        >
+          {field.value === item ? <FaCheck className="h-3 w-3" /> : null}
+          {item}
+        </button>
+      ))}
+    </div>
   );
 }
 

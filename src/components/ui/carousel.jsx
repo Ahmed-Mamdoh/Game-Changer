@@ -170,7 +170,7 @@ function CarouselPrevious({
       onClick={scrollPrev}
       {...props}
     >
-      <ArrowLeft />
+      <ArrowLeft className="h-5! w-5!" />
       <span className="sr-only">Previous slide</span>
     </Button>
   );

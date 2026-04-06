@@ -10,8 +10,9 @@ import {
 } from "@/components/ui/popover";
 import { useState } from "react";
 import { useController } from "react-hook-form";
+import { MyDatePicker } from "./MyDatePicker";
 
-function ModalDate({ name, control, minDate, defaultValue }) {
+function ModalDate({ name, control, minDate, defaultValue, disabled }) {
   const [open, setOpen] = useState(false);
   const [date, setDate] = useState(
     defaultValue ? new Date(defaultValue) : null,
@@ -22,11 +23,13 @@ function ModalDate({ name, control, minDate, defaultValue }) {
     defaultValue: defaultValue ? new Date(defaultValue) : null,
     rules: {
       validate: (value) =>
-        new Date(value) >= new Date()
-          ? "Date cant be in the future"
-          : new Date(value) >= new Date(minDate * 1000)
-            ? true
-            : "Date must be after the release date",
+        value === null
+          ? true
+          : new Date(value) >= new Date()
+            ? "Date cant be in the future"
+            : new Date(value) >= new Date(minDate * 1000)
+              ? true
+              : "Date must be after the release date",
     },
   });
 
@@ -37,21 +40,18 @@ function ModalDate({ name, control, minDate, defaultValue }) {
           <Button
             variant="outline"
             id="date"
-            className="hover:text-base-content w-full justify-between bg-transparent font-normal hover:bg-transparent"
+            disabled={disabled}
+            className=" bg-myGray/70 border-obsidian-border w-full justify-between rounded-full border-2"
           >
             {date ? date.toLocaleDateString() : "Select date"}
             <ChevronDownIcon />
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          className="bg-base-100 w-auto overflow-hidden p-0"
+          className="bg-myGray/70 w-auto overflow-hidden p-0"
           align="start"
         >
-          <Calendar
-            mode="single"
-            selected={defaultValue || field.value}
-            className="bg-base-100"
-            captionLayout="dropdown"
+          <MyDatePicker
             onSelect={(date) => {
               field.onChange(date);
               setDate(date);

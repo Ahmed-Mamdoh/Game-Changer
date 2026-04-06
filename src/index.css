@@ -49,12 +49,16 @@
   --color-obsidian-card: rgba(18, 18, 18, 0.8);
   --color-obsidian-muted: #1a1a1a;
   --color-obsidian-border: rgba(255, 255, 255, 0.05);
+  --color-obsidian-deep: #252129;
 
+  --color-myGray: #35343f;
   /* Pulse Accent Colors */
   --color-pulse-primary: #7c3aed;
   --color-pulse-secondary: #5b21b6;
   --color-pulse-accent: #a78bfa;
   --color-pulse-glow: rgba(168, 85, 247, 0.1);
+
+
 
   /* Typography Colors */
   --color-text-primary: #ffffff;

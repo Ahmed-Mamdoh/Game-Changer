@@ -7,7 +7,7 @@ function FreeGames() {
     useGetFreeGamesToShow();
   return (
     <div className="relative mx-auto w-full">
-      <FadingBackground />
+      <FadingBackground first={true} />
       <div className="absolute top-[10vh] left-0 h-full w-full">
         <GamesGallary
           isLoading={isLoadingFreeGamesNames || isLoadingFreeGamesIgdbData}

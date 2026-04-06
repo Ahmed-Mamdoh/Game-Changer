@@ -24,6 +24,7 @@ function Calendar({
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
+      style={{ "--rdp-accent-color": "#123123 !important" }}
       className={cn(
         "group/calendar [[data-slot=popover-content]_&]:bg-base-100 [[data-slot=card-content]_&]:bg-base-200 p-3 [--cell-size:--spacing(8)]",
         String.raw`rtl:**:[.rdp-button\_next>svg]:rotate-180`,

@@ -28,8 +28,8 @@ function GameDetailsRelatedGames({ data }) {
       {franchises?.length > 0 && (
         <>
           <span id="Franchises"></span>
-          <div className="font-heading flex items-center justify-center pt-12 pb-3 text-4xl md:text-6xl">
-            <h2 className="text-center">Franchises</h2>
+          <div className="font-heading mx-auto flex w-9/10 items-start justify-start pt-12 pb-3">
+            <h2 className="text-center text-5xl">Franchises</h2>
           </div>
         </>
       )}
