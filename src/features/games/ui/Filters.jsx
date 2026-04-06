@@ -22,13 +22,13 @@ function Filters({
   const { data: gameModes, isLoading: isLoadingGameModes } = useGetGameModes();
   const sortBy = isAccount
     ? [
-        { id: "hours_played", name: "Hours Played" },
-        { id: "date_finished", name: "Date Finished" },
-      ]
+      { id: "hours_played", name: "Hours Played" },
+      { id: "date_finished", name: "Date Finished" },
+    ]
     : [
-        { id: "first_release_date", name: "Release Date" },
-        { id: "total_rating_count", name: "Popularity" },
-      ];
+      { id: "first_release_date", name: "Release Date" },
+      { id: "total_rating_count", name: "Popularity" },
+    ];
   const status = [
     { id: "finished", name: "Finished" },
     { id: "playing", name: "Playing" },
@@ -40,7 +40,7 @@ function Filters({
   if (isLoadingGenres || isLoadingThemes || isLoadingGameModes) return null;
   return (
     <div
-      className={`bg-obsidian-base/30 mx-auto rounded-xl px-2 py-4 shadow-md backdrop-blur-2xl ${className}`}
+      className={`bg-obsidian-base/20 mx-auto rounded-xl px-2 py-4 shadow-lg backdrop-blur-sm ${className}`}
     >
       <div className="container flex flex-col flex-wrap items-start justify-between gap-x-8 gap-y-4 px-2 sm:flex-row">
         <div className="flex flex-wrap items-center gap-x-10 gap-y-5">

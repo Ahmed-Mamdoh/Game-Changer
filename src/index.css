@@ -61,8 +61,8 @@
   --color-text-secondary: #a1a1aa;
   --color-text-muted: #71717a;
   --color-text-dark: #18181b;
-  --font-heading: 'Orbitron', sans-serif;
-  --font-body: 'Roboto', sans-serif;
+  --font-heading: 'Space Grotesk', sans-serif;
+  --font-body: 'Manrope', sans-serif;
 }
 
 @layer base {
@@ -79,12 +79,15 @@
     font-size: 4rem;
     letter-spacing: -0.05em;
     font-weight: 700;
+    font-family: var(--font-heading), sans-serif;
+    ;
   }
 
   h2 {
     font-size: 2rem;
     letter-spacing: -0.025em;
     font-weight: 600;
+    font-family: var(--font-heading), sans-serif;
   }
 
   body {
@@ -100,32 +103,4 @@
     font-weight: 500;
   }
 
-}
-
-@layer components {
-  .card-obsidian {
-    background: rgba(18, 18, 18, 0.8);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 8px;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .card-obsidian:hover {
-    transform: translateY(-4px);
-    border-color: rgba(168, 85, 247, 0.3);
-  }
-
-  .btn-pulse {
-    background: #a855f7;
-    color: white;
-    padding: 10px 24px;
-    border-radius: 9999px;
-    box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
-    transition: all 0.2s ease;
-  }
-
-  .btn-pulse:active {
-    transform: scale(0.95);
-  }
 }

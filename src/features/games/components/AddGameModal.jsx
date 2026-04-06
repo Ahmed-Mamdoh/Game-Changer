@@ -122,14 +122,14 @@ function AddGameModal({
       });
   }
 
-  const btnStyle = isUpdate
-    ? "bg-secondary hover:bg-secondary text-secondary-content"
-    : "bg-primary hover:bg-primary text-primary-content";
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
-          className={`${btnStyle} cursor-pointer px-6 py-3 text-xl font-bold hover:rounded-xl`}
+          className={`bg-obsidian-muted/75 border-obsidian-border border-1
+            backdrop-blur-md rounded-full tracking-wide text-text-primary cursor-pointer
+          hover:bg-obsidian-muted/40 hover:backdrop-blur-xs px-10! py-6 text-xl`}
         >
           {isUpdate ? <FaPen /> : <FaPlus />}
           {isUpdate ? "Update Game" : "Add Game"}

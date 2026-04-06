@@ -73,7 +73,7 @@ export async function getOneGame(id) {
     body: JSON.stringify({
       endpoint: "games",
 
-      query: `fields name,cover.url,first_release_date,summary,
+      query: `fields name,artworks.url,artworks.artwork_type,first_release_date,summary,
       age_ratings.rating,age_ratings.category,
       total_rating,total_rating_count,
       genres.name,themes.name,

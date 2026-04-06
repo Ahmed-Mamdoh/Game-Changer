@@ -15,8 +15,8 @@ function GameDetails() {
 
   return (
     <>
-      <GameDetailsTabs data={data} />
-      <div className="relative mx-4 mt-0 pb-20 sm:mx-12">
+      {/* <GameDetailsTabs data={data} /> */}
+      <div className="relative mt-0 pb-20">
         {/* Data */}
         <GameDetailsOverview data={data} />
         {/*Media*/}
