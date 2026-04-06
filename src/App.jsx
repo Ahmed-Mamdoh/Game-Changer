@@ -11,6 +11,7 @@ const Home = lazy(() => import("./pages/Home"));
 const Auth = lazy(() => import("./pages/Auth"));
 const Account = lazy(() => import("./pages/Account"));
 import RouteErrorFallback from "./pages/RouteErrorFallback";
+import { Analytics } from "@vercel/analytics/react";
 
 function App() {
   const queryClient = new QueryClient({
@@ -62,6 +63,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />
       <RouterProvider router={router} />
+      <Analytics />
     </QueryClientProvider>
   );
 }
