@@ -22,13 +22,13 @@ function Filters({
   const { data: gameModes, isLoading: isLoadingGameModes } = useGetGameModes();
   const sortBy = isAccount
     ? [
-      { id: "hours_played", name: "Hours Played" },
-      { id: "date_finished", name: "Date Finished" },
-    ]
+        { id: "hours_played", name: "Hours Played" },
+        { id: "date_finished", name: "Date Finished" },
+      ]
     : [
-      { id: "first_release_date", name: "Release Date" },
-      { id: "total_rating_count", name: "Popularity" },
-    ];
+        { id: "first_release_date", name: "Release Date" },
+        { id: "total_rating_count", name: "Popularity" },
+      ];
   const status = [
     { id: "finished", name: "Finished" },
     { id: "playing", name: "Playing" },
@@ -40,7 +40,7 @@ function Filters({
   if (isLoadingGenres || isLoadingThemes || isLoadingGameModes) return null;
   return (
     <div
-      className={`bg-obsidian-base/20 mx-auto rounded-xl px-2 py-4 shadow-lg backdrop-blur-sm ${className}`}
+      className={`bg-obsidian-base/20 mx-auto w-9/10 rounded-xl px-2 py-4 shadow-lg backdrop-blur-sm ${className}`}
     >
       <div className="container flex flex-col flex-wrap items-start justify-between gap-x-8 gap-y-4 px-2 sm:flex-row">
         <div className="flex flex-wrap items-center gap-x-10 gap-y-5">
@@ -65,28 +65,26 @@ function Filters({
           )}
 
           {!search && showSortBy && (
-            <div className="flex flex-1 items-center justify-between">
-              <FilterButtons
-                category={sortBy}
-                name="Sort By"
-                paramName="sortBy"
-                or={true}
-                defaultValue={["total_rating_count"]}
-              />
-              <button
-                onClick={() => {
-                  const newParams = new URLSearchParams();
-                  setSearchParams(newParams);
-                }}
-                className="bg-pulse-secondary text-secondary-content group cursor-pointer rounded-full font-extrabold transition-all duration-200"
-              >
-                <div className="flex items-center gap-x-2 px-4 py-2">
-                  <FaUndoAlt className="transition-transform duration-200 group-hover:-rotate-90" />
-                  <span>Reset</span>
-                </div>
-              </button>
-            </div>
+            <FilterButtons
+              category={sortBy}
+              name="Sort By"
+              paramName="sortBy"
+              or={true}
+              defaultValue={["total_rating_count"]}
+            />
           )}
+          <button
+            onClick={() => {
+              const newParams = new URLSearchParams();
+              setSearchParams(newParams);
+            }}
+            className="bg-pulse-secondary text-secondary-content group cursor-pointer rounded-full font-extrabold transition-all duration-200"
+          >
+            <div className="flex items-center gap-x-2 px-4 py-2">
+              <FaUndoAlt className="transition-transform duration-200 group-hover:-rotate-90" />
+              <span>Reset</span>
+            </div>
+          </button>
 
           {showFavorite && (
             <div className="flex w-5/12 items-center justify-start gap-x-2">

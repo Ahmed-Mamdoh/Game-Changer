@@ -137,7 +137,7 @@ function AddGameModal({
 
       <DialogContent className="bg-obsidian-card/70 border-0 backdrop-blur-sm sm:max-w-4xl">
         <div className="flex w-full items-start gap-x-10">
-          <div className="flex h-full flex-col items-start gap-3">
+          <div className="flex h-full flex-col items-start justify-between">
             <img
               src={game_cover}
               className="w-70 rounded-md object-contain"

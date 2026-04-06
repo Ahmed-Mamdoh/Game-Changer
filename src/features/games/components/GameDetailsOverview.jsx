@@ -154,7 +154,7 @@ function GameDetailsOverview({ data }) {
                     userGame={userGame.data[0]}
                     game_cover={
                       cover?.url
-                        ?.replace("t_thumb", "t_1080p_2x")
+                        ?.replace("t_thumb", "t_720p_2x")
                         ?.replace("jpg", "webp") || null
                     }
                     game_name={name}
@@ -169,7 +169,7 @@ function GameDetailsOverview({ data }) {
                 themesData={themes}
                 game_cover={
                   cover?.url
-                    ?.replace("t_thumb", "t_1080p_2x")
+                    ?.replace("t_thumb", "t_720p_2x")
                     ?.replace("jpg", "webp") || null
                 }
                 game_name={name}

@@ -17,7 +17,9 @@ function FilterButtons({
   const [showAll, setShowAll] = useState(false);
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div
+      className={`flex ${or ? "flex-nowrap" : "flex-wrap"} items-center gap-2`}
+    >
       <p>{name}: </p>
       {category
         .sort((a, b) => a.name.localeCompare(b.name))
@@ -25,7 +27,7 @@ function FilterButtons({
         .map((item) => {
           return (
             <button
-              className={`border-pulse-primary/50 hover:bg-pulse-primary/30
+              className={`border-pulse-primary/40 hover:bg-pulse-primary/30
                     hover:shadow-pulse-primary/60 cursor-pointer rounded-full border px-3 py-1.5 text-sm
                     font-medium tracking-wide transition-all duration-200 hover:scale-105 hover:shadow-[0_0_8px_2px]
                     ${selected?.includes(item.id.toString()) ? "bg-pulse-primary/50 shadow-pulse-primary/60 shadow-[0_0_8px_2px]" : ""}`}
@@ -64,7 +66,7 @@ function FilterButtons({
               }}
               key={item.id.toString()}
             >
-              {item.name}
+              {item.name.split("(")[0]}
             </button>
           );
         })}
