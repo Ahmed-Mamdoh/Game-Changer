@@ -1,5 +1,5 @@
 import { formatDate, intervalToDuration } from "date-fns";
-import { ArrowLeft, CalendarCheck, Clock } from "lucide-react";
+import { ArrowLeft, CalendarCheck, Check, Clock } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   FaArrowLeft,
@@ -12,6 +12,7 @@ import {
 } from "react-icons/fa";
 import { SiEpicgames, SiGogdotcom } from "react-icons/si";
 import { Link, useNavigate } from "react-router-dom";
+import { CiPlay1, CiStop1 } from "react-icons/ci";
 
 function GameItem({ game }) {
   const [isSmallScreen, setIsSmallScreen] = useState(false);
@@ -88,43 +89,12 @@ function GameItem({ game }) {
             ❌ image not found
           </div>
         )}
-        {game?.status && (
-          <div className="bg-base-300 absolute top-2 right-2 flex items-center justify-center gap-x-2 rounded-full px-2">
-            {game.status === "playing" ? (
-              <div className="status status-primary animate-bounce"></div>
-            ) : game.status === "finished" ? (
-              <div className="status status-secondary animate-none"></div>
-            ) : (
-              <div className="status status-error animate-none"></div>
-            )}
-            <p className="text-sm">{game.status}</p>
-          </div>
-        )}
-        {game?.hoursPlayed && (
-          <div className="bg-base-300 absolute bottom-2 left-2 flex items-center justify-center gap-x-2 rounded-full px-2">
-            <FaRegClock />
-            <p className="text-sm">{game.hoursPlayed}h</p>
-          </div>
-        )}
-        {game?.dateFinished && (
-          <div className="bg-base-300 absolute right-2 bottom-2 flex items-center justify-center gap-x-2 rounded-full px-2">
-            <p className="text-sm">
-              {formatDate(new Date(game.dateFinished), "dd/MM/yyyy")}
-            </p>
-            {/* <FaCalendarCheck /> */}
-          </div>
-        )}
-        {game?.isFavorite && (
-          <div className="bg-base-300 absolute top-2 left-2 flex items-center justify-center gap-x-2 rounded-full px-2 py-1">
-            <FaHeart className="text-error" />
-          </div>
-        )}
       </div>
       <div
         className="w-72 cursor-default text-center text-lg font-medium text-wrap
       transition-colors duration-300 md:h-12 md:w-48 md:text-base"
       >
-        <Link to={`/game/${game.id}`} className=" cursor-pointer">
+        <Link to={`/game/${game.id}`} className="cursor-pointer">
           <div>
             <p>
               {game.name?.substring(0, 40)}
@@ -178,6 +148,24 @@ function GameItem({ game }) {
             <CalendarCheck className="h-4 w-4" />
           </div>
         )}
+      {game?.hoursPlayed && (
+        <div className="text-text-secondary flex w-full items-center justify-between">
+          <div className="flex items-center gap-2">
+            {game.status === "playing" ? (
+              <CiPlay1 className="h-4 w-4" />
+            ) : game.status === "finished" ? (
+              <Check className="h-4 w-4" />
+            ) : (
+              <CiStop1 className="h-4 w-4" />
+            )}
+            <p className="text-sm">{game.status.toUpperCase()}</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <FaRegClock className="h-4 w-4" />
+            <p>{game.hoursPlayed}h</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import GamesGallary from "@/features/games/ui/GamesGallary";
+import GamesGallery from "@/features/games/ui/GamesGallery";
 import Filters from "@/features/games/ui/Filters";
 import FullPagination from "@/features/games/ui/FullPagination";
 import { useGetUpcomingGames } from "@/features/games/hooks/useGetUpcomingGames";
@@ -13,7 +13,7 @@ function UpcomingGames() {
       {/* Content section */}
       <div className="absolute top-[10vh] z-10 w-full pb-5">
         <Filters showSortBy={false} className="mt-4 w-3/4" />
-        <GamesGallary data={data} isLoading={isLoading} />
+        <GamesGallery data={data} isLoading={isLoading} />
         <FullPagination />
       </div>
     </div>

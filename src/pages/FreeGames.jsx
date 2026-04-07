@@ -1,4 +1,4 @@
-import GamesGallary from "@/features/games/ui/GamesGallary";
+import GamesGallery from "@/features/games/ui/GamesGallery";
 import { useGetFreeGamesToShow } from "@/features/games/hooks/useGetFreeGamesToShow";
 import FadingBackground from "@/features/games/ui/FadingBackground";
 
@@ -9,7 +9,7 @@ function FreeGames() {
     <div className="relative mx-auto w-full">
       <FadingBackground first={true} />
       <div className="absolute top-[10vh] left-0 h-full w-full">
-        <GamesGallary
+        <GamesGallery
           isLoading={isLoadingFreeGamesNames || isLoadingFreeGamesIgdbData}
           data={dataToShow}
         />

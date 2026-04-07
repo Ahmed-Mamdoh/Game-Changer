@@ -19,6 +19,7 @@ import { addGame, updateUserGame } from "@/api/supabase";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import { FaEdit, FaPen, FaPlus, FaRegEdit } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 function AddGameModal({
   game_id,
@@ -30,6 +31,7 @@ function AddGameModal({
   isUpdate = false,
   userGame,
 }) {
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { register, handleSubmit, formState, control, watch } = useForm();
   const { errors } = formState;
@@ -123,7 +125,13 @@ function AddGameModal({
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={() => {
+        if (user_id) setOpen(!open);
+        else navigate("/auth");
+      }}
+    >
       <DialogTrigger asChild>
         <Button
           className={`bg-obsidian-muted/75 border-obsidian-border text-text-primary

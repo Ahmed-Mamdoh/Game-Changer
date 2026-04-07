@@ -29,10 +29,16 @@ function UserHeader() {
   }
 
   return (
-    <div className="bg-base-300 mx-auto mt-5 flex w-11/12 items-center justify-around rounded-md p-5">
-      <DataField label="Username" value={username} />
+    <div
+      className="bg-obsidian-deep/60 border-obsidian-border hover:border-pulse-extra/50
+       flex items-center gap-3 rounded-2xl border-2 p-5 backdrop-blur-xs transition-all"
+    >
+      {/* <DataField label="Username" value={username} /> */}
+      <p className="text-text-primary/80 text-2xl font-bold">
+        Welcome, {username}
+      </p>
       <button
-        className="btn bg-secondary text-secondary-content"
+        className="btn bg-pulse-extra/80 rounded-full text-white"
         aria-label="Log out"
         aria-labelledby="logout-btn"
         name="logout"

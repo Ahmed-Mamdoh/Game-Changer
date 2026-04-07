@@ -1,3 +1,4 @@
+import { ChartBarLabel } from "@/ui/ChartBarLabel";
 import { ChartPieDonutActive } from "@/ui/ChartPieDonutActive";
 import { memo } from "react";
 
@@ -7,11 +8,8 @@ function prepareChartData({ user_games, field }) {
     return { ...acc, [item]: (acc[item] || 0) + 1 };
   }, {});
   const chartData = Object.entries(dataCount).map(([item, count]) => ({
-    label: item,
+    game: item,
     number: count,
-    fill: `#${Math.floor(Math.random() * 16777215)
-      .toString(16)
-      .padStart(6, "0")}`,
   }));
   chartData.sort((a, b) => b.number - a.number);
   return chartData;
@@ -26,12 +24,16 @@ function UserCharts({ user_games, isLoading }) {
   }
 
   return (
-    <div className="bg-base-300 mb-12 hidden flex-col gap-2 rounded-xl border lg:flex">
+    <div className="flex items-center justify-between gap-3 py-3">
       {!isLoading && (
-        <ChartPieDonutActive chartData={genresData} field="Genre" />
+        <div className="w-full">
+          <ChartBarLabel chartData={genresData} title="Genres Played " />
+        </div>
       )}
       {!isLoading && (
-        <ChartPieDonutActive chartData={themesData} field="Theme" />
+        <div className="w-full">
+          <ChartBarLabel chartData={themesData} title="Themes Played " />
+        </div>
       )}
     </div>
   );

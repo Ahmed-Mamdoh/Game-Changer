@@ -1,4 +1,4 @@
-import GamesGallary from "@/features/games/ui/GamesGallary";
+import GamesGallery from "@/features/games/ui/GamesGallery";
 import { Link } from "react-router-dom";
 
 function HomeSection({ sectionName, data, isLoading, route, id }) {
@@ -15,7 +15,7 @@ function HomeSection({ sectionName, data, isLoading, route, id }) {
           See All →
         </Link>
       </div>
-      <GamesGallary data={data} isLoading={isLoading} />
+      <GamesGallery data={data} isLoading={isLoading} />
     </div>
   );
 }

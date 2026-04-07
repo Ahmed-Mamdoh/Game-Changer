@@ -1,7 +1,7 @@
 import GameItem from "./GameItem";
 import Spinner from "../../../ui/Spinner";
 
-function GamesGallary({ data, isLoading }) {
+function GamesGallery({ data, isLoading }) {
   if (isLoading) return <Spinner />;
 
   return (
@@ -27,4 +27,4 @@ function GamesGallary({ data, isLoading }) {
   );
 }
 
-export default GamesGallary;
+export default GamesGallery;

@@ -123,58 +123,60 @@ function GameDetailsOverview({ data }) {
             {/* Name */}
             <h1 className="font-heading">{name}</h1>
             {/* Actions */}
-            {userGame?.data?.length > 0 ? (
-              <div className="flex flex-col items-end gap-3">
-                <div className="flex items-center gap-x-4">
-                  <label className="swap tooltip" data-tip="Delete Game">
-                    <button
-                      onClick={handleDeleteGame}
-                      className="text-text-primary cursor-pointer bg-transparent text-2xl"
-                    >
-                      <FaTrash />
-                    </button>
-                  </label>
-                  <label className="swap tooltip" data-tip="Add to Favorites">
-                    <input
-                      type="checkbox"
-                      defaultChecked={userGame.data[0].is_favorite}
-                      onChange={handleFavoriteChange}
+            {new Date(releaseDate * 1000) < new Date() ? (
+              userGame?.data?.length > 0 ? (
+                <div className="flex flex-col items-end gap-3">
+                  <div className="flex items-center gap-x-4">
+                    <label className="swap tooltip" data-tip="Delete Game">
+                      <button
+                        onClick={handleDeleteGame}
+                        className="text-text-primary cursor-pointer bg-transparent text-2xl"
+                      >
+                        <FaTrash />
+                      </button>
+                    </label>
+                    <label className="swap tooltip" data-tip="Add to Favorites">
+                      <input
+                        type="checkbox"
+                        defaultChecked={userGame.data[0].is_favorite}
+                        onChange={handleFavoriteChange}
+                      />
+                      <div className="swap-on text-error text-3xl">
+                        <FaHeart />
+                      </div>
+                      <div className="swap-off text-3xl">
+                        <FaRegHeart />
+                      </div>
+                    </label>
+                    <AddGameModal
+                      isUpdate={true}
+                      game_id={id}
+                      releaseDate={releaseDate}
+                      userGame={userGame.data[0]}
+                      game_cover={
+                        cover?.url
+                          ?.replace("t_thumb", "t_720p_2x")
+                          ?.replace("jpg", "webp") || null
+                      }
+                      game_name={name}
                     />
-                    <div className="swap-on text-error text-3xl">
-                      <FaHeart />
-                    </div>
-                    <div className="swap-off text-3xl">
-                      <FaRegHeart />
-                    </div>
-                  </label>
-                  <AddGameModal
-                    isUpdate={true}
-                    game_id={id}
-                    releaseDate={releaseDate}
-                    userGame={userGame.data[0]}
-                    game_cover={
-                      cover?.url
-                        ?.replace("t_thumb", "t_720p_2x")
-                        ?.replace("jpg", "webp") || null
-                    }
-                    game_name={name}
-                  />
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <AddGameModal
-                game_id={id}
-                releaseDate={releaseDate}
-                genresData={genres}
-                themesData={themes}
-                game_cover={
-                  cover?.url
-                    ?.replace("t_thumb", "t_720p_2x")
-                    ?.replace("jpg", "webp") || null
-                }
-                game_name={name}
-              />
-            )}
+              ) : (
+                <AddGameModal
+                  game_id={id}
+                  releaseDate={releaseDate}
+                  genresData={genres}
+                  themesData={themes}
+                  game_cover={
+                    cover?.url
+                      ?.replace("t_thumb", "t_720p_2x")
+                      ?.replace("jpg", "webp") || null
+                  }
+                  game_name={name}
+                />
+              )
+            ) : null}
           </div>
 
           {/* Row 2 */}
