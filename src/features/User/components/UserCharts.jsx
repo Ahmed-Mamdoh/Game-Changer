@@ -1,5 +1,4 @@
 import { ChartPieDonutActive } from "@/ui/ChartPieDonutActive";
-import { useGetUserGames } from "../hooks/useGetUserGames";
 import { memo } from "react";
 
 function prepareChartData({ user_games, field }) {

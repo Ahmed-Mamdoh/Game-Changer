@@ -1,12 +1,13 @@
 import UserCharts from "@/features/User/components/UserCharts";
-import UserHeader from "@/features/User/components/UserHeader";
-import Filters from "./../features/games/ui/Filters";
 import { useGetUserGames } from "@/features/User/hooks/useGetUserGames";
-import GamesGallary from "@/features/games/ui/GamesGallary";
 import { useGetGenres } from "@/features/games/hooks/useGetGenres";
-import { useSearchParams } from "react-router-dom";
-import Spinner from "@/ui/Spinner";
 import { useGetThemes } from "@/features/games/hooks/useGetThemes";
+import GamesGallary from "@/features/games/ui/GamesGallary";
+import Spinner from "@/ui/Spinner";
+import StatsCard from "@/ui/StatsCard";
+import { IoGameControllerOutline } from "react-icons/io5";
+import { useSearchParams } from "react-router-dom";
+import { GoClock } from "react-icons/go";
 
 function Account() {
   const [searchParams] = useSearchParams();
@@ -85,17 +86,48 @@ function Account() {
     });
 
   return (
-    <div className="container mx-auto">
-      <UserHeader />
+    <div className="container mx-auto pt-16">
+      {/* <UserHeader /> */}
       <div className="mx-auto mt-6 flex w-11/12 items-start justify-between gap-x-6">
         <div>
-          <Filters
+          {/* <Filters
             showGameModes={false}
             showStatus={true}
             isAccount={true}
             showFavorite={true}
             className="bg-base-300 mt-0 w-full"
-          />
+          /> */}
+          <div className="flex items-center gap-x-3">
+            <StatsCard
+              data={GallaryData.length}
+              title="Total Games"
+              icon={
+                <IoGameControllerOutline className="text-pulse-extra h-12 w-12" />
+              }
+            />
+            <StatsCard
+              data={GallaryData.reduce((acc, cur) => acc + cur.hoursPlayed, 0)}
+              title="Total Hours"
+              icon={<GoClock className="text-pulse-extra h-12 w-12" />}
+            />
+            <StatsCard
+              data={(() => {
+                const data = user_games?.map((game) => game.genres).flat();
+                const dataCount = data.reduce((acc, item) => {
+                  return { ...acc, [item]: (acc[item] || 0) + 1 };
+                }, {});
+                console.log(dataCount);
+                const mostPlayed = Object.entries(dataCount).sort(
+                  (a, b) => b[1] - a[1],
+                )[0];
+                return mostPlayed ? mostPlayed[0] : "N/A";
+              })()}
+              title="Most Played Genre"
+              icon={
+                <IoGameControllerOutline className="text-pulse-extra h-12 w-12" />
+              }
+            />
+          </div>
           <GamesGallary data={GallaryData} isLoading={isLoading} />
         </div>
         <UserCharts user_games={user_games} isLoading={isLoading} />
