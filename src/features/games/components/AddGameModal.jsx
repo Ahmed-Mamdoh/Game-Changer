@@ -142,7 +142,7 @@ function AddGameModal({
               src={game_cover}
               className="w-70 rounded-md object-contain"
               alt=""
-              loading="lazy"
+              fetchPriority="high"
             />
 
             <div className="flex flex-col gap-1">

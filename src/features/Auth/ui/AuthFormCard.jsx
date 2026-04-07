@@ -8,20 +8,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-function AuthFormCard({ title, description, children, btnText }) {
+function AuthFormCard({ children, btnText }) {
   return (
-    <Card className="base-content bg-base-100 border-base-300">
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        <CardDescription className="text-text-subtle">
-          {description}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="grid gap-6">{children}</CardContent>
-      <CardFooter>
-        <Button type="submit" className="w-full cursor-pointer py-5">
+    <Card className="border-0 bg-transparent shadow-none">
+      <CardContent className="grid gap-3 px-0">{children}</CardContent>
+      <CardFooter className="px-0">
+        <button
+          type="submit"
+          className="bg-pulse-secondary w-full cursor-pointer rounded-full py-2 text-lg"
+        >
           {btnText}
-        </Button>
+        </button>
       </CardFooter>
     </Card>
   );

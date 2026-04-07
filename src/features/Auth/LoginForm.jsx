@@ -43,12 +43,7 @@ function LoginForm() {
   }
   return (
     <form onSubmit={handleSubmit((data) => handleLogin(data))}>
-      <AuthFormCard
-        btnText="Login"
-        title="Login"
-        description=" Welcome back! Please enter your credentials to access your
-                account."
-      >
+      <AuthFormCard btnText="Login">
         <AuthFormField
           field={"email"}
           register={register}

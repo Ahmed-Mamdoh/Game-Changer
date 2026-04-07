@@ -4,18 +4,18 @@ import { Label } from "@radix-ui/react-label";
 function AuthFormField({ field, validations, register, formState }) {
   const { errors } = formState;
   return (
-    <div className="grid gap-3">
+    <div className="grid">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Label htmlFor={field}>
-          {field.charAt(0).toUpperCase() + field.slice(1)}
+          {field.charAt(0).toUpperCase() + field.slice(1)}:
         </Label>
         {errors?.[field]?.message && (
-          <p className="w-fit rounded-full bg-red-900 px-3 py-1 text-sm">
+          <p className=" rounded-full px-3 py-1 text-[1rem] font-medium tracking-wide text-red-500">
             {errors[field].message}
           </p>
         )}
       </div>
-      <Input
+      <input
         id={field}
         type={
           field === "email"
@@ -24,7 +24,9 @@ function AuthFormField({ field, validations, register, formState }) {
               ? "password"
               : "text"
         }
-        className="border-gray-500"
+        className="border-obsidian-border bg-myGray
+        focus-visible:border-pulse-primary hover:border-pulse-primary/50 rounded-full border-1 px-4
+        py-1.5 transition-all duration-200 focus-visible:shadow-[0_0_4px_1px_rgba(101,35,208,0.7)] focus-visible:outline-none"
         {...register(field, {
           required: `${field} is required`,
           ...validations,

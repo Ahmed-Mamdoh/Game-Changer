@@ -11,7 +11,7 @@ function UpcomingGames() {
     <div className="relative mx-auto">
       <FadingBackground first={true} />
       {/* Content section */}
-      <div className="absolute top-[10vh] z-10 pb-5">
+      <div className="absolute top-[10vh] z-10 w-full pb-5">
         <Filters showSortBy={false} className="mt-4 w-3/4" />
         <GamesGallary data={data} isLoading={isLoading} />
         <FullPagination />
