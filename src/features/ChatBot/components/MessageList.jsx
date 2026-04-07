@@ -5,19 +5,21 @@ function MessageList({ messages, messagesRef, isLoading }) {
   return (
     <div
       ref={messagesRef}
-      className="flex max-h-[60vh] flex-col gap-2 overflow-x-hidden overflow-y-auto"
+      className="flex max-h-[60vh] min-h-[30vh] flex-col gap-2 overflow-x-hidden  overflow-y-auto"
     >
       {messages.map((item, index) => {
         if (item.role === "user")
           return (
             <div key={index} className="chat chat-start">
-              <div className="chat-bubble">{item.content}</div>
+              <div className="chat-bubble bg-myGray text-text-primary rounded-3xl">
+                {item.content}
+              </div>
             </div>
           );
         if (item.role === "assistant") {
           return (
             <div key={index} className="chat chat-end">
-              <div className="chat-bubble bg-primary/70 text-primary-content">
+              <div className="chat-bubble bg-pulse-secondary text-text-primary  rounded-3xl">
                 <Markdown
                   components={{
                     a: ({ href, children, ...props }) => {
@@ -33,7 +35,7 @@ function MessageList({ messages, messagesRef, isLoading }) {
                           <Link
                             to={to}
                             {...props}
-                            className="hover:text-secondary/80 text-secondary transform underline transition-colors duration-200"
+                            className="hover:text-text-primary/80 text-text-primary transform underline transition-colors duration-200"
                           >
                             {children}
                           </Link>
@@ -62,7 +64,7 @@ function MessageList({ messages, messagesRef, isLoading }) {
       })}
       {isLoading && (
         <div className="chat chat-end">
-          <div className="chat-bubble bg-primary/70 text-primary-content">
+          <div className="chat-bubble bg-pulse-secondary text-text-primary">
             <span className="loading loading-dots loading-xs"></span>
           </div>
         </div>
