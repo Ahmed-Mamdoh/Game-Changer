@@ -13,6 +13,7 @@ const Auth = lazy(() => import("./pages/Auth"));
 const Account = lazy(() => import("./pages/Account"));
 import RouteErrorFallback from "./pages/RouteErrorFallback";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
 function App() {
   const queryClient = new QueryClient({
@@ -69,6 +70,7 @@ function App() {
         />
         <RouterProvider router={router} />
         <Analytics />
+        <SpeedInsights />
       </QueryClientProvider>
     </HelmetProvider>
   );
