@@ -6,15 +6,8 @@
       "destination": "/api/$1"
     },
     {
-      "source": "/(.*)",
-      "destination": "/index.html",
-      "has": [
-        {
-          "type": "header",
-          "key": "x-vercel-env",
-          "value": "production"
-        }
-      ]
+      "source": "/((?!api|.*\\..*).*)",
+      "destination": "/index.html"
     }
   ],
   "headers": [
@@ -23,16 +16,11 @@
       "headers": [
         {
           "key": "Content-Type",
-          "value": "application/xml"
-        }
-      ]
-    },
-    {
-      "source": "/(.*\\.xml)",
-      "headers": [
+          "value": "application/xml; charset=utf-8"
+        },
         {
-          "key": "Content-Type",
-          "value": "application/xml"
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
         }
       ]
     },
@@ -41,7 +29,7 @@
       "headers": [
         {
           "key": "Content-Type",
-          "value": "text/plain"
+          "value": "text/plain; charset=utf-8"
         }
       ]
     }
