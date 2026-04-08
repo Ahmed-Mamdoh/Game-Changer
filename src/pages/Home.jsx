@@ -24,20 +24,7 @@ function Home() {
     <>
       {/* SEO Meta Tags */}
       <Helmet>
-        {/* Basic SEO Meta Tags */}
-        <title>Game-Changer | Discover Popular, Free & Upcoming Games</title>
-        <meta
-          name="description"
-          content="Discover the best games on Game-Changer. Browse popular games, find free-to-play titles, and stay updated with upcoming releases. Your ultimate gaming destination."
-        />
-        <meta
-          name="keywords"
-          content="games, video games, free games, upcoming games, popular games, gaming, game discovery"
-        />
-        <meta name="author" content="Ahmed Mamdoh" />
-        <link rel="canonical" href="https://game-changer-gg.vercel.app" />
-
-        {/* Open Graph Meta Tags for Social Media */}
+        {/* Basic Open Graph Tags */}
         <meta
           property="og:title"
           content="Game-Changer | Discover Popular, Free & Upcoming Games"
@@ -46,15 +33,30 @@ function Home() {
           property="og:description"
           content="Discover the best games on Game-Changer. Browse popular games, find free-to-play titles, and stay updated with upcoming releases."
         />
+        <meta property="og:url" content="https://game-changer-gg.vercel.app" />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="Game-Changer" />
+        <meta property="og:locale" content="en_US" />
+
         <meta
           property="og:image"
           content="https://game-changer-gg.vercel.app/og-image.jpg"
         />
-        <meta property="og:url" content="https://game-changer-gg.vercel.app" />
-        <meta property="og:type" content="website" />
-        <meta property="og:site_name" content="Game-Changer" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:type" content="image/jpeg" />
+        <meta
+          property="og:image:alt"
+          content="Game-Changer - Discover Amazing Games"
+        />
 
-        {/* Twitter Card Meta Tags */}
+        <meta
+          property="og:image"
+          content="https://game-changer-gg.vercel.app/og-image-2.jpg"
+        />
+        <meta property="og:image:width" content="1080" />
+        <meta property="og:image:height" content="1080" />
+
         <meta name="twitter:card" content="summary_large_image" />
         <meta
           name="twitter:title"
@@ -69,11 +71,11 @@ function Home() {
           content="https://game-changer-gg.vercel.app/twitter-image.jpg"
         />
 
-        {/* Additional SEO Meta Tags */}
-        <meta name="robots" content="index, follow" />
-        <meta name="googlebot" content="index, follow" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta charset="UTF-8" />
+        <meta property="og:determiner" content="the" />
+        <meta
+          property="og:see_also"
+          content="https://game-changer-gg.vercel.app/allGames"
+        />
       </Helmet>
 
       <div className="from-obsidian-surface to-obsidian-muted bg-gradient-to-b pb-12">
