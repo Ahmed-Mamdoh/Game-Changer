@@ -7,14 +7,7 @@
     },
     {
       "source": "/(.*)",
-      "destination": "/index.html",
-      "has": [
-        {
-          "type": "header",
-          "key": "x-vercel-env",
-          "value": "production"
-        }
-      ]
+      "destination": "/index.html"
     }
   ]
 }
