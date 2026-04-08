@@ -8,12 +8,12 @@ function AllGames() {
   const { data, isLoading } = useGetAllGames();
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen py-20">
       <FadingBackground first={true} />
       {/* Content section */}
-      <div className="absolute top-[10vh] z-10 w-full">
+      <div className="z-10 w-full">
         <div className="container mx-auto">
-          <Filters className="mt-4 w-3/4" />
+          <Filters className="w-3/4" />
           <GamesGallery data={data} isLoading={isLoading} />
           <FullPagination />
         </div>

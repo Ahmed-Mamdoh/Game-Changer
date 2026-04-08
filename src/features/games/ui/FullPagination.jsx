@@ -23,7 +23,7 @@ function FullPagination() {
   if (data.count === 0) return null;
   const numberOfPages = Math.ceil(data?.count / LIMIT);
   return (
-    <div className="flex items-center justify-center select-none">
+    <div className="flex items-center justify-center pb-12 select-none">
       <div className="border-obsidian-border mb-16 w-5/8 rounded-full border-1 bg-[#25212950] py-4 backdrop-blur-2xl">
         <Pagination>
           <PaginationContent>

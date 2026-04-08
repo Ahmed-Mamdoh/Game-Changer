@@ -1,4 +1,4 @@
-import chatBotIcon from "@/assets/chatbot-icon.png";
+import chatBotIcon from "@/assets/chatbot-icon.webp";
 import { PopoverTrigger } from "@radix-ui/react-popover";
 function ChatTrigger() {
   return (

@@ -113,7 +113,10 @@ function GameDetailsOverview({ data }) {
     <>
       <div className="relative h-[100vh] w-full overflow-hidden">
         {/* Cover */}
-        <img src={imageUrl} className="h-full w-full object-cover" />
+        <img
+          src={imageUrl}
+          className="absolute top-0 left-0 h-full w-full object-cover"
+        />
         <div className=" to-obsidian-muted pointer-events-none absolute inset-0 bg-gradient-to-b from-black/15" />
 
         {/* Content */}

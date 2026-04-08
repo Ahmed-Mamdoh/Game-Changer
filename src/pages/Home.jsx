@@ -38,7 +38,7 @@ function Home() {
         <link rel="canonical" href="https://game-changer-gg.vercel.app" />
       </Helmet>
 
-      <div className="from-obsidian-surface to-obsidian-muted bg-gradient-to-b pb-12">
+      <div className="from-obsidian-surface to-obsidian-muted bg-gradient-to-b pb-32">
         <HeroSection />
         <HomeSection
           id="popular"

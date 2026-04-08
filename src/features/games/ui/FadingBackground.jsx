@@ -9,7 +9,9 @@ function FadingBackground({ first = false, middle = false, last = false }) {
         ? "bg-gradient-to-b from-obsidian-muted/90 to-obsidian-muted via-black/60"
         : null;
   return (
-    <div className={`relative h-[70vh] overflow-hidden ${styles}`}>
+    <div
+      className={`absolute top-0 left-0 h-[70vh] w-full overflow-hidden ${styles}`}
+    >
       <img
         src={spaceBackground}
         alt="space background"

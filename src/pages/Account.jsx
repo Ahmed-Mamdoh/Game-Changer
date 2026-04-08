@@ -86,9 +86,9 @@ function Account() {
     });
 
   return (
-    <div className="relative mx-auto min-h-[150vh] ">
+    <div className="relative mx-auto min-h-[150vh] py-20">
       <FadingBackground first />
-      <div className="absolute top-[10vh] mx-auto mt-6 flex w-full items-start justify-between gap-x-6">
+      <div className="mx-auto flex w-full items-start justify-between gap-x-6">
         <div className="container mx-auto">
           <div className="mx-auto w-9/10">
             <UserHeader />

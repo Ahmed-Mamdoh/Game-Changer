@@ -5,12 +5,13 @@ import { Toaster } from "react-hot-toast";
 import { Suspense } from "react";
 import Spinner from "../ui/Spinner";
 import ChatBot from "@/features/ChatBot/ChatBot";
+import Footer from "@/ui/Footer";
 
 function AppLayout() {
   const location = useLocation();
 
   return (
-    <div>
+    <div className="relative min-h-[100vh]">
       <Toaster />
       <ScrollToTop />
       <Header />
@@ -18,6 +19,7 @@ function AppLayout() {
       <Suspense fallback={<Spinner />} key={location.pathname}>
         <Outlet />
       </Suspense>
+      <Footer />
     </div>
   );
 }
