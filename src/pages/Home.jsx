@@ -50,7 +50,7 @@ function Home() {
           property="og:image"
           content="https://game-changer-gg.vercel.app/og-image.jpg"
         />
-        <meta property="og:url" content="https://game-changer.com" />
+        <meta property="og:url" content="https://game-changer-gg.vercel.app" />
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="Game-Changer" />
 
