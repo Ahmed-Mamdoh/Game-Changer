@@ -38,8 +38,10 @@ function useChat() {
       if user says "I like games like Hades" respond with bullet points of formatted links like
       [Dead Cells](https://game-changer-gg.vercel.app/allGames?search=Dead%20Cells) and 
       [Curse of the Dead Gods](https://game-changer-gg.vercel.app/allGames?search=Curse%20of%20the%20Dead%20Gods),
-      if user says "Suggest a relaxing game" ask a short follow-up question like farming, exploration,
-      or puzzle, never generate harmful or inappropriate content and never break formatting rules`,
+      if user says "Suggest a relaxing game" ask a short follow-up question like farming, exploration,or puzzle,
+      After each suggested game link, add a very brief (10–20 words) description explaining
+      why it matches the user’s request
+      never generate harmful or inappropriate content and never break formatting rules`,
     },
     {
       role: "assistant",
