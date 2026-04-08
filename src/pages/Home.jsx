@@ -24,58 +24,18 @@ function Home() {
     <>
       {/* SEO Meta Tags */}
       <Helmet>
-        {/* Basic Open Graph Tags */}
+        {/* Basic SEO Meta Tags */}
+        <title>Game-Changer | Discover Popular, Free & Upcoming Games</title>
         <meta
-          property="og:title"
-          content="Game-Changer | Discover Popular, Free & Upcoming Games"
+          name="description"
+          content="Discover the best games on Game-Changer. Browse popular games, find free-to-play titles, and stay updated with upcoming releases. Your ultimate gaming destination."
         />
         <meta
-          property="og:description"
-          content="Discover the best games on Game-Changer. Browse popular games, find free-to-play titles, and stay updated with upcoming releases."
+          name="keywords"
+          content="games, video games, free games, upcoming games, popular games, gaming, game discovery"
         />
-        <meta property="og:url" content="https://game-changer-gg.vercel.app" />
-        <meta property="og:type" content="website" />
-        <meta property="og:site_name" content="Game-Changer" />
-        <meta property="og:locale" content="en_US" />
-
-        <meta
-          property="og:image"
-          content="https://game-changer-gg.vercel.app/og-image.jpg"
-        />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-        <meta property="og:image:type" content="image/jpeg" />
-        <meta
-          property="og:image:alt"
-          content="Game-Changer - Discover Amazing Games"
-        />
-
-        <meta
-          property="og:image"
-          content="https://game-changer-gg.vercel.app/og-image-2.jpg"
-        />
-        <meta property="og:image:width" content="1080" />
-        <meta property="og:image:height" content="1080" />
-
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta
-          name="twitter:title"
-          content="Game-Changer | Discover Popular, Free & Upcoming Games"
-        />
-        <meta
-          name="twitter:description"
-          content="Discover the best games on Game-Changer. Browse popular games, find free-to-play titles, and stay updated with upcoming releases."
-        />
-        <meta
-          name="twitter:image"
-          content="https://game-changer-gg.vercel.app/twitter-image.jpg"
-        />
-
-        <meta property="og:determiner" content="the" />
-        <meta
-          property="og:see_also"
-          content="https://game-changer-gg.vercel.app/allGames"
-        />
+        <meta name="author" content="Ahmed Mamdoh" />
+        <link rel="canonical" href="https://game-changer-gg.vercel.app" />
       </Helmet>
 
       <div className="from-obsidian-surface to-obsidian-muted bg-gradient-to-b pb-12">
