@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Homepage - Highest Priority -->
+  <url>
+    <loc>https://game-changer-gg.vercel.app/</loc>
+    <priority>1.0</priority>
+    <changefreq>daily</changefreq>
+    <lastmod>2026-04-08</lastmod>
+  </url>
+  
+  <!-- Main Game Pages -->
+  <url>
+    <loc>https://game-changer-gg.vercel.app/allGames</loc>
+    <priority>0.9</priority>
+    <changefreq>weekly</changefreq>
+    <lastmod>2026-04-08</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://game-changer-gg.vercel.app/freeGames</loc>
+    <priority>0.9</priority>
+    <changefreq>weekly</changefreq>
+    <lastmod>2026-04-08</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://game-changer-gg.vercel.app/upcomingGames</loc>
+    <priority>0.9</priority>
+    <changefreq>weekly</changefreq>
+    <lastmod>2026-04-08</lastmod>
+  </url>
+  
+  <!-- Authentication Pages -->
+  <url>
+    <loc>https://game-changer-gg.vercel.app/auth</loc>
+    <priority>0.5</priority>
+    <changefreq>monthly</changefreq>
+    <lastmod>2026-04-08</lastmod>
+  </url>
+  
+  <!-- User Account Page -->
+  <url>
+    <loc>https://game-changer-gg.vercel.app/account</loc>
+    <priority>0.6</priority>
+    <changefreq>weekly</changefreq>
+    <lastmod>2026-04-08</lastmod>
+  </url>
+</urlset>
