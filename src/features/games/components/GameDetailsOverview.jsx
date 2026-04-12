@@ -111,7 +111,7 @@ function GameDetailsOverview({ data }) {
 
   return (
     <>
-      <div className="relative h-[100vh] w-full overflow-hidden">
+      <div className="relative h-[100dvh] w-full overflow-hidden">
         {/* Cover */}
         <img
           src={imageUrl}

@@ -66,9 +66,9 @@ function Header() {
           <Drawer />
           <label
             htmlFor="my-drawer-4"
-            className=" bg-pulse-secondary text-md flex items-center justify-center rounded-full  border-none p-2 shadow-xl transition-all duration-300 lg:hidden"
+            className=" bg-pulse-secondary text-md flex items-center justify-center rounded-full  border-none px-3 py-2 shadow-xl transition-all duration-300 lg:hidden"
           >
-            <Menu className="h-5 w-5 md:h-8 md:w-8" />
+            <Menu className="h-5 w-5 md:h-5 md:w-5" />
           </label>
         </div>
       </div>

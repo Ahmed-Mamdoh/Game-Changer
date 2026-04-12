@@ -5,7 +5,7 @@ function MessageList({ messages, messagesRef, isLoading }) {
   return (
     <div
       ref={messagesRef}
-      className="flex max-h-[60vh] min-h-[30vh] flex-col gap-2 overflow-x-hidden  overflow-y-auto"
+      className="flex max-h-[60dvh] min-h-[30dvh] flex-col gap-2 overflow-x-hidden  overflow-y-auto"
     >
       {messages.map((item, index) => {
         if (item.role === "user")

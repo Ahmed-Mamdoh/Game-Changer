@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 function HomeSection({ sectionName, data, isLoading, route, id }) {
   return (
-    <div id={id} className="flex flex-col items-center">
+    <div id={id} className="flex flex-col items-center pt-12">
       <div className="flex w-9/10 items-center justify-between">
         <h2 className="font-heading text-2xl text-nowrap md:text-4xl lg:text-5xl">
           {sectionName}

@@ -38,9 +38,7 @@ function GameItem({ game }) {
   let imageUrl = game.cover?.url
     ? game.cover?.url?.replace("jpg", "webp")
     : null;
-  imageUrl = isSmallScreen
-    ? imageUrl?.replace("t_thumb", "t_720p")
-    : imageUrl?.replace("t_thumb", "t_cover_big");
+  imageUrl = imageUrl?.replace("t_thumb", "t_cover_big");
   const navigate = useNavigate();
 
   const [countDown, setCountDown] = useState(() =>
@@ -75,7 +73,7 @@ function GameItem({ game }) {
     hover:from-70% hover:shadow-xl"
     >
       <div
-        className="peer relative w-3/4  md:h-64 md:w-48"
+        className="peer relative w-36 md:w-48"
         onClick={() => navigate(`/game/${game.id}`)}
       >
         {imageUrl ? (
@@ -91,7 +89,7 @@ function GameItem({ game }) {
         )}
       </div>
       <div
-        className="w-72 cursor-default text-center text-lg font-medium text-wrap
+        className="h-12 w-36 cursor-default text-center text-sm font-medium text-wrap
       transition-colors duration-300 md:h-12 md:w-48 md:text-base"
       >
         <Link to={`/game/${game.id}`} className="cursor-pointer">
@@ -110,7 +108,7 @@ function GameItem({ game }) {
             href={game.giveAwayLink}
             target="_blank"
             rel="noreferrer"
-            className=" flex cursor-pointer items-center justify-center gap-2"
+            className="flex cursor-pointer items-center justify-center gap-2 text-sm md:text-base"
           >
             {game.freeOn === "Steam" ? <FaSteam className="h-4 w-4" /> : null}
             {game.freeOn === "Epic Games" ? (
@@ -120,7 +118,7 @@ function GameItem({ game }) {
             {game.freeOn}
           </a>
 
-          <div className="flex items-center justify-center gap-1">
+          <div className="flex items-center justify-center gap-1 text-sm md:text-base">
             <Clock className="h-4 w-4" />
             <p>
               {countDown.days
@@ -138,7 +136,7 @@ function GameItem({ game }) {
       )}
       {game?.first_release_date &&
         game?.first_release_date > Math.floor(Date.now() / 1000) && (
-          <div className="text-pulse-accent flex items-center justify-center gap-x-1">
+          <div className="text-pulse-accent flex items-center justify-center gap-x-1 text-sm md:text-base">
             <p>
               {formatDate(
                 new Date(game.first_release_date * 1000),
@@ -149,7 +147,7 @@ function GameItem({ game }) {
           </div>
         )}
       {game?.hoursPlayed && (
-        <div className="text-text-secondary flex w-full items-center justify-between">
+        <div className="text-text-secondary flex w-full items-center justify-between text-sm md:text-base">
           <div className="flex items-center gap-2">
             {game.status === "playing" ? (
               <CiPlay1 className="h-4 w-4" />
@@ -160,7 +158,7 @@ function GameItem({ game }) {
             )}
             <p className="text-sm">{game.status.toUpperCase()}</p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 text-sm md:text-base">
             <FaRegClock className="h-4 w-4" />
             <p>{game.hoursPlayed}h</p>
           </div>

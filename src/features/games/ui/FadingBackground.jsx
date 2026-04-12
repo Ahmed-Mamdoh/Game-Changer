@@ -10,7 +10,7 @@ function FadingBackground({ first = false, middle = false, last = false }) {
         : null;
   return (
     <div
-      className={`absolute top-0 left-0 h-[70vh] w-full overflow-hidden ${styles}`}
+      className={`absolute top-0 left-0 h-[70dvh] w-full overflow-hidden ${styles}`}
     >
       <img
         src={spaceBackground}

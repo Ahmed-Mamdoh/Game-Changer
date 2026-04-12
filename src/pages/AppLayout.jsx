@@ -11,7 +11,7 @@ function AppLayout() {
   const location = useLocation();
 
   return (
-    <div className="relative min-h-[100vh]">
+    <div className="relative min-h-[100dvh]">
       <Toaster />
       <ScrollToTop />
       <Header />
