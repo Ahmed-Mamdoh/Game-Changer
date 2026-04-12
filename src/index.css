@@ -37,11 +37,6 @@
   --noise: 0;
 }
 
-
-
-
-
-
 @theme {
   /* Obsidian Surface Colors */
   --color-obsidian-base: #000000;
@@ -59,25 +54,38 @@
   --color-pulse-extra: #9e6cd3;
   --color-pulse-glow: rgba(168, 85, 247, 0.1);
 
-
-
   /* Typography Colors */
   --color-text-primary: #ffffff;
   --color-text-secondary: #a1a1aa;
   --color-text-muted: #71717a;
   --color-text-dark: #18181b;
-  --font-heading: 'Space Grotesk', sans-serif;
-  --font-body: 'Manrope', sans-serif;
+  --font-heading: "Space Grotesk", sans-serif;
+  --font-body: "Manrope", sans-serif;
+
+  /* Screens (breakpoints) */
+  --breakpoint-xs: 375px;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
+  /* Container Configuration */
+  --container-center: true;
+  --container-padding-default: 1rem;
+  --container-padding-sm: 2rem;
+  --container-padding-lg: 4rem;
+  --container-padding-xl: 5rem;
+  --container-padding-2xl: 6rem;
 }
 
 @layer base {
-
   html {
     @apply scroll-smooth;
   }
 
   body {
-    @apply text-text-primary font-body min-h-screen bg-obsidian-muted;
+    @apply text-text-primary font-body bg-obsidian-muted min-h-screen;
   }
 
   h1 {
@@ -85,7 +93,6 @@
     letter-spacing: -0.05em;
     font-weight: 700;
     font-family: var(--font-heading), sans-serif;
-    ;
   }
 
   h2 {
@@ -107,5 +114,4 @@
     text-transform: uppercase;
     font-weight: 500;
   }
-
 }

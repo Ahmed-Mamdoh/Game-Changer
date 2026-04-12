@@ -1,5 +1,0 @@
-User-agent: *
-Allow: /
-
-# Sitemap
-Sitemap: https://game-changer-gg.vercel.app/sitemap.xml

@@ -7,10 +7,11 @@ import UserHeader from "@/features/User/components/UserHeader";
 import UserStats from "@/features/User/components/UserStats";
 import { useGetUserGames } from "@/features/User/hooks/useGetUserGames";
 import Spinner from "@/ui/Spinner";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 function Account() {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const genreParam = searchParams.get("genre");
   const themeParam = searchParams.get("theme");
   const statusParam = searchParams.get("status");
@@ -27,6 +28,10 @@ function Account() {
 
   const { data, isLoading } = useGetUserGames(user_id);
   const user_games = data?.user_games || [];
+
+  if (!supabaseToken) {
+    navigate("/auth");
+  }
 
   if (isLoading || isLoadingGenres || isLoadingThemes) return <Spinner />;
 
