@@ -29,25 +29,25 @@ function UserHeader() {
   }
 
   return (
-    <div
-      className="bg-obsidian-deep/60 border-obsidian-border hover:border-pulse-extra/50
-       flex items-center gap-3 rounded-2xl border-2 p-5 backdrop-blur-xs transition-all"
-    >
+     <div
+       className="bg-obsidian-deep/60 border-obsidian-border hover:border-pulse-extra/50
+        flex flex-col items-start gap-2 rounded-2xl border-2 p-3 sm:flex-row sm:items-center sm:gap-3 sm:p-5 backdrop-blur-xs transition-all"
+     >
       {/* <DataField label="Username" value={username} /> */}
-      <p className="text-text-primary/80 text-2xl font-bold">
-        Welcome, {username}
-      </p>
-      <button
-        className="btn bg-pulse-extra/80 rounded-full text-white"
-        aria-label="Log out"
-        aria-labelledby="logout-btn"
-        name="logout"
-        onClick={() => {
-          handleLogout();
-        }}
-      >
-        Log Out
-      </button>
+       <p className="text-text-primary/80 text-xl font-bold sm:text-2xl">
+         Welcome, {username}
+       </p>
+       <button
+         className="btn bg-pulse-extra/80 rounded-full text-white w-full sm:w-auto"
+         aria-label="Log out"
+         aria-labelledby="logout-btn"
+         name="logout"
+         onClick={() => {
+           handleLogout();
+         }}
+       >
+         Log Out
+       </button>
     </div>
   );
 }

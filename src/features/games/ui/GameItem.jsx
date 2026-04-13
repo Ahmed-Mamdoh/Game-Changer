@@ -148,7 +148,7 @@ function GameItem({ game }) {
         )}
       {game?.hoursPlayed && (
         <div className="text-text-secondary flex w-full items-center justify-between text-sm md:text-base">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             {game.status === "playing" ? (
               <CiPlay1 className="h-4 w-4" />
             ) : game.status === "finished" ? (
@@ -158,7 +158,7 @@ function GameItem({ game }) {
             )}
             <p className="text-sm">{game.status.toUpperCase()}</p>
           </div>
-          <div className="flex items-center gap-2 text-sm md:text-base">
+          <div className="flex items-center gap-1 text-sm md:text-base">
             <FaRegClock className="h-4 w-4" />
             <p>{game.hoursPlayed}h</p>
           </div>

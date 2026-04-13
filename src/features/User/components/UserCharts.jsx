@@ -24,17 +24,17 @@ function UserCharts({ user_games, isLoading }) {
   }
 
   return (
-    <div className="flex items-center justify-between gap-3 py-3">
-      {!isLoading && (
-        <div className="w-full">
-          <ChartBarLabel chartData={genresData} title="Genres Played " />
-        </div>
-      )}
-      {!isLoading && (
-        <div className="w-full">
-          <ChartBarLabel chartData={themesData} title="Themes Played " />
-        </div>
-      )}
+    <div className="flex flex-col items-center justify-between gap-2 py-2 sm:gap-3 sm:py-3 md:flex-row">
+       {!isLoading && (
+         <div className="w-full md:w-1/2">
+           <ChartBarLabel chartData={genresData} title="Genres Played" />
+         </div>
+       )}
+       {!isLoading && (
+         <div className="w-full md:w-1/2">
+           <ChartBarLabel chartData={themesData} title="Themes Played" />
+         </div>
+       )}
     </div>
   );
 }

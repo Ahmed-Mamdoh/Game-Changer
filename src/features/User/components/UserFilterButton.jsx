@@ -11,8 +11,8 @@ function UserFilterButton({ paramsValue, buttonText }) {
         newParams.set("status", paramsValue);
         setSearchParams(newParams);
       }}
-      className={`bg-myGray/80 hover:bg-pulse-primary/60 w-full cursor-pointer rounded-2xl
-      px-4 py-2 font-semibold transition-all
+      className={`bg-myGray/80 hover:bg-pulse-primary/60 w-full  cursor-pointer  
+      rounded-2xl px-4 py-2 text-sm font-semibold transition-all sm:max-w-full sm:text-base
       ${statusParam === paramsValue ? "bg-pulse-secondary" : ""}`}
     >
       {buttonText}

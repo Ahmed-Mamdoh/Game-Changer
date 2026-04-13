@@ -93,27 +93,23 @@ function Account() {
   return (
     <div className="relative mx-auto min-h-[150dvh] py-20">
       <FadingBackground first />
-      <div className="mx-auto flex w-full items-start justify-between gap-x-6">
-        <div className="container mx-auto">
-          <div className="mx-auto w-9/10">
-            <UserHeader />
-            <UserStats user_games={user_games} isLoading={isLoading} />
-            <div className="flex flex-col gap-2">
-              <p>Filters</p>
-              <div className="flex items-center gap-x-5">
-                <UserFilterButton paramsValue="" buttonText="All" />
-                <UserFilterButton paramsValue="playing" buttonText="Playing" />
-                <UserFilterButton
-                  paramsValue="finished"
-                  buttonText="Finished"
-                />
-                <UserFilterButton paramsValue="dropped" buttonText="Dropped" />
-              </div>
+
+      <div className=" mx-auto w-full ">
+        <div className="mx-auto w-full px-4 md:w-9/10">
+          <UserHeader />
+          <UserStats user_games={user_games} isLoading={isLoading} />
+          <div className="flex flex-col gap-2">
+            <p>Filters</p>
+            <div className="grid grid-cols-2 gap-x-3 gap-y-3 sm:grid-cols-4">
+              <UserFilterButton paramsValue="" buttonText="All" />
+              <UserFilterButton paramsValue="playing" buttonText="Playing" />
+              <UserFilterButton paramsValue="finished" buttonText="Finished" />
+              <UserFilterButton paramsValue="dropped" buttonText="Dropped" />
             </div>
           </div>
-
-          <GamesGallery data={GalleryData} isLoading={isLoading} />
         </div>
+
+        <GamesGallery data={GalleryData} isLoading={isLoading} />
       </div>
     </div>
   );

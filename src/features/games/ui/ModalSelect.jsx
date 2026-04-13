@@ -13,7 +13,7 @@ function ModalSelect({ control, name, defaultValue }) {
   });
   return (
     <div className="flex items-center gap-x-2">
-      {["playing", "completed", "dropped"].map((item) => (
+      {["playing", "finished", "dropped"].map((item) => (
         <button
           className={`border-obsidian-border hover:bg-pulse-primary/30
             bg-myGray/70

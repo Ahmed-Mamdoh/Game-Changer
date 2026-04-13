@@ -7,12 +7,12 @@ import UserCharts from "./UserCharts";
 function UserStats({ user_games, isLoading }) {
   return (
     <>
-      <div className="flex items-center gap-x-3 pt-3">
+      <div className="grid grid-cols-1 gap-2 pt-2 sm:grid-cols-2 lg:grid-cols-3">
         <StatsCard
           data={user_games?.length || 0}
           title="Total Games"
           icon={
-            <IoGameControllerOutline className="text-pulse-extra h-12 w-12" />
+            <IoGameControllerOutline className="text-pulse-extra h-10 w-10 sm:h-12 sm:w-12" />
           }
         />
         <StatsCard
@@ -20,7 +20,9 @@ function UserStats({ user_games, isLoading }) {
             ?.map((game) => game.hours_played)
             .reduce((acc, cur) => acc + cur || 0)}
           title="Total Hours"
-          icon={<GoClock className="text-pulse-extra h-12 w-12" />}
+          icon={
+            <GoClock className="text-pulse-extra h-10 w-10 sm:h-12 sm:w-12" />
+          }
         />
         <StatsCard
           data={(() => {
@@ -28,14 +30,16 @@ function UserStats({ user_games, isLoading }) {
             const dataCount = data.reduce((acc, item) => {
               return { ...acc, [item]: (acc[item] || 0) + 1 };
             }, {});
-            console.log(dataCount);
             const mostPlayed = Object.entries(dataCount).sort(
               (a, b) => b[1] - a[1],
             )[0];
             return mostPlayed ? mostPlayed[0] : "N/A";
           })()}
+          className="sm:col-span-2 lg:col-span-1"
           title="Most Played Genre"
-          icon={<PiSwordLight className="text-pulse-extra h-12 w-12" />}
+          icon={
+            <PiSwordLight className="text-pulse-extra h-10 w-10 sm:h-12 sm:w-12" />
+          }
         />
       </div>
       <UserCharts user_games={user_games} isLoading={isLoading} />
