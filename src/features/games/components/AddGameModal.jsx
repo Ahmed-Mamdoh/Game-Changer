@@ -135,11 +135,13 @@ function AddGameModal({
       <DialogTrigger asChild>
         <Button
           className={`bg-obsidian-muted/75 border-obsidian-border text-text-primary
-            hover:bg-obsidian-muted/40 cursor-pointer rounded-full border-1 px-10!
-          py-6 text-xl tracking-wide backdrop-blur-md hover:backdrop-blur-xs`}
+            hover:bg-obsidian-muted/40 cursor-pointer rounded-full border-1 py-6
+          text-xl tracking-wide backdrop-blur-md hover:backdrop-blur-xs md:px-10!`}
         >
-          {isUpdate ? <FaPen /> : <FaPlus />}
-          {isUpdate ? "Update Game" : "Add Game"}
+          <span>{isUpdate ? <FaPen /> : <FaPlus />}</span>
+          <span className="hidden md:inline">
+            {isUpdate ? "Update Game" : "Add Game"}
+          </span>
         </Button>
       </DialogTrigger>
 
