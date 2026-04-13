@@ -1,40 +1,12 @@
 import { formatDate, intervalToDuration } from "date-fns";
-import { ArrowLeft, CalendarCheck, Check, Clock } from "lucide-react";
+import { CalendarCheck, Check, Clock } from "lucide-react";
 import { useEffect, useState } from "react";
-import {
-  FaArrowLeft,
-  FaBell,
-  FaCalendarCheck,
-  FaHeart,
-  FaHourglass,
-  FaRegClock,
-  FaSteam,
-} from "react-icons/fa";
+import { CiPlay1, CiStop1 } from "react-icons/ci";
+import { FaRegClock, FaSteam } from "react-icons/fa";
 import { SiEpicgames, SiGogdotcom } from "react-icons/si";
 import { Link, useNavigate } from "react-router-dom";
-import { CiPlay1, CiStop1 } from "react-icons/ci";
 
 function GameItem({ game }) {
-  const [isSmallScreen, setIsSmallScreen] = useState(false);
-
-  //check if the screen size changed and set isSmall screen if the size < 1024
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 768) {
-        setIsSmallScreen(true);
-      } else {
-        setIsSmallScreen(false);
-      }
-    };
-    handleResize();
-
-    // Add event listener
-    window.addEventListener("resize", handleResize);
-
-    // Cleanup
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-  // get 720p image instead of low quality
   let imageUrl = game.cover?.url
     ? game.cover?.url?.replace("jpg", "webp")
     : null;

@@ -24,6 +24,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { useEffect, useState } from "react";
+import useScreenWidth from "@/hooks/useScreenWidth";
 
 export const description = "A bar chart with a label";
 
@@ -35,7 +36,7 @@ const chartConfig = {
 };
 
 export function ChartBarLabel({ chartData, title }) {
-  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+  const screenWidth = useScreenWidth();
   const limit =
     screenWidth > 1280
       ? 5
@@ -46,11 +47,7 @@ export function ChartBarLabel({ chartData, title }) {
           : screenWidth > 640
             ? 6
             : 2; // Adjust limits based on breakpoints
-  useEffect(() => {
-    const handleResize = () => setScreenWidth(window.innerWidth);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+
   const total = chartData.reduce((acc, cur) => acc + cur.number, 0);
 
   // Limit bars based on screen size, combine the rest into "Other"

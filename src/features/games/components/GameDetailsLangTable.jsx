@@ -6,6 +6,7 @@ import {
   TableRow,
   Table,
 } from "@/components/ui/table";
+import useScreenWidth from "@/hooks/useScreenWidth";
 import { useEffect, useState } from "react";
 import { FaCheck } from "react-icons/fa";
 
@@ -60,25 +61,8 @@ const LANGUAGES_TYPES = [
 function GameDetailsLangTable({ data }) {
   const { language_supports } = data[0];
 
-  const [isSmallScreen, setIsSmallScreen] = useState(false);
-
-  //check if the screen size changed and set isSmall screen if the size < 1024
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 1024) {
-        setIsSmallScreen(true);
-      } else {
-        setIsSmallScreen(false);
-      }
-    };
-    handleResize();
-
-    // Add event listener
-    window.addEventListener("resize", handleResize);
-
-    // Cleanup
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  const screenWidth = useScreenWidth();
+  const isSmallScreen = screenWidth < 1024;
 
   if (language_supports?.length > 0 && !isSmallScreen) {
     return (
