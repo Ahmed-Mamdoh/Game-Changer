@@ -22,6 +22,7 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useGetTimeToBeat } from "../hooks/useGetTimeToBeat";
 import AddGameModal from "./AddGameModal";
+import useScreenWidth from "@/hooks/useScreenWidth";
 
 function GameDetailsOverview({ data }) {
   const {
@@ -41,6 +42,7 @@ function GameDetailsOverview({ data }) {
 
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const screenWidth = useScreenWidth();
 
   const userToken = localStorage.getItem("sb-kapovyqqncfsoangqppi-auth-token");
   const user_id = JSON.parse(userToken || "{}")?.user?.id;
@@ -51,12 +53,14 @@ function GameDetailsOverview({ data }) {
 
   //  gets the full quality image instead of low quality
   const chosenArtwork =
-    artworks?.find((a) => a.artwork_type === 2) ||
-    artworks?.find((a) => a.artwork_type === 3) ||
-    artworks?.find((a) => a.artwork_type === 1) ||
-    artworks?.find((a) => a.artwork_type === 4) ||
-    artworks?.[0] ||
-    cover;
+    screenWidth < 640
+      ? cover
+      : artworks?.find((a) => a.artwork_type === 2) ||
+        artworks?.find((a) => a.artwork_type === 3) ||
+        artworks?.find((a) => a.artwork_type === 1) ||
+        artworks?.find((a) => a.artwork_type === 4) ||
+        artworks?.[0] ||
+        cover;
   const imageUrl =
     chosenArtwork?.url
       ?.replace("t_thumb", "t_1080p_2x")
@@ -172,7 +176,7 @@ function GameDetailsOverview({ data }) {
 
   return (
     <>
-      <div className="relative h-[100dvh] w-full overflow-hidden">
+      <div className="relative  h-[100dvh] w-full overflow-hidden">
         {/* Cover */}
         <img
           src={imageUrl}
