@@ -20,10 +20,10 @@ function HeroSection() {
           className="absolute top-1/2 left-1/2 flex h-full w-full
         -translate-x-1/2 -translate-y-1/2 transform flex-col items-center gap-y-8"
         >
-          <div className="flex h-full w-full items-center justify-center px-4">
+          <div className="flex h-full w-full items-center justify-center ">
             <div
-              className="relative h-[70%] w-[95%] cursor-pointer transition-all duration-500
-            hover:scale-102 sm:mt-10 sm:h-[80%] sm:w-[80%]"
+              className="relative aspect-[7/10] h-[70%] cursor-pointer transition-all duration-500 hover:scale-102 sm:mt-16
+              sm:aspect-[11/10] sm:h-[80%] md:aspect-[13/10] lg:aspect-[16/10] lg:h-[85%] xl:aspect-[20/10]"
               onClick={() => navigate("/game/296831")}
             >
               <img

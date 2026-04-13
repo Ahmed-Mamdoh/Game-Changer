@@ -24,12 +24,13 @@ function FilterButtons({
       {category
         .sort((a, b) => a.name.localeCompare(b.name))
         .filter((_, i) => showAll || i < 2)
-        .map((item) => {
+        .map((item, i) => {
           return (
             <button
               className={`border-pulse-primary/40 hover:bg-pulse-primary/30
-                    hover:shadow-pulse-primary/60 cursor-pointer rounded-full border px-3 py-1.5 text-sm
+                    hover:shadow-pulse-primary/60  cursor-pointer rounded-full border px-3 py-1.5 text-sm
                     font-medium tracking-wide transition-all duration-200 hover:scale-105 hover:shadow-[0_0_8px_2px]
+                    ${!showAll && i === 1 && !or ? "hidden sm:block" : ""}
                     ${selected?.includes(item.id.toString()) ? "bg-pulse-primary/50 shadow-pulse-primary/60 shadow-[0_0_8px_2px]" : ""}`}
               onClick={() => {
                 setSelected((prev) =>

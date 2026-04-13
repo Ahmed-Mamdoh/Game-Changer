@@ -12,8 +12,8 @@ function AllGames() {
       <FadingBackground first={true} />
       {/* Content section */}
       <div className="z-10 w-full">
-        <div className="container mx-auto">
-          <Filters className="w-3/4" />
+        <div className=" mx-auto">
+          <Filters />
           <GamesGallery data={data} isLoading={isLoading} />
           <FullPagination />
         </div>
