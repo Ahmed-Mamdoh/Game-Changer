@@ -145,9 +145,9 @@ function AddGameModal({
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="bg-obsidian-card/70 border-0 backdrop-blur-sm sm:max-w-4xl">
+      <DialogContent className="bg-obsidian-card/85 border-obsidian-border border-2 backdrop-blur-sm sm:max-w-xl md:max-w-3xl lg:max-w-4xl">
         <div className="flex w-full items-start gap-x-10">
-          <div className="flex h-full flex-col items-start justify-between">
+          <div className="hidden h-full flex-col items-start justify-between sm:flex">
             <img
               src={game_cover}
               className="w-70 rounded-md object-contain"
@@ -163,98 +163,93 @@ function AddGameModal({
               </p>
             </div>
           </div>
-          {user_id ? (
-            <form
-              onSubmit={handleSubmit(
-                isUpdate ? handleUpdateGame : handleAddGame,
-              )}
-              className="w-full"
-            >
-              <div className="grid gap-4">
-                <div className="flex flex-col gap-1">
-                  <p className="text-4xl">
-                    {isUpdate ? "Update Game" : "Add Game"}
-                  </p>
-                  <p className="text-text-secondary text-lg">
-                    {isUpdate
-                      ? "Update game details"
-                      : "Add a new game to your list."}
-                  </p>
-                </div>
-                <div className="grid gap-3">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="status">Status *</Label>
-                    {errors["status"] && (
-                      <p className="text-error text-sm">
-                        {errors["status"].message}
-                      </p>
-                    )}
-                  </div>
-                  <ModalSelect
-                    control={control}
-                    name="status"
-                    defaultValue={userGame?.status || ""}
-                  />
-                </div>
-                <div className="grid gap-3">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="hours_played">Hours Played *</Label>
-                    {errors["hours_played"] && (
-                      <p className="text-error text-sm">
-                        {errors["hours_played"].message}
-                      </p>
-                    )}
-                  </div>
-                  <Input
-                    id="hours_played"
-                    name="hours_played"
-                    type="number"
-                    className="border-obsidian-border bg-myGray/70  rounded-full border-2 focus-visible:ring-0"
-                    min={1}
-                    defaultValue={userGame?.hours_played || ""}
-                    {...register("hours_played", {
-                      required: "Hours played is required",
-                    })}
-                  />
-                </div>
 
-                <div className="grid gap-3">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="date_finished">Date {status}</Label>
-                    {errors["date_finished"] && (
-                      <p className="text-error text-sm">
-                        {errors["date_finished"].message}
-                      </p>
-                    )}
-                  </div>
-                  <ModalDate
-                    name="date_finished"
-                    control={control}
-                    disabled={status === "playing" || status === undefined}
-                    minDate={releaseDate}
-                    defaultValue={userGame?.date_finished || null}
-                  />
-                </div>
-              </div>
-              <DialogFooter className="pt-4">
-                <DialogClose asChild>
-                  <button className=" bg-myGray/70 border-obsidian-border cursor-pointer rounded-full border px-4 py-2">
-                    Cancel
-                  </button>
-                </DialogClose>
-
-                <button
-                  type="submit"
-                  disabled={isLoadingRef.current}
-                  className="bg-pulse-secondary cursor-pointer rounded-full px-5 py-1"
-                >
+          <form
+            onSubmit={handleSubmit(isUpdate ? handleUpdateGame : handleAddGame)}
+            className="w-full"
+          >
+            <div className="grid w-full gap-4">
+              <div className="flex w-full flex-col items-center justify-center gap-1">
+                <p className="text-4xl">
                   {isUpdate ? "Update Game" : "Add Game"}
+                </p>
+                <p className="text-text-secondary text-lg">
+                  {isUpdate
+                    ? "Update game details"
+                    : "Add a new game to your list."}
+                </p>
+              </div>
+              <div className="grid gap-3">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="status">Status *</Label>
+                  {errors["status"] && (
+                    <p className="text-error text-sm">
+                      {errors["status"].message}
+                    </p>
+                  )}
+                </div>
+                <ModalSelect
+                  control={control}
+                  name="status"
+                  defaultValue={userGame?.status || ""}
+                />
+              </div>
+              <div className="grid gap-3">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="hours_played">Hours Played *</Label>
+                  {errors["hours_played"] && (
+                    <p className="text-error text-sm">
+                      {errors["hours_played"].message}
+                    </p>
+                  )}
+                </div>
+                <Input
+                  id="hours_played"
+                  name="hours_played"
+                  type="number"
+                  className="border-obsidian-border bg-myGray/70  rounded-full border-2 focus-visible:ring-0"
+                  min={1}
+                  defaultValue={userGame?.hours_played || ""}
+                  {...register("hours_played", {
+                    required: "Hours played is required",
+                  })}
+                />
+              </div>
+
+              <div className="grid gap-3">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="date_finished">Date {status}</Label>
+                  {errors["date_finished"] && (
+                    <p className="text-error text-sm">
+                      {errors["date_finished"].message}
+                    </p>
+                  )}
+                </div>
+                <ModalDate
+                  name="date_finished"
+                  control={control}
+                  disabled={status === "playing" || status === undefined}
+                  minDate={releaseDate}
+                  defaultValue={userGame?.date_finished || null}
+                />
+              </div>
+            </div>
+            <DialogFooter className="pt-4">
+              <DialogClose asChild>
+                <button className=" bg-myGray/70 border-obsidian-border cursor-pointer rounded-full border px-5 py-2">
+                  Cancel
                 </button>
-              </DialogFooter>
-            </form>
-          ) : (
-            <p className="text-text-subtle">Please login to add a game.</p>
-          )}
+              </DialogClose>
+
+              <button
+                type="submit"
+                disabled={isLoadingRef.current}
+                className="bg-pulse-secondary cursor-pointer rounded-full px-5 py-2"
+              >
+                {isUpdate ? "Update Game" : "Add Game"}
+              </button>
+            </DialogFooter>
+          </form>
         </div>
       </DialogContent>
     </Dialog>
