@@ -6,6 +6,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import YoutubeEmbed from "@/ui/YoutubeEmbed";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 function GameDetailsMedia({ data }) {
   const { screenshots, videos } = data[0];
@@ -44,8 +45,19 @@ function GameDetailsMedia({ data }) {
                 })}
                 {videos?.map((video) => {
                   return (
-                    <CarouselItem key={video.id} className="px-1 md:pl-4">
+                    <CarouselItem
+                      key={video.id}
+                      className="flex flex-col items-center gap-3 px-1 pb-4 md:pb-0 md:pl-4"
+                    >
                       <YoutubeEmbed videoId={video.video_id} />
+
+                      <div className="flex items-center gap-x-2 md:hidden">
+                        <FaChevronLeft className="text-text-secondary text-sm" />
+                        <p className="text-text-secondary text-sm">
+                          Swap From Here
+                        </p>
+                        <FaChevronRight className="text-text-secondary text-sm" />
+                      </div>
                     </CarouselItem>
                   );
                 })}
