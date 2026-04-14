@@ -53,7 +53,7 @@ function GameDetailsMedia({ data }) {
 
                       <div className="flex items-center gap-x-2 md:hidden">
                         <FaChevronLeft className="text-text-secondary text-sm" />
-                        <p className="text-text-secondary text-sm">
+                        <p className="text-text-secondary text-sm select-none">
                           Swap From Here
                         </p>
                         <FaChevronRight className="text-text-secondary text-sm" />
