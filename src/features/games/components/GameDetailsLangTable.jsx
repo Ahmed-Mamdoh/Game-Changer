@@ -1,13 +1,12 @@
 import {
+  Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
-  Table,
 } from "@/components/ui/table";
 import useScreenWidth from "@/hooks/useScreenWidth";
-import { useEffect, useState } from "react";
 import { FaCheck } from "react-icons/fa";
 
 const LANGUAGES = [
@@ -69,9 +68,9 @@ function GameDetailsLangTable({ data }) {
       <>
         <span id="Supported languages"></span>
         <div className="font-heading mx-auto flex w-9/10 items-start justify-start pt-9 pb-4">
-          <h2 className="text-center text-5xl">Language Support</h2>
+          <h2 className="text-center text-3xl md:text-5xl">Language Support</h2>
         </div>
-        <Table className="bg-obsidian-deep/30  mx-auto w-9/10 rounded-2xl  px-4 py-8 backdrop-blur-sm">
+        <Table className="bg-obsidian-deep/50  mx-auto w-9/10 rounded-2xl  px-4 py-8 backdrop-blur-sm">
           <TableHeader>
             <TableRow className="border-text-muted">
               <TableHead></TableHead>
@@ -131,10 +130,10 @@ function GameDetailsLangTable({ data }) {
       <>
         <span id="Supported languages"></span>
 
-        <div className="font-heading flex items-center justify-center pt-9 pb-4 text-4xl md:text-6xl">
-          <h2 className="text-center">Language Support</h2>
+        <div className="font-heading flex items-start justify-center pt-9 pb-4">
+          <h2 className="text-center text-3xl md:text-5xl">Language Support</h2>
         </div>
-        <Table className="bg-base-100 rounded-sm px-4 py-8">
+        <Table className="bg-obsidian-deep/50 mx-auto w-9/10 rounded-2xl  px-4 py-8 backdrop-blur-sm">
           <TableHeader>
             <TableRow className="border-text-muted">
               <TableHead></TableHead>
