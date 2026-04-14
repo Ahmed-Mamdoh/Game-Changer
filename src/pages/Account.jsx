@@ -94,7 +94,7 @@ function Account() {
     <div className="relative mx-auto min-h-[150dvh] py-20">
       <FadingBackground first />
 
-      <div className=" mx-auto w-full ">
+      <div className="relative z-10 mx-auto w-full">
         <div className="mx-auto w-full px-4 md:w-9/10">
           <UserHeader />
           <UserStats user_games={user_games} isLoading={isLoading} />

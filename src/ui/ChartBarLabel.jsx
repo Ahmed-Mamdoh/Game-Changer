@@ -76,7 +76,7 @@ export function ChartBarLabel({ chartData, title }) {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className=" h-40 w-full">
+         <ChartContainer config={chartConfig} className=" h-32 w-full sm:h-40">
           <BarChart
             accessibilityLayer
             data={finalChartData}
@@ -93,14 +93,14 @@ export function ChartBarLabel({ chartData, title }) {
               tickFormatter={(value) => value.split("/")[0].split("(")[0]} // Shorten long labels
             />
             <YAxis domain={[0, Number(finalChartData[0].number)]} hide={true} />
-            <Bar dataKey="number" fill="var(--color-pulse-extra)" radius={4}>
-              <LabelList
-                position="top"
-                offset={12}
-                className="fill-foreground"
-                fontSize={12}
-                formatter={(value) => `${value}%`}
-              />
+             <Bar dataKey="number" fill="var(--color-pulse-extra)" radius={4} barSize={30}>
+               <LabelList
+                 position="top"
+                 offset={8}
+                 className="fill-foreground"
+                 fontSize={10}
+                 formatter={(value) => `${value}%`}
+               />
             </Bar>
           </BarChart>
         </ChartContainer>
