@@ -1,3 +1,7 @@
+import {
+  findBestMatchingGame,
+  normalizeGameName,
+} from "@/utils/gameNameMatching";
 import { useGetFreeGameData } from "./useGetFreeGameData";
 import { useGetFreePcGames } from "./useGetFreePcGames";
 
@@ -26,27 +30,58 @@ export function useGetFreeGamesToShow() {
 
   const dataToShow =
     freeGamesIgdbData?.length > 0
-      ? freeGamesIgdbData?.map((searchResult, i) => {
-          const intendedGame = searchResult.filter((game) => {
-            return (
-              game.name.toLowerCase().trim().replace(/['’]/g, "") ===
-                gamesCleanNames[i].toLowerCase().trim().replace(/['’]/g, "") ||
-              game.name
-                .split(":")[0]
-                .toLowerCase()
-                .trim()
-                .replace(/['’]/g, "") ===
-                gamesCleanNames[i].toLowerCase().trim().replace(/['’]/g, "")
+      ? freeGamesIgdbData
+          ?.map((searchResult, i) => {
+            // Use the new robust matching function
+            const intendedGame = findBestMatchingGame(
+              searchResult,
+              gamesCleanNames[i],
             );
-          });
 
-          return {
-            ...intendedGame[0],
-            freeOn: freeOnPlatform[i],
-            endDate: freeGamesNames[i].end_date,
-            giveAwayLink: freeGamesNames[i].open_giveaway,
-          };
-        })
+            // Fallback logic if no match found
+            if (!intendedGame && searchResult.length > 0) {
+              // Try to find any game that contains the target name
+              const containsMatch = searchResult.find((game) =>
+                normalizeGameName(game.name).includes(
+                  normalizeGameName(gamesCleanNames[i]),
+                ),
+              );
+
+              if (containsMatch) {
+                return {
+                  ...containsMatch,
+                  freeOn: freeOnPlatform[i],
+                  endDate: freeGamesNames[i].end_date,
+                  giveAwayLink: freeGamesNames[i].open_giveaway,
+                };
+              }
+
+              // As last resort, use the first result with a warning
+              console.warn(
+                `No good match found for "${gamesCleanNames[i]}", using first result`,
+              );
+              return {
+                ...searchResult[0],
+                freeOn: freeOnPlatform[i],
+                endDate: freeGamesNames[i].end_date,
+                giveAwayLink: freeGamesNames[i].open_giveaway,
+              };
+            }
+
+            // Return matched game with additional data
+            if (intendedGame) {
+              return {
+                ...intendedGame,
+                freeOn: freeOnPlatform[i],
+                endDate: freeGamesNames[i].end_date,
+                giveAwayLink: freeGamesNames[i].open_giveaway,
+              };
+            }
+
+            // If still no match, return null for this entry
+            return null;
+          })
+          .filter(Boolean) // Remove null entries
       : [];
 
   return { dataToShow, isLoadingFreeGamesIgdbData, isLoadingFreeGamesNames };

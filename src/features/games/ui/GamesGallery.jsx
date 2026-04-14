@@ -18,7 +18,6 @@ function GamesGallery({ data, isLoading }) {
         </span>
       )}
       {data?.length > 0 &&
-        data[0]?.id &&
         data?.map((game) => {
           if (!game.id) return null;
           return <GameItem key={game.id} game={game} />;
