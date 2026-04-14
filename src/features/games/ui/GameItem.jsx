@@ -6,7 +6,7 @@ import { FaRegClock, FaSteam } from "react-icons/fa";
 import { SiEpicgames, SiGogdotcom } from "react-icons/si";
 import { Link, useNavigate } from "react-router-dom";
 
-function GameItem({ game }) {
+function GameItem({ game, className }) {
   let imageUrl = game.cover?.url
     ? game.cover?.url?.replace("jpg", "webp")
     : null;
@@ -38,11 +38,11 @@ function GameItem({ game }) {
 
   return (
     <div
-      className="border-obsidian-border flex w-fit
-    cursor-pointer flex-col items-center justify-center gap-y-2 rounded-2xl border-1
-    bg-gradient-to-tl from-[#25212950] from-80% to-gray-200/30 to-100% p-2
-    backdrop-blur-xs transition-all duration-300 hover:scale-105 hover:rotate-z-1
-    hover:from-70% hover:shadow-xl"
+      className={`border-obsidian-border flex w-fit cursor-pointer
+    flex-col items-center justify-center gap-y-2 rounded-2xl
+    border-1 bg-gradient-to-tl from-[#25212950] from-80% to-gray-200/30 to-100%
+    p-2 backdrop-blur-xs transition-all duration-300 hover:scale-105
+    hover:rotate-z-1 hover:from-70% hover:shadow-xl ${className}`}
     >
       <div
         className="peer relative w-36 md:w-48"
