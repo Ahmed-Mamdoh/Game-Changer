@@ -70,7 +70,7 @@ function GameDetailsLangTable({ data }) {
         <div className="font-heading mx-auto flex w-9/10 items-start justify-start pt-9 pb-4">
           <h2 className="text-center text-3xl md:text-5xl">Language Support</h2>
         </div>
-        <Table className="bg-obsidian-deep/50  mx-auto w-9/10 rounded-2xl  px-4 py-8 backdrop-blur-sm">
+        <Table className="bg-obsidian-deep/50 outline-obsidian-border mx-auto my-5 w-9/10 rounded-2xl px-4 py-8 outline-2 backdrop-blur-sm">
           <TableHeader>
             <TableRow className="border-text-muted">
               <TableHead></TableHead>
@@ -133,7 +133,7 @@ function GameDetailsLangTable({ data }) {
         <div className="font-heading flex items-start justify-center pt-9 pb-4">
           <h2 className="text-center text-3xl md:text-5xl">Language Support</h2>
         </div>
-        <Table className="bg-obsidian-deep/50 mx-auto w-9/10 rounded-2xl  px-4 py-8 backdrop-blur-sm">
+        <Table className="bg-obsidian-deep/50 outline-obsidian-border mx-auto my-3 w-9/10 rounded-2xl px-4 py-8 outline-2 backdrop-blur-sm">
           <TableHeader>
             <TableRow className="border-text-muted">
               <TableHead></TableHead>
@@ -186,26 +186,10 @@ function checkGameLanguages(
   const isAvailable = currentLanguage?.find(
     (lang) => lang?.language_support_type?.name === type,
   );
-  if (isAvailable) {
-    return (
-      <TableCell
-        className={`border-text-muted border-x py-4 font-medium ${
-          variant === "horizontal"
-            ? i === LANGUAGES.length - 1
-              ? "border-r-0"
-              : ""
-            : i === LANGUAGES_TYPES.length - 1
-              ? "border-r-0"
-              : ""
-        }`}
-      >
-        <FaCheck className="mx-auto" />
-      </TableCell>
-    );
-  }
+
   return (
     <TableCell
-      className={`border-text-muted border-x py-6 font-medium ${
+      className={`border-text-muted border-x ${isAvailable ? "py-4" : "py-6"} text-center font-medium ${
         variant === "horizontal"
           ? i === LANGUAGES.length - 1
             ? "border-r-0"
@@ -214,7 +198,9 @@ function checkGameLanguages(
             ? "border-r-0"
             : ""
       }`}
-    ></TableCell>
+    >
+      {isAvailable ? <FaCheck className="mx-auto" /> : null}
+    </TableCell>
   );
 }
 
