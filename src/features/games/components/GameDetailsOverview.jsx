@@ -159,7 +159,7 @@ function GameDetailsOverview({ data }) {
         return (
           <a
             href={link.url}
-            className={`flex items-center gap-x-2 rounded-full p-3 text-lg backdrop-blur-xs transition-all hover:scale-105 md:px-4 md:py-2 ${platform.bgColor}`}
+            className={`flex items-center gap-x-2 rounded-full p-3 text-lg text-nowrap backdrop-blur-xs transition-all hover:scale-105 md:px-4 md:py-2 ${platform.bgColor}`}
             target="_blank"
             rel="noopener noreferrer"
             key={`${platform.name}-${link.url}`}
@@ -250,15 +250,17 @@ function GameDetailsOverview({ data }) {
           {/* Row 2 */}
           <div className="flex w-full flex-col items-center justify-between md:flex-row">
             <div className="flex w-full flex-col items-center gap-2 md:flex-row">
-              {/* Release Date */}
               <div className="flex w-full items-center justify-between gap-x-2 md:w-fit md:justify-start">
+                {/* Release Date */}
                 <div className="text-text-secondary flex flex-row items-center text-lg md:flex-col md:items-start md:text-xl">
                   <p className="md:hidden">
                     <FaCalendarAlt className="mr-1" />
                   </p>
                   <p className="hidden text-nowrap md:block">Release Date: </p>
                   <p>
-                    {formatDate(new Date(releaseDate * 1000), "dd/MM/yyyy")}
+                    {releaseDate
+                      ? formatDate(new Date(releaseDate * 1000), "dd/MM/yyyy")
+                      : "N/A"}
                   </p>
                 </div>
                 <div className="border-text-secondary/50 hidden w-[1px] self-stretch border-1 md:block"></div>
