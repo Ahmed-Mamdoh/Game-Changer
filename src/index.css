@@ -61,6 +61,7 @@
   --color-text-dark: #18181b;
   --font-heading: "Space Grotesk", sans-serif;
   --font-body: "Manrope", sans-serif;
+  --font-arabic: "Cairo", sans-serif;
 
   /* Screens (breakpoints) */
   --breakpoint-xs: 375px;
@@ -119,8 +120,11 @@
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
+
   .no-scrollbar {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
   }
 }

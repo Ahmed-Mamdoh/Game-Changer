@@ -22,7 +22,7 @@ function HeroSection() {
         >
           <div className="flex h-full w-full items-center justify-center ">
             <div
-              className="xs:w-fit xs:h-[70%] relative aspect-[7/10] w-9/10 cursor-pointer transition-all duration-500 hover:scale-102 sm:mt-16
+              className="xs:w-fit xs:h-[65%] relative aspect-[7/10] w-9/10 cursor-pointer transition-all duration-500 hover:scale-102 sm:mt-16
               sm:aspect-[11/10] sm:h-[80%] md:aspect-[13/10] lg:aspect-[16/10] lg:h-[85%] xl:aspect-[20/10]"
               onClick={() => navigate("/game/296831")}
             >

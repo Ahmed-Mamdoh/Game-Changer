@@ -70,7 +70,7 @@ function GameItem({ game, className }) {
             className="border-base-300 aspect-[3/4] h-full w-full rounded-xl border object-cover"
           />
         ) : (
-          <div className="bg-base-300 flex h-full w-full items-center justify-center rounded-lg font-medium">
+          <div className="bg-base-300 flex aspect-[3/4] h-full w-full items-center justify-center rounded-lg font-medium">
             ❌ image not found
           </div>
         )}
@@ -124,9 +124,7 @@ function GameItem({ game, className }) {
       {game?.first_release_date &&
         game?.first_release_date > Math.floor(Date.now() / 1000) && (
           <div className="text-pulse-accent flex items-center justify-center gap-x-1 text-sm md:text-base">
-             <p>
-               {formatReleaseDate(game.first_release_date)}
-             </p>
+            <p>{formatReleaseDate(game.first_release_date)}</p>
             <CalendarCheck className="h-4 w-4" />
           </div>
         )}

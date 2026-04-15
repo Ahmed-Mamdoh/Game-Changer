@@ -11,15 +11,18 @@ function MessageList({ messages, messagesRef, isLoading }) {
         if (item.role === "user")
           return (
             <div key={index} className="chat chat-start">
-              <div className="chat-bubble bg-myGray text-text-primary rounded-3xl">
-                {item.content}
+              <div className="chat-bubble bg-myGray text-text-primary font-arabic rounded-3xl">
+                <p dir="auto">{item.content}</p>
               </div>
             </div>
           );
         if (item.role === "assistant") {
           return (
             <div key={index} className="chat chat-end">
-              <div className="chat-bubble bg-pulse-secondary text-text-primary  rounded-3xl">
+              <div
+                dir="auto"
+                className="chat-bubble bg-pulse-secondary text-text-primary font-arabic rounded-3xl"
+              >
                 <Markdown
                   components={{
                     a: ({ href, children, ...props }) => {
@@ -53,6 +56,12 @@ function MessageList({ messages, messagesRef, isLoading }) {
                         </a>
                       );
                     },
+
+                    p: ({ children, ...props }) => (
+                      <p {...props} dir="auto">
+                        {children}
+                      </p>
+                    ),
                   }}
                 >
                   {item.content}
