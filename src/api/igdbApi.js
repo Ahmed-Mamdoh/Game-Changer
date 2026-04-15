@@ -14,11 +14,10 @@ export async function getAllGames({
   const offset = (page - 1) * LIMIT;
   // if there is sortBy and no search then sort by sortBy
   const sortByString =
-    sortBy && !search
-      ? `sort ${sortBy} ${sortBy === "name" ? "asc" : "desc"};`
-      : isUpcoming
-        ? `sort hypes desc;`
-        : "";
+    sortBy &&
+    !search &&
+    `sort ${sortBy} ${sortBy === "name" || (isUpcoming && sortBy === "first_release_date") ? "asc" : "desc"};`;
+
   const searchString = search ? `search "${search}";` : "";
 
   const releaseDateString = search

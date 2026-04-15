@@ -1,4 +1,4 @@
-import { formatDate, intervalToDuration } from "date-fns";
+import { formatDate, intervalToDuration, formatDistanceToNow } from "date-fns";
 import { CalendarCheck, Check, Clock } from "lucide-react";
 import { useEffect, useState } from "react";
 import { CiPlay1, CiStop1 } from "react-icons/ci";
@@ -12,6 +12,21 @@ function GameItem({ game, className }) {
     : null;
   imageUrl = imageUrl?.replace("t_thumb", "t_cover_big");
   const navigate = useNavigate();
+
+  const formatReleaseDate = (timestamp) => {
+    const releaseDate = new Date(timestamp * 1000);
+    const now = new Date();
+    const diffInDays = Math.abs(releaseDate - now) / (1000 * 60 * 60 * 24);
+
+    // If within 3 months (90 days), show relative format
+    if (diffInDays <= 90) {
+      return formatDistanceToNow(releaseDate, { addSuffix: true });
+    }
+    // Otherwise show absolute format
+    else {
+      return formatDate(releaseDate, "dd/MM/yyyy");
+    }
+  };
 
   const [countDown, setCountDown] = useState(() =>
     intervalToDuration({
@@ -52,7 +67,7 @@ function GameItem({ game, className }) {
           <img
             src={imageUrl}
             alt=""
-            className="border-base-300 h-full w-full rounded-xl border object-cover"
+            className="border-base-300 aspect-[3/4] h-full w-full rounded-xl border object-cover"
           />
         ) : (
           <div className="bg-base-300 flex h-full w-full items-center justify-center rounded-lg font-medium">
@@ -109,12 +124,9 @@ function GameItem({ game, className }) {
       {game?.first_release_date &&
         game?.first_release_date > Math.floor(Date.now() / 1000) && (
           <div className="text-pulse-accent flex items-center justify-center gap-x-1 text-sm md:text-base">
-            <p>
-              {formatDate(
-                new Date(game.first_release_date * 1000),
-                "dd/MM/yyyy",
-              )}
-            </p>
+             <p>
+               {formatReleaseDate(game.first_release_date)}
+             </p>
             <CalendarCheck className="h-4 w-4" />
           </div>
         )}

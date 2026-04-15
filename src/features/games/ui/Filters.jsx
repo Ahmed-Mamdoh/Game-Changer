@@ -15,6 +15,7 @@ function Filters({
   showStatus = false,
   isAccount = false,
   showFavorite = false,
+  isUpcoming = false,
   className = "",
 }) {
   const { data: genres, isLoading: isLoadingGenres } = useGetGenres();
@@ -25,10 +26,15 @@ function Filters({
         { id: "hours_played", name: "Hours Played" },
         { id: "date_finished", name: "Date Finished" },
       ]
-    : [
-        { id: "first_release_date", name: "Release Date" },
-        { id: "total_rating_count", name: "Popularity" },
-      ];
+    : isUpcoming
+      ? [
+          { id: "first_release_date", name: "Release Date" },
+          { id: "hypes", name: "Hype" },
+        ]
+      : [
+          { id: "first_release_date", name: "Release Date" },
+          { id: "total_rating_count", name: "Popularity" },
+        ];
   const status = [
     { id: "finished", name: "Finished" },
     { id: "playing", name: "Playing" },
@@ -70,7 +76,7 @@ function Filters({
               name="Sort By"
               paramName="sortBy"
               or={true}
-              defaultValue={["total_rating_count"]}
+              defaultValue={isUpcoming ? ["hypes"] : ["total_rating_count"]}
             />
           )}
           <button

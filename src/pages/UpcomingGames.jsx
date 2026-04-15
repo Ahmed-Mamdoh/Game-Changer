@@ -12,7 +12,7 @@ function UpcomingGames() {
       <FadingBackground first={true} />
       {/* Content section */}
       <div className=" z-10 w-full py-20">
-        <Filters showSortBy={false} className="w-3/4" />
+        <Filters isUpcoming={true} className="w-3/4" />
         <GamesGallery data={data} isLoading={isLoading} />
         <FullPagination />
       </div>

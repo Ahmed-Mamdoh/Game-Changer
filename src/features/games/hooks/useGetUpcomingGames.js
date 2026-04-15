@@ -1,46 +1,31 @@
 import { getAllGames } from "@/api/igdbApi";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useSearchParams } from "react-router-dom";
+import useGetFiltersParams from "./useGetFiltersParams";
 
 export function useGetUpcomingGames(limit) {
+  const { filters, sortBy, page, search } = useGetFiltersParams();
   const queryClient = useQueryClient();
 
-  const [searchParams] = useSearchParams();
-  const search = searchParams.get("search");
-  const page = Number(searchParams.get("page")) || 1;
-  const genre = searchParams.get("genre");
-  const themes = searchParams.get("theme");
-  const gameMode = searchParams.get("gameMode");
-
-  let filters = [];
-  if (genre) {
-    filters.push(`genres = (${genre})`);
-  }
-  if (themes) {
-    filters.push(`themes = (${themes})`);
-  }
-  if (gameMode) {
-    filters.push(`game_modes = (${gameMode})`);
-  }
-
   const { data, isLoading } = useQuery({
-    queryKey: ["games", "upcoming", page, search, filters, limit],
+    queryKey: ["games", "upcoming", page, search, filters, limit, sortBy],
     queryFn: () =>
       getAllGames({
         filters,
         page,
         limit,
+        sortBy: sortBy || "hypes",
         isUpcoming: true,
       }),
   });
 
   queryClient.prefetchQuery({
-    queryKey: ["games", "upcoming", page + 1, search, filters, limit],
+    queryKey: ["games", "upcoming", page + 1, search, filters, limit, sortBy],
     queryFn: () =>
       getAllGames({
         filters,
         page: page + 1,
         limit,
+        sortBy: sortBy || "hypes",
         isUpcoming: true,
       }),
   });
