@@ -65,7 +65,7 @@ export function ChartBarLabel({ chartData, title }) {
               tickMargin={2}
               axisLine={false}
               tickFormatter={(value) =>
-                value.split("/")[0].split("(")[0].trim()
+                value.split("/")[0].split("(")[0].trim().replaceAll(" ", "-")
               } // Shorten long labels
               width={100}
             />
