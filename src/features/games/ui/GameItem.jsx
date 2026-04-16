@@ -53,39 +53,35 @@ function GameItem({ game, className }) {
 
   return (
     <div
-      className={`border-obsidian-border flex w-fit cursor-pointer
-    flex-col items-center justify-center gap-y-2 rounded-2xl
-    border-1 bg-gradient-to-tl from-[#25212950] from-80% to-gray-200/30 to-100%
-    p-2 backdrop-blur-xs transition-all duration-300 hover:scale-105
-    hover:rotate-z-1 hover:from-70% hover:shadow-xl ${className}`}
+      className={`bg-obsidian-card border-obsidian-border hover:border-pulse-primary/50 group
+        hover:shadow-pulse-primary/5 relative flex w-fit cursor-pointer flex-col items-center
+        justify-center gap-y-3 rounded-2xl border-1 p-3 backdrop-blur-md transition-all duration-500
+        hover:-translate-y-2 hover:shadow-lg ${className}`}
     >
       <div
-        className="peer relative w-36 md:w-48"
+        className="relative w-36 overflow-hidden rounded-xl md:w-48"
         onClick={() => navigate(`/game/${game.id}`)}
       >
         {imageUrl ? (
           <img
             src={imageUrl}
-            alt=""
-            className="border-base-300 aspect-[3/4] h-full w-full rounded-xl border object-cover"
+            alt={game.name}
+            className="aspect-[3/4] h-full w-full object-cover transition-transform duration-700"
+            fetchPriority="low"
           />
         ) : (
-          <div className="bg-base-300 flex aspect-[3/4] h-full w-full items-center justify-center rounded-lg font-medium">
-            ❌ image not found
+          <div className="bg-obsidian-muted font-body text-text-muted flex aspect-[3/4] h-full w-full items-center justify-center rounded-xl text-xs">
+            No Image
           </div>
         )}
+        <div className="from-obsidian-base/40 absolute inset-0 bg-gradient-to-t via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
       </div>
-      <div
-        className="h-12 w-36 cursor-default text-center text-sm font-medium text-wrap
-      transition-colors duration-300 md:h-12 md:w-48 md:text-base"
-      >
+      <div className="h-12 w-36 cursor-default text-center transition-colors duration-300 md:w-48">
         <Link to={`/game/${game.id}`} className="cursor-pointer">
-          <div>
-            <p>
-              {game.name?.substring(0, 40)}
-              {game.name?.length > 40 ? "..." : ""}
-            </p>
-          </div>
+          <p className="font-heading text-text-primary group-hover:text-pulse-accent text-sm leading-tight font-semibold md:text-base">
+            {game.name?.substring(0, 40)}
+            {game.name?.length > 40 ? "..." : ""}
+          </p>
         </Link>
       </div>
       {game?.giveAwayLink && (
@@ -95,7 +91,7 @@ function GameItem({ game, className }) {
             href={game.giveAwayLink}
             target="_blank"
             rel="noreferrer"
-            className="flex cursor-pointer items-center justify-center gap-2 text-sm md:text-base"
+            className="font-body flex cursor-pointer items-center justify-center gap-2 text-xs font-semibold tracking-wider uppercase md:text-sm"
           >
             {game.freeOn === "Steam" ? <FaSteam className="h-4 w-4" /> : null}
             {game.freeOn === "Epic Games" ? (
@@ -105,8 +101,8 @@ function GameItem({ game, className }) {
             {game.freeOn}
           </a>
 
-          <div className="flex items-center justify-center gap-1 text-sm md:text-base">
-            <Clock className="h-4 w-4" />
+          <div className="font-body flex items-center justify-center gap-1 text-xs font-bold md:text-sm">
+            <Clock className="h-3.5 w-3.5" />
             <p>
               {countDown.days
                 ? `${countDown.days}D`
@@ -123,26 +119,30 @@ function GameItem({ game, className }) {
       )}
       {game?.first_release_date &&
         game?.first_release_date > Math.floor(Date.now() / 1000) && (
-          <div className="text-pulse-accent flex items-center justify-center gap-x-1 text-sm md:text-base">
-            <p>{formatReleaseDate(game.first_release_date)}</p>
+          <div className="text-pulse-accent flex items-center justify-center gap-x-2">
+            <p className="font-body text-xs font-bold md:text-sm">
+              {formatReleaseDate(game.first_release_date)}
+            </p>
             <CalendarCheck className="h-4 w-4" />
           </div>
         )}
       {game?.hoursPlayed && (
-        <div className="text-text-secondary flex w-full items-center justify-between text-sm md:text-base">
-          <div className="flex items-center gap-1">
+        <div className="border-obsidian-border flex w-full items-center justify-between border-t pt-2">
+          <div className="text-text-secondary flex items-center gap-1.5">
             {game.status === "playing" ? (
-              <CiPlay1 className="h-4 w-4" />
+              <CiPlay1 className="text-pulse-primary h-3.5 w-3.5" />
             ) : game.status === "finished" ? (
-              <Check className="h-4 w-4" />
+              <Check className="h-3.5 w-3.5 text-green-500" />
             ) : (
-              <CiStop1 className="h-4 w-4" />
+              <CiStop1 className="h-3.5 w-3.5 text-red-500" />
             )}
-            <p className="text-sm">{game.status.toUpperCase()}</p>
+            <p className="font-body text-[10px] font-bold tracking-widest uppercase sm:text-xs">
+              {game.status}
+            </p>
           </div>
-          <div className="flex items-center gap-1 text-sm md:text-base">
-            <FaRegClock className="h-4 w-4" />
-            <p>{game.hoursPlayed}h</p>
+          <div className="text-text-secondary flex items-center gap-1">
+            <FaRegClock className="h-3 w-3" />
+            <p className="font-body text-xs font-bold">{game.hoursPlayed}h</p>
           </div>
         </div>
       )}

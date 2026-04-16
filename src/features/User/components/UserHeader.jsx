@@ -29,25 +29,30 @@ function UserHeader() {
   }
 
   return (
-     <div
-       className="bg-obsidian-deep/60 border-obsidian-border hover:border-pulse-extra/50
-        flex flex-col items-start gap-2 rounded-2xl border-2 p-3 sm:flex-row sm:items-center sm:gap-3 sm:p-5 backdrop-blur-xs transition-all"
-     >
+    <div
+      className="bg-obsidian-deep/60 border-obsidian-border hover:border-pulse-extra/50
+       flex flex-col items-start gap-4 rounded-2xl border-2 p-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:p-6 backdrop-blur-xs transition-all duration-300"
+    >
       {/* <DataField label="Username" value={username} /> */}
-       <p className="text-text-primary/80 text-xl font-bold sm:text-2xl">
-         Welcome, {username}
-       </p>
-       <button
-         className="btn bg-pulse-extra/80 rounded-full text-white w-full sm:w-auto"
-         aria-label="Log out"
-         aria-labelledby="logout-btn"
-         name="logout"
-         onClick={() => {
-           handleLogout();
-         }}
-       >
-         Log Out
-       </button>
+      <div className="flex flex-col gap-1">
+        <h2 className="text-text-primary font-heading text-2xl font-bold sm:text-3xl">
+          Welcome back
+        </h2>
+        <p className="text-text-secondary font-body text-lg sm:text-xl">
+          {username}
+        </p>
+      </div>
+      <button
+        className="bg-pulse-primary hover:bg-pulse-secondary cursor-pointer rounded-full px-6 py-2 text-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-pulse-glow w-full sm:w-auto"
+        aria-label="Log out"
+        aria-labelledby="logout-btn"
+        name="logout"
+        onClick={() => {
+          handleLogout();
+        }}
+      >
+        Log Out
+      </button>
     </div>
   );
 }
