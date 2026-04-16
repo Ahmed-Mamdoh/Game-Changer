@@ -76,30 +76,6 @@ function UserStats({ user_games, isLoading }) {
         </div>
 
         {/* Desktop View Stats */}
-        <StatsCard
-          data={user_games?.length || 0}
-          title="Total Games"
-          className="hidden md:flex"
-          icon={
-            <IoGameControllerOutline className="text-pulse-extra h-10 w-10 sm:h-12 sm:w-12" />
-          }
-        />
-        <StatsCard
-          data={totalHours}
-          title="Total Hours"
-          className="hidden md:flex"
-          icon={
-            <GoClock className="text-pulse-extra h-10 w-10 sm:h-12 sm:w-12" />
-          }
-        />
-        <StatsCard
-          data={mostPlayedGenre}
-          title="Most Played Genre"
-          className="hidden sm:col-span-2 md:flex lg:col-span-1"
-          icon={
-            <PiSwordLight className="text-pulse-extra h-10 w-10 sm:h-12 sm:w-12" />
-          }
-        />
       </div>
       {/* User Charts */}
       <UserCharts user_games={user_games} isLoading={isLoading} />

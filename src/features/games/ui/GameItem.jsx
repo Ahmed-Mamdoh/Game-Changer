@@ -53,9 +53,9 @@ function GameItem({ game, className }) {
 
   return (
     <div
-      className={`bg-obsidian-card border-obsidian-border hover:border-pulse-primary/50 group
+      className={`bg-obsidian-card/50 border-obsidian-border hover:border-pulse-primary/50 group
         hover:shadow-pulse-primary/5 relative flex w-fit cursor-pointer flex-col items-center
-        justify-center gap-y-3 rounded-2xl border-1 p-3 backdrop-blur-md transition-all duration-500
+        justify-center gap-y-3 rounded-2xl border-1 p-3 backdrop-blur-xs transition-all duration-500
         hover:-translate-y-2 hover:shadow-lg ${className}`}
     >
       <div

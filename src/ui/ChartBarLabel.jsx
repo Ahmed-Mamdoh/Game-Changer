@@ -1,32 +1,8 @@
 "use client";
 
-import { TrendingUp } from "lucide-react";
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  LabelList,
-  XAxis,
-  YAxis,
-} from "recharts";
-
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-import { useEffect, useState } from "react";
-import useScreenWidth from "@/hooks/useScreenWidth";
-
-export const description = "A bar chart with a label";
+import { Bar, BarChart, LabelList, XAxis, YAxis } from "recharts";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ChartContainer } from "@/components/ui/chart";
 
 const chartConfig = {
   desktop: {
@@ -36,18 +12,7 @@ const chartConfig = {
 };
 
 export function ChartBarLabel({ chartData, title }) {
-  const screenWidth = useScreenWidth();
-  const limit =
-    screenWidth > 1280
-      ? 5
-      : screenWidth > 1024
-        ? 4
-        : screenWidth > 768
-          ? 3
-          : screenWidth > 640
-            ? 6
-            : 2; // Adjust limits based on breakpoints
-
+  const limit = 5;
   const total = chartData.reduce((acc, cur) => acc + cur.number, 0);
 
   // Limit bars based on screen size, combine the rest into "Other"
@@ -57,7 +22,6 @@ export function ChartBarLabel({ chartData, title }) {
     const otherSum = chartData
       .slice(limit)
       .reduce((acc, cur) => acc + cur.number, 0); // Sum the rest
-
     updatedChartData = [...topData, { game: "Other", number: otherSum }];
   } else {
     updatedChartData = chartData; // Use all data if within limit
@@ -68,39 +32,61 @@ export function ChartBarLabel({ chartData, title }) {
     ...item,
     number: ((item.number / total) * 100).toFixed(0),
   }));
+
   return (
-    <Card className="bg-obsidian-deep/60 border-obsidian-border hover:border-pulse-extra/50 gap-1 rounded-2xl border-2 backdrop-blur-xs transition-all">
+    <Card
+      className="bg-obsidian-deep/60 border-obsidian-border hover:border-pulse-extra/50
+      gap-0 rounded-2xl border-2 py-4 backdrop-blur-xs transition-all"
+    >
       <CardHeader>
-        <CardTitle className=" text-text-primary/80 text-lg font-normal">
+        <CardTitle className="text-text-primary/80 text-lg font-normal">
           {title}
         </CardTitle>
       </CardHeader>
-      <CardContent>
-         <ChartContainer config={chartConfig} className=" h-32 w-full sm:h-40">
+      <CardContent className="pr-1 pl-0">
+        <ChartContainer
+          config={chartConfig}
+          className="aspect-auto h-48 min-h-0 w-full min-w-0"
+        >
           <BarChart
+            layout="vertical"
             accessibilityLayer
             data={finalChartData}
             margin={{
-              top: 30,
+              top: 0,
+              right: 30,
             }}
-            barSize={50}
           >
-            <XAxis
+            <YAxis
               dataKey="game"
+              type="category"
               tickLine={false}
-              tickMargin={10}
+              tick={{ fill: "var(--color-text-secondary)" }} // Add this line
+              tickMargin={2}
               axisLine={false}
-              tickFormatter={(value) => value.split("/")[0].split("(")[0]} // Shorten long labels
+              tickFormatter={(value) =>
+                value.split("/")[0].split("(")[0].trim()
+              } // Shorten long labels
+              width={100}
             />
-            <YAxis domain={[0, Number(finalChartData[0].number)]} hide={true} />
-             <Bar dataKey="number" fill="var(--color-pulse-extra)" radius={4} barSize={30}>
-               <LabelList
-                 position="top"
-                 offset={8}
-                 className="fill-foreground"
-                 fontSize={10}
-                 formatter={(value) => `${value}%`}
-               />
+            <XAxis
+              type="number"
+              domain={[0, Number(finalChartData[0].number)]}
+              hide={true}
+            />
+            <Bar
+              dataKey="number"
+              fill="var(--color-pulse-extra)"
+              radius={5}
+              barSize={20}
+            >
+              <LabelList
+                position="right"
+                offset={5}
+                className="fill-text-secondary"
+                fontSize={10}
+                formatter={(value) => `${value}%`}
+              />
             </Bar>
           </BarChart>
         </ChartContainer>

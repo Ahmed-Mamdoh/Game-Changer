@@ -99,7 +99,6 @@ function Account() {
           <UserHeader />
           <UserStats user_games={user_games} isLoading={isLoading} />
           <div className="flex flex-col gap-2">
-            <p>Filters</p>
             <div className="grid grid-cols-2 gap-x-3 gap-y-3 sm:grid-cols-4">
               <UserFilterButton paramsValue="" buttonText="All" />
               <UserFilterButton paramsValue="playing" buttonText="Playing" />
