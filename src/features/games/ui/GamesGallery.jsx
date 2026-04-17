@@ -6,8 +6,8 @@ function GamesGallery({ data, isLoading }) {
 
   return (
     <div
-      className="mx-auto grid w-9/10 grid-cols-[repeat(auto-fill,minmax(144px,1fr))]
-    justify-items-center gap-x-2 gap-y-4 pt-8 pb-16 md:grid-cols-[repeat(auto-fill,minmax(192px,1fr))] md:gap-x-10"
+      className="mx-auto grid w-9/10 grid-cols-[repeat(auto-fill,minmax(var(--game-card-w-mobile),1fr))]
+    justify-items-center gap-y-2 pt-8 pb-16 md:grid-cols-[repeat(auto-fill,minmax(var(--game-card-w-desktop),1fr))] md:gap-y-5"
     >
       {data?.length === 0 && (
         <span className="text-3xl font-bold">🔍 No Games Found</span>

@@ -67,10 +67,10 @@ function GameDetailsLangTable({ data }) {
     return (
       <>
         <span id="Supported languages"></span>
-        <div className="font-heading mx-auto flex w-9/10 items-start justify-start pt-9 pb-4">
-          <h2 className="text-center text-3xl md:text-5xl">Language Support</h2>
+        <div className="mx-auto flex w-9/10 items-start justify-start pt-9 pb-4">
+          <h2 className="text-center">Language Support</h2>
         </div>
-        <Table className="bg-obsidian-deep/50 outline-obsidian-border mx-auto my-5 w-9/10 rounded-2xl px-4 py-8 outline-2 backdrop-blur-sm">
+        <Table className="bg-bg-card outline-stroke-subtle mx-auto my-5 w-9/10 rounded-xl px-4 py-8 outline-2 backdrop-blur-sm">
           <TableHeader>
             <TableRow className="border-text-muted">
               <TableHead></TableHead>
@@ -78,7 +78,7 @@ function GameDetailsLangTable({ data }) {
               {LANGUAGES.map((language, i) => (
                 <TableHead
                   key={language.id}
-                  className={`base-content border-text-muted border-x py-4 text-center ${i === LANGUAGES.length - 1 ? "border-r-0" : ""}`}
+                  className={`border-text-muted border-x py-4 text-center ${i === LANGUAGES.length - 1 ? "border-r-0" : ""}`}
                 >
                   {language.native_name}
                 </TableHead>
@@ -130,16 +130,16 @@ function GameDetailsLangTable({ data }) {
       <>
         <span id="Supported languages"></span>
 
-        <div className="font-heading flex items-start justify-center pt-9 pb-4">
-          <h2 className="text-center text-3xl md:text-5xl">Language Support</h2>
+        <div className="flex items-start justify-center pt-9 pb-4">
+          <h2 className="text-center">Language Support</h2>
         </div>
-        <Table className="bg-obsidian-deep/50 outline-obsidian-border mx-auto my-3 w-9/10 rounded-2xl px-4 py-8 outline-2 backdrop-blur-sm">
+        <Table className="bg-bg-card outline-stroke-subtle mx-auto my-3 w-9/10 rounded-2xl px-4 py-8 outline-2 backdrop-blur-sm">
           <TableHeader>
             <TableRow className="border-text-muted">
               <TableHead></TableHead>
               {LANGUAGES_TYPES.map((type, i) => (
                 <TableHead
-                  className={`base-content border-text-muted border-x py-4 text-center ${i === LANGUAGES_TYPES.length - 1 ? "border-r-0" : ""}`}
+                  className={`border-text-muted border-x py-4 text-center ${i === LANGUAGES_TYPES.length - 1 ? "border-r-0" : ""}`}
                 >
                   {type.name}
                 </TableHead>
@@ -199,7 +199,7 @@ function checkGameLanguages(
             : ""
       }`}
     >
-      {isAvailable ? <FaCheck className="mx-auto" /> : null}
+      {isAvailable ? <FaCheck className="text-text-dim mx-auto" /> : null}
     </TableCell>
   );
 }

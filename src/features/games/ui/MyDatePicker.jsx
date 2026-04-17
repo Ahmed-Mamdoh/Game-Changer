@@ -21,10 +21,7 @@ export function MyDatePicker({ onSelect }) {
         "--rdp-disabled-opacity": "0.3",
         "--rdp-weekday-opacity": "0.8",
         "--rdp-weekday-text-align": "center",
-        "--rdp-nav_button-disabled-opacity": "0.3",
-        background: "rgba(18, 18, 18, 0.5)",
-        "backdrop-filter": "blur(12px)",
-        "border-radius": "8px",
+        "border-radius": "1.5rem",
         padding: "1rem",
       }}
       className="rdp-root"

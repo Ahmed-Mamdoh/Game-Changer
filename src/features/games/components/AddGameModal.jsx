@@ -134,8 +134,8 @@ function AddGameModal({
     >
       <DialogTrigger asChild>
         <Button
-          className={`bg-obsidian-muted/75 border-obsidian-border text-text-primary
-            hover:bg-obsidian-muted/40 cursor-pointer rounded-full border-1 py-6
+          className={`bg-bg-surface border-stroke-subtle
+            hover:bg-bg-surface/75 cursor-pointer rounded-full border py-6
           text-xl tracking-wide backdrop-blur-md hover:backdrop-blur-xs md:px-10!`}
         >
           <span>{isUpdate ? <FaPen /> : <FaPlus />}</span>
@@ -145,19 +145,19 @@ function AddGameModal({
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="bg-obsidian-card/85 border-obsidian-border border-2 backdrop-blur-sm sm:max-w-xl md:max-w-3xl lg:max-w-4xl">
+      <DialogContent className="bg-bg-card border-stroke-medium border backdrop-blur-xl sm:max-w-xl md:max-w-3xl lg:max-w-4xl">
         <div className="flex w-full items-start gap-x-10">
           <div className="hidden h-full flex-col items-start justify-between sm:flex">
             <img
               src={game_cover}
-              className="w-70 rounded-md object-contain"
+              className="w-70 rounded-xl object-contain"
               alt=""
               fetchPriority="high"
             />
 
             <div className="flex flex-col gap-1">
-              <p className="text-2xl">{game_name}</p>
-              <p className="text-text-secondary text-md">
+              <h3>{game_name}</h3>
+              <p>
                 Release Date:{" "}
                 {new Date(releaseDate * 1000).toLocaleDateString()}
               </p>
@@ -170,10 +170,8 @@ function AddGameModal({
           >
             <div className="grid w-full gap-4">
               <div className="flex w-full flex-col items-center justify-center gap-1">
-                <p className="text-4xl">
-                  {isUpdate ? "Update Game" : "Add Game"}
-                </p>
-                <p className="text-text-secondary text-lg">
+                <h2>{isUpdate ? "Update Game" : "Add Game"}</h2>
+                <p>
                   {isUpdate
                     ? "Update game details"
                     : "Add a new game to your list."}
@@ -207,7 +205,7 @@ function AddGameModal({
                   id="hours_played"
                   name="hours_played"
                   type="number"
-                  className="border-obsidian-border bg-myGray/70  rounded-full border-2 focus-visible:ring-0"
+                  className="border-stroke-subtle bg-bg-card rounded-full border focus-visible:ring-0"
                   min={1}
                   defaultValue={userGame?.hours_played || ""}
                   {...register("hours_played", {
@@ -236,7 +234,7 @@ function AddGameModal({
             </div>
             <DialogFooter className="pt-4">
               <DialogClose asChild>
-                <button className=" bg-myGray/70 border-obsidian-border cursor-pointer rounded-full border px-5 py-2">
+                <button className=" bg-bg-card border-stroke-subtle cursor-pointer rounded-full border px-5 py-2">
                   Cancel
                 </button>
               </DialogClose>
@@ -244,7 +242,7 @@ function AddGameModal({
               <button
                 type="submit"
                 disabled={isLoadingRef.current}
-                className="bg-pulse-secondary cursor-pointer rounded-full px-5 py-2"
+                className="bg-pulse-primary cursor-pointer rounded-full px-5 py-2"
               >
                 {isUpdate ? "Update Game" : "Add Game"}
               </button>

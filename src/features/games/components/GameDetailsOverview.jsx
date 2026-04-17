@@ -131,19 +131,19 @@ function GameDetailsOverview({ data }) {
         name: "Steam",
         urlPattern: "steam",
         icon: <FaSteam className="h-5 w-5" />,
-        bgColor: "bg-[#2a475e30]",
+        bgColor: "bg-[#2a475e50]",
       },
       {
         name: "GOG",
         urlPattern: "gog",
         icon: <SiGogdotcom className="h-5 w-5" />,
-        bgColor: "bg-[#310E7630]",
+        bgColor: "bg-[#310E7650]",
       },
       {
         name: "Epic Games",
         urlPattern: "epic",
         icon: <SiEpicgames className="h-5 w-5" />,
-        bgColor: "bg-black/30",
+        bgColor: "bg-black/50",
       },
     ];
 
@@ -166,7 +166,7 @@ function GameDetailsOverview({ data }) {
             key={`${platform.name}-${link.url}`}
           >
             <span>{platform.icon}</span>
-            <span className="hidden md:inline">{platform.name}</span>
+            <span className="hidden lg:inline">{platform.name}</span>
           </a>
         );
       }
@@ -190,7 +190,7 @@ function GameDetailsOverview({ data }) {
           {/* Row 1 */}
           <div className="flex items-center justify-between">
             {/* Name */}
-            <h1>{name}</h1>
+            {screenWidth > 640 ? <h1>{name}</h1> : <h2>{name}</h2>}
             {/* Actions */}
             {new Date(releaseDate * 1000) < new Date() ? (
               userGame?.data?.length > 0 ? (
@@ -253,69 +253,67 @@ function GameDetailsOverview({ data }) {
             <div className="flex w-full flex-col items-center gap-2 md:flex-row">
               <div className="flex w-full items-center justify-between gap-x-2 md:w-fit md:justify-start">
                 {/* Release Date */}
-                <div className="text-text-secondary flex flex-row items-center text-lg md:flex-col md:items-start md:text-xl">
+                <div className="flex flex-row items-center md:flex-col md:items-start md:text-xl">
                   <p className="md:hidden">
                     <FaCalendarAlt className="mr-1" />
                   </p>
-                  <p className="hidden text-nowrap md:block">Release Date: </p>
+                  <h4 className="hidden text-nowrap md:block">
+                    Release Date:{" "}
+                  </h4>
                   <p>
                     {releaseDate
                       ? formatDate(new Date(releaseDate * 1000), "dd/MM/yyyy")
                       : "N/A"}
                   </p>
                 </div>
-                <div className="border-text-secondary/50 hidden w-[1px] self-stretch border-1 md:block"></div>
+                <div className="border-text-dim hidden w-[1px] self-stretch border-1 md:block"></div>
 
                 {/* Rating */}
-                <div className="text-text-secondary flex flex-row text-lg  md:flex-col md:text-xl">
-                  <p className="hidden md:block">Rating:</p>
+                <div className="flex flex-row md:flex-col">
+                  <h4 className=" hidden md:block">Rating:</h4>
                   <div className="flex items-center gap-1">
                     <Rating bgColor="bg-pulse-primary" rating={rating} />
-                    <p className="text-text-subtle text-lg font-medium md:text-xl">
-                      {rating?.toFixed(0)}%
-                    </p>
-                    <p className="text-text-muted self-center text-lg font-medium">
-                      ({ratingCount})
-                    </p>
+                    <p className="pt-1">{rating?.toFixed(0)}%</p>
+                    <p className="self-center pt-1">({ratingCount})</p>
                   </div>
                 </div>
               </div>
 
-              <div className="border-text-secondary/50 w-full self-stretch border-1 md:w-[1px]"></div>
+              <div className="border-text-dim w-full self-stretch border-1 md:w-[1px]"></div>
 
               {/* Time To Beat */}
-              <div className="flex w-full items-center justify-between">
-                <div className="text-text-secondary text-lg md:flex-col md:text-xl ">
-                  <span className="hidden md:block">Time To Beat: </span>
+              <div className="flex w-full flex-wrap items-center justify-between gap-1">
+                <div className="md:flex-col">
+                  <h4 className="hidden md:block">Time To Beat: </h4>
 
-                  <div className="flex items-center gap-x-2 gap-y-1 text-lg md:gap-x-2 ">
+                  <div className="flex items-center gap-x-2 gap-y-1 md:gap-x-2 ">
                     <p className="flex items-center gap-x-1">
-                      <span className="lg:hidden">
+                      <span className="xl:hidden">
                         <FaBook className="mr-1" />
                       </span>
-                      <span className="hidden lg:inline">Main Story: </span>
+                      <p className="hidden xl:inline">Main Story: </p>
                       {timeToBeat?.[0]?.hastily
                         ? (timeToBeat[0]?.hastily / 60 / 60).toFixed(0)
                         : "0"}
                       h
                     </p>
-                    <span>|</span>
+                    <p>|</p>
                     <p className="flex items-center gap-x-1">
-                      <span className="lg:hidden">
+                      <span className="xl:hidden">
                         <FaFlagCheckered className="mr-1" />
                       </span>
-                      <span className="hidden lg:inline">Main + Extras: </span>
+                      <p className="hidden xl:inline">Main + Extras: </p>
                       {timeToBeat?.[0]?.normally
                         ? (timeToBeat[0]?.normally / 60 / 60).toFixed(0)
                         : "0"}
                       h
                     </p>
-                    <span>|</span>
+                    <p>|</p>
                     <p className="flex items-center gap-x-1">
-                      <span className="lg:hidden">
+                      <span className="xl:hidden">
                         <FaTrophy className="mr-1" />
                       </span>
-                      <span className="hidden lg:inline">Completionist: </span>
+                      <p className="hidden xl:inline">Completionist: </p>
                       {timeToBeat?.[0]?.completely
                         ? (timeToBeat[0]?.completely / 60 / 60).toFixed(0)
                         : "0"}
@@ -335,17 +333,15 @@ function GameDetailsOverview({ data }) {
           </div>
 
           {/* Row 3 - Horizontal scroll on mobile */}
-          <div className="flex flex-col gap-x-5 gap-y-3 pt-4 md:flex-row md:flex-wrap md:items-center">
+          <div className="flex flex-col gap-x-5 gap-y-3 pt-2 md:flex-row md:flex-wrap md:items-center">
             {/* Genres */}
             {genres?.length > 0 && (
               <div className="flex items-center gap-x-1.5 gap-y-2">
-                <p className="text-text-secondary text-lg whitespace-nowrap">
-                  Genres:
-                </p>
-                <div className="no-scrollbar flex w-full gap-x-2 overflow-x-auto ">
+                <p className=" text-text-main  whitespace-nowrap">Genres:</p>
+                <div className="no-scrollbar flex w-full gap-x-2 overflow-x-auto px-1">
                   {genres.map((genre) => (
                     <button
-                      className="text-text-primary cursor-pointer rounded-full bg-gray-400/15 px-4 py-1 text-sm whitespace-nowrap backdrop-blur-md transition-all hover:scale-105 hover:bg-gray-400/20"
+                      className="bg-bg-card text-text-dim cursor-pointer rounded-full px-4 py-1 text-sm whitespace-nowrap backdrop-blur-md transition-all hover:scale-105 hover:bg-gray-400/20"
                       onClick={() => {
                         navigate(`/allGames?genre=${genre.id}`);
                       }}
@@ -361,13 +357,11 @@ function GameDetailsOverview({ data }) {
             {/* Themes */}
             {themes?.length > 0 && (
               <div className="flex items-center gap-x-1.5 gap-y-2">
-                <p className="text-text-secondary text-lg whitespace-nowrap">
-                  Themes:
-                </p>
-                <div className="no-scrollbar flex w-full gap-x-2 overflow-x-auto ">
+                <p className=" text-text-main  whitespace-nowrap">Themes:</p>
+                <div className="no-scrollbar flex w-full gap-x-2 overflow-x-auto px-1">
                   {themes?.map((theme) => (
                     <button
-                      className="text-text-primary cursor-pointer rounded-full bg-gray-400/15 px-4 py-1 text-sm whitespace-nowrap backdrop-blur-md transition-all hover:scale-105 hover:bg-gray-400/20"
+                      className="bg-bg-card text-text-dim cursor-pointer rounded-full px-4 py-1 text-sm whitespace-nowrap backdrop-blur-md transition-all hover:scale-105 hover:bg-gray-400/20"
                       onClick={() => {
                         navigate(`/allGames?theme=${theme.id}`);
                       }}
@@ -383,13 +377,11 @@ function GameDetailsOverview({ data }) {
             {/* Modes */}
             {game_modes?.length > 0 && (
               <div className="flex items-center gap-x-1.5 gap-y-2">
-                <p className="text-text-secondary text-lg whitespace-nowrap">
-                  Modes:
-                </p>
-                <div className="no-scrollbar flex w-full gap-x-2 overflow-x-auto ">
+                <p className=" text-text-main whitespace-nowrap">Modes:</p>
+                <div className="no-scrollbar flex w-full gap-x-2 overflow-x-auto px-1">
                   {game_modes?.map((mode) => (
                     <button
-                      className="text-text-primary cursor-pointer rounded-full bg-gray-400/15 px-4 py-1 text-sm whitespace-nowrap backdrop-blur-md transition-all hover:scale-105 hover:bg-gray-400/20"
+                      className="bg-bg-card text-text-dim cursor-pointer rounded-full px-4 py-1 text-sm whitespace-nowrap backdrop-blur-md transition-all hover:scale-105 hover:bg-gray-400/20"
                       onClick={() => {
                         navigate(`/allGames?gameMode=${mode.id}`);
                       }}
@@ -407,7 +399,7 @@ function GameDetailsOverview({ data }) {
 
       {/* Description */}
       <div className="mx-auto w-9/10">
-        <p className="text-text-secondary text-base leading-8 tracking-wide sm:text-lg md:text-xl">
+        <p className="text-text-secondary leading-8 tracking-wide sm:text-lg md:text-xl">
           {summary}
         </p>
       </div>

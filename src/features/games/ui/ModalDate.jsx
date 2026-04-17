@@ -1,7 +1,6 @@
 import { ChevronDownIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 
 import {
   Popover,
@@ -41,14 +40,14 @@ function ModalDate({ name, control, minDate, defaultValue, disabled }) {
             variant="outline"
             id="date"
             disabled={disabled}
-            className=" bg-myGray/70 border-obsidian-border w-full justify-between rounded-full border-2"
+            className=" bg-bg-card border-stroke-subtle w-full justify-between rounded-full border"
           >
             {date ? date.toLocaleDateString() : "Select date"}
             <ChevronDownIcon />
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          className="bg-myGray/70 w-auto overflow-hidden p-0"
+          className="bg-bg-card border-stroke-subtle w-auto overflow-hidden border p-0 backdrop-blur-xl"
           align="start"
         >
           <MyDatePicker

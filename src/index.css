@@ -71,6 +71,8 @@
   /* Section headers */
   --font-size-subtitle: clamp(1.125rem, 2vw, 1.5rem);
   /* Card titles */
+  --font-size-lg: 1.125rem;
+  /* Large body text */
   --font-size-base: 1rem;
   /* Default body */
   --font-size-sm: 0.875rem;
@@ -101,7 +103,7 @@
   --breakpoint-xs: 480px;
 
   /* --- 6. GAME CARD DIMENSIONS --- */
-  --game-card-w-mobile: 193.6px;
+  --game-card-w-mobile: 169.6px;
   --game-card-w-desktop: 241.6px;
 }
 
@@ -134,33 +136,59 @@
     font-size: var(--font-size-subtitle);
   }
 
+  h4,
+  .h4 {
+    @apply font-heading font-semibold leading-snug text-text-main;
+    font-size: var(--font-size-lg);
+  }
+
   p {
     @apply text-text-dim leading-relaxed;
     font-size: var(--font-size-base);
   }
+}
 
-  /* CUSTOM SCROLLBAR (Optimized for Dark Mode) */
-  ::-webkit-scrollbar {
-    @apply w-1.5;
-  }
+/* CUSTOM SCROLLBAR (Global) */
+::-webkit-scrollbar {
+  display: block;
+  width: 8px;
+  height: 8px;
+}
 
-  ::-webkit-scrollbar-track {
-    @apply bg-bg-base;
-  }
+::-webkit-scrollbar-track {
+  background-color: #020617;
+  /* obsidian-950 hex directly */
+}
 
-  ::-webkit-scrollbar-thumb {
-    @apply bg-obsidian-800 rounded-full hover:bg-text-muted transition-colors;
-  }
+::-webkit-scrollbar-thumb {
+  background-color: #1e293b;
+  /* obsidian-800 hex directly */
+  border-radius: 100px;
+  border: 2px solid #020617;
+  /* track-color padding effect */
+}
 
-  /* UTILITY: No Scrollbar but keeping scroll logic */
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
+::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8;
+  /* text-dim hex directly */
+}
 
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
+/* Firefox Support */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #1e293b #020617;
+}
+
+/* UTILITY: No Scrollbar but keeping scroll logic */
+.no-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
 @layer components {

@@ -16,28 +16,28 @@ function GameDetailsMedia({ data }) {
         <div className="mx-auto w-full pt-16 pb-2 md:w-9/10 md:pt-32 md:pb-3">
           <div
             id="Media"
-            className="font-heading flex items-start justify-start px-4 md:px-0"
+            className="flex items-start justify-start px-4 md:px-0"
           >
-            <h2 className="text-3xl md:text-5xl">Media</h2>
+            <h2>Media</h2>
           </div>
 
-          <div className="mx-auto rounded-sm py-4 md:py-6">
+          <div className="mx-auto py-4 md:py-6">
             <Carousel
-              className="to-obsidian-deep border-obsidian-border
-              mx-auto w-[95%] rounded-2xl border-2 bg-gradient-to-br from-gray-400/15
-              from-5% to-10% py-0 pr-0 md:w-[80%] md:py-4 md:pr-4"
+              className="border-stroke-subtle bg-bg-card
+              mx-auto w-[95%] rounded-xl border-1 
+              py-0 pr-0 md:w-[80%] md:py-4 md:pr-4"
             >
               <CarouselContent className="mx-auto">
                 {screenshots?.map((screenshot) => {
                   return (
                     <CarouselItem key={screenshot.id} className="px-1 md:pl-4">
-                      <div className="aspect-[4/3] md:aspect-auto">
+                      <div className="aspect-[4/3] rounded-xl md:aspect-[16/9]">
                         <img
                           src={screenshot?.url
                             ?.replace("t_thumb", "t_1080p_2x")
                             ?.replace("jpg", "webp")}
                           alt=""
-                          className="h-full w-full cursor-grab rounded-2xl object-cover  select-none active:cursor-grabbing"
+                          className="h-full w-full cursor-grab rounded-xl object-cover select-none active:cursor-grabbing"
                         />
                       </div>
                     </CarouselItem>
@@ -52,11 +52,11 @@ function GameDetailsMedia({ data }) {
                       <YoutubeEmbed videoId={video.video_id} />
 
                       <div className="flex items-center gap-x-2 md:hidden">
-                        <FaChevronLeft className="text-text-secondary text-sm" />
+                        <FaChevronLeft className="text-text-dim text-sm" />
                         <p className="text-text-secondary text-sm select-none">
                           Swap From Here
                         </p>
-                        <FaChevronRight className="text-text-secondary text-sm" />
+                        <FaChevronRight className="text-text-dim text-sm" />
                       </div>
                     </CarouselItem>
                   );
@@ -64,11 +64,11 @@ function GameDetailsMedia({ data }) {
               </CarouselContent>
               <CarouselPrevious
                 variant="default"
-                className="border-obsidian-border bg-obsidian-muted/90 hover:bg-obsidian-muted/60 hidden h-22 w-12 translate-x-22 cursor-pointer rounded-full border-1 backdrop-blur-xs md:flex"
+                className="border-stroke-subtle bg-bg-card hover:bg-bg-card/60 hidden h-22 w-12 translate-x-22 cursor-pointer rounded-full border-1 backdrop-blur-xs md:flex"
               />
               <CarouselNext
                 variant="default"
-                className="border-obsidian-border bg-obsidian-muted/90 hover:bg-obsidian-muted/60 hidden h-22 w-12 -translate-x-22 cursor-pointer rounded-full border-1 backdrop-blur-xs md:flex"
+                className="border-stroke-subtle bg-bg-card hover:bg-bg-card/60 hidden h-22 w-12 -translate-x-22 cursor-pointer rounded-full border-1 backdrop-blur-xs md:flex"
               />
             </Carousel>
           </div>
