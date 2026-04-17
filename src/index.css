@@ -1,5 +1,5 @@
 @import "tailwindcss";
-
+@plugin "daisyui";
 /* 
  * --------------------------------------------------------------------------
  * GAME CHANGER - DESIGN SYSTEM v2.0 (Pure Tailwind)

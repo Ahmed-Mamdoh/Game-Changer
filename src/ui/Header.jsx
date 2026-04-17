@@ -26,9 +26,9 @@ function Header() {
         <Tabs />
         <div className="flex w-full items-center gap-x-2 md:gap-x-3">
           <div
-            className="text-text-primary border-obsidian-border focus-within:border-pulse-primary/80 
-            z-10 flex w-full  items-center gap-2 rounded-full border-1 
-          bg-[#2f2f3280] px-2 py-1.5 text-sm transition-colors"
+            className="border-stroke-subtle focus-within:border-stroke-brand 
+            bg-bg-surface z-10 flex  w-full items-center gap-2 rounded-full 
+          border-1 px-2 py-1.5 text-sm transition-colors"
           >
             <IoIosSearch className="h-5 w-5 md:h-6 md:w-6" />
             <input
@@ -39,15 +39,15 @@ function Header() {
               value={search}
               id="search"
               onChange={(e) => setSearch(e.target.value)}
-              className="placeholder:text-text-secondary/60 w-full border-0 focus:outline-none"
+              className="placeholder:text-text-dim w-full border-0 focus:outline-none"
             />
           </div>
 
           {!supabaseToken && (
             <button
-              className="text-text-primary bg-pulse-secondary hover:bg-pulse-primary/80
+              className="bg-pulse-primary/80 hover:bg-pulse-primary/60
               md:text-md cursor-pointer rounded-full border-none px-3
-              py-2 text-sm text-nowrap shadow-xl
+              py-2 text-sm text-nowrap 
               transition-all duration-300 md:block md:px-4.5"
               onClick={() => {
                 localStorage.removeItem("sb-kapovyqqncfsoangqppi-auth-token");
@@ -66,7 +66,7 @@ function Header() {
           <Drawer />
           <label
             htmlFor="my-drawer-4"
-            className=" bg-pulse-secondary text-md flex items-center justify-center rounded-full  border-none px-3 py-2 shadow-xl transition-all duration-300 lg:hidden"
+            className="bg-pulse-primary/80 text-md flex items-center justify-center rounded-full  border-none px-2 py-2 transition-all duration-300 lg:hidden"
           >
             <Menu className="h-5 w-5 md:h-5 md:w-5" />
           </label>

@@ -24,12 +24,12 @@ function FullPagination() {
   const numberOfPages = Math.ceil(data?.count / LIMIT);
   return (
     <div className="flex items-center justify-center pb-12 select-none">
-      <div className="border-obsidian-border mb-16 w-5/8 rounded-full border-1 bg-[#25212950] py-4 backdrop-blur-2xl">
+      <div className="border-stroke-subtle bg-bg-card mb-16 w-5/8 rounded-full border-1 py-4 ">
         <Pagination>
           <PaginationContent>
             <PaginationItem>
               <PaginationPrevious
-                className="hover:bg-pulse-primary/50 hover:text-text-primary cursor-pointer rounded-full font-bold transition-colors"
+                className="hover:bg-pulse-primary/50  cursor-pointer rounded-full font-bold transition-colors"
                 onClick={() => {
                   const newParams = new URLSearchParams(searchParams);
                   if (currentPage > 1) {
@@ -53,8 +53,8 @@ function FullPagination() {
                     <PaginationLink
                       className={`${
                         i + currentPage - middleNumber === currentPage
-                          ? " hover:bg-pulse-primary/50  text-text-primary bg-pulse-primary/50 shadow-pulse-primary/60 rounded-full font-bold shadow-[0_0_10px_1px]"
-                          : "hover:bg-pulse-primary/50 hover:text-text-primary cursor-pointer rounded-full font-bold"
+                          ? " hover:bg-pulse-primary/50  bg-pulse-primary/50 shadow-pulse-primary/60 rounded-full font-bold shadow-[0_0_6px_1px]"
+                          : "hover:bg-pulse-primary/50 cursor-pointer rounded-full font-bold"
                       }`}
                       onClick={() => {
                         if (i === middleNumber) return;
@@ -76,7 +76,7 @@ function FullPagination() {
             ) : null}
             <PaginationItem>
               <PaginationNext
-                className="hover:bg-pulse-primary/50 hover:text-text-primary cursor-pointer rounded-full font-bold transition-colors"
+                className="hover:bg-pulse-primary/50 cursor-pointer rounded-full font-bold transition-colors"
                 onClick={() => {
                   if (currentPage === numberOfPages) return;
                   const newParams = new URLSearchParams(searchParams);

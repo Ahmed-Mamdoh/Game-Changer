@@ -1,10 +1,9 @@
-import { useSearchParams } from "react-router-dom";
-import { Combobox } from "@/components/ui/combobox";
+import { memo } from "react";
 import { FaUndoAlt } from "react-icons/fa";
+import { useSearchParams } from "react-router-dom";
+import { useGetGameModes } from "../hooks/useGetGameModes";
 import { useGetGenres } from "../hooks/useGetGenres";
 import { useGetThemes } from "../hooks/useGetThemes";
-import { useGetGameModes } from "../hooks/useGetGameModes";
-import { memo } from "react";
 import FilterButtons from "./FilterButtons";
 
 function Filters({
@@ -46,7 +45,7 @@ function Filters({
   if (isLoadingGenres || isLoadingThemes || isLoadingGameModes) return null;
   return (
     <div
-      className={`bg-obsidian-base/20 mx-auto w-9/10 rounded-xl px-2 py-4 shadow-lg backdrop-blur-sm ${className}`}
+      className={`bg-bg-card border-stroke-medium mx-auto w-9/10 rounded-xl border-1 bg-linear-to-br from-white/5 to-transparent px-2 py-4 shadow-2xl backdrop-blur-xl ${className}`}
     >
       <div className="container flex flex-col flex-wrap items-start justify-between gap-x-8 gap-y-4 px-2 sm:flex-row">
         <div className="flex flex-wrap items-center gap-x-10 gap-y-5">

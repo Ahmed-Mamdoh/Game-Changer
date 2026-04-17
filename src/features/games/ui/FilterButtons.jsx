@@ -20,18 +20,18 @@ function FilterButtons({
     <div
       className={`flex ${or ? "flex-nowrap" : "flex-wrap"} items-center gap-2`}
     >
-      <p>{name}: </p>
+      <p className="text-text-main">{name}: </p>
       {category
         .sort((a, b) => a.name.localeCompare(b.name))
         .filter((_, i) => showAll || i < 2)
         .map((item, i) => {
           return (
             <button
-              className={`border-pulse-primary/40 hover:bg-pulse-primary/30
+              className={`border-stroke-brand hover:bg-pulse-primary/30
                     hover:shadow-pulse-primary/60  cursor-pointer rounded-full border px-3 py-1.5 text-sm
-                    font-medium tracking-wide transition-all duration-200 hover:scale-105 hover:shadow-[0_0_8px_2px]
+                    font-medium tracking-wide transition-all duration-200 hover:scale-105 hover:shadow-[0_0_6px_2px]
                     ${!showAll && i === 1 && !or ? "hidden sm:block" : ""}
-                    ${selected?.includes(item.id.toString()) ? "bg-pulse-primary/50 shadow-pulse-primary/60 shadow-[0_0_8px_2px]" : ""}`}
+                    ${selected?.includes(item.id.toString()) ? "bg-pulse-primary/50 shadow-pulse-primary/60 shadow-[0_0_6px_2px]" : ""}`}
               onClick={() => {
                 setSelected((prev) =>
                   prev.includes(item.id.toString())
@@ -73,7 +73,7 @@ function FilterButtons({
         })}
       {category.length > 2 && (
         <button
-          className="text-text-secondary cursor-pointer"
+          className="text-text-dim cursor-pointer"
           onClick={() => setShowAll(!showAll)}
         >
           {showAll ? "Hide All" : "Show All..."}

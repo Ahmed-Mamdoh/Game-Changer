@@ -1,10 +1,9 @@
-import { Gamepad2, Gift, Calendar, User } from "lucide-react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Calendar, Gamepad2, Gift, User } from "lucide-react";
 import { useRef } from "react";
+import { Link, useLocation } from "react-router-dom";
 
 function Drawer() {
   const drawerCheckboxRef = useRef(null);
-  const navigate = useNavigate();
   const location = useLocation();
   const path = location.pathname;
 
@@ -62,14 +61,14 @@ function Drawer() {
           className="drawer-overlay"
         ></label>
 
-        <div className="bg-obsidian-surface border-obsidian-border text-text-primary font-body h-full w-64 border-r px-4 py-6 backdrop-blur-lg">
+        <div className="bg-bg-base border-stroke-subtle h-full w-64 border-l px-4 py-6">
           <div className="flex h-full flex-col items-end">
             {/* Header */}
             <header className="mb-8">
               <Link
                 to="/"
                 onClick={closeDrawer}
-                className="font-heading text-pulse-accent text-left text-2xl font-bold"
+                className="font-heading text-text-brand text-left text-2xl font-bold"
               >
                 Game Changer
               </Link>
@@ -82,7 +81,7 @@ function Drawer() {
                   key={index}
                   to={item.to}
                   onClick={closeDrawer}
-                  className={`flex w-full items-center justify-end gap-3 rounded-full px-3 py-2 transition-all duration-200 ${path === item.to ? "bg-obsidian-deep" : ""}`}
+                  className={`flex w-full items-center justify-end gap-3 rounded-full px-3 py-2 transition-all duration-200 ${path === item.to ? "bg-pulse-primary/80" : ""}`}
                 >
                   <span className=" text-lg font-medium">{item.text}</span>
                   {item.icon}
