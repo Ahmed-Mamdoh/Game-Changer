@@ -24,9 +24,9 @@ function AuthFormField({ field, validations, register, formState }) {
               ? "password"
               : "text"
         }
-        className="border-obsidian-border bg-myGray
+        className="border-stroke-subtle bg-bg-card
         focus-visible:border-pulse-primary hover:border-pulse-primary/50 rounded-full border-1 px-4
-        py-1.5 transition-all duration-200 focus-visible:shadow-[0_0_4px_1px_rgba(101,35,208,0.7)] focus-visible:outline-none"
+        py-1.5 transition-all duration-200 focus-visible:outline-none"
         {...register(field, {
           required: `${field} is required`,
           ...validations,
