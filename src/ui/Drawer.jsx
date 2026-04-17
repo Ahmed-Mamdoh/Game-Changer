@@ -81,7 +81,7 @@ function Drawer() {
                   key={index}
                   to={item.to}
                   onClick={closeDrawer}
-                  className={`flex w-full items-center justify-end gap-3 rounded-full px-3 py-2 transition-all duration-200 ${path === item.to ? "bg-pulse-primary/80" : ""}`}
+                  className={`flex w-full items-center justify-end gap-3 rounded-full px-3 py-2 transition-all duration-200 ${path === item.to ? "bg-pulse-primary " : ""}`}
                 >
                   <span className=" text-lg font-medium">{item.text}</span>
                   {item.icon}

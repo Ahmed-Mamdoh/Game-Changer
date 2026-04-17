@@ -10,13 +10,15 @@ import {
 } from "@/components/ui/pagination";
 import { useGetNumberOfResults } from "@/features/games/hooks/useGetNumberOfResults";
 import { LIMIT } from "@/constants/constant";
+import useScreenWidth from "@/hooks/useScreenWidth";
 
-const NUM_PAGE_BUTTONS = 10;
-const middleNumber = Math.floor(NUM_PAGE_BUTTONS / 2);
 function FullPagination() {
   const [searchParams, setSearchParams] = useSearchParams();
   const location = useLocation();
+  const screenWidth = useScreenWidth();
 
+  const NUM_PAGE_BUTTONS = screenWidth > 768 ? 10 : 5;
+  const middleNumber = Math.floor(NUM_PAGE_BUTTONS / 2);
   const currentPage = Number(searchParams.get("page")) || 1;
   const { data, isLoading } = useGetNumberOfResults(location.pathname);
   if (isLoading) return null;
@@ -24,7 +26,7 @@ function FullPagination() {
   const numberOfPages = Math.ceil(data?.count / LIMIT);
   return (
     <div className="flex items-center justify-center pb-12 select-none">
-      <div className="border-stroke-subtle bg-bg-card mb-16 w-5/8 rounded-full border-1 py-4 ">
+      <div className="border-stroke-subtle bg-bg-card mb-16 w-fit rounded-full border-1 px-6 py-4 md:px-12 ">
         <Pagination>
           <PaginationContent>
             <PaginationItem>

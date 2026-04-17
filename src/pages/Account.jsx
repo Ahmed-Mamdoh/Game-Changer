@@ -98,13 +98,16 @@ function Account() {
         <div className="mx-auto w-full px-4 md:w-9/10">
           <UserHeader />
           <UserStats user_games={user_games} isLoading={isLoading} />
-          <div className="flex flex-col gap-2">
-            <div className="grid grid-cols-2 gap-x-3 gap-y-3 sm:grid-cols-4">
-              <UserFilterButton paramsValue="" buttonText="All" />
-              <UserFilterButton paramsValue="playing" buttonText="Playing" />
-              <UserFilterButton paramsValue="finished" buttonText="Finished" />
-              <UserFilterButton paramsValue="dropped" buttonText="Dropped" />
-            </div>
+
+          <div
+            className="bg-bg-card border-stroke-medium hover:border-pulse-secondary
+          grid w-full grid-cols-2 gap-x-3 gap-y-3 rounded-xl border p-4 backdrop-blur-xl
+          transition-all sm:grid-cols-4"
+          >
+            <UserFilterButton paramsValue="" buttonText="All" />
+            <UserFilterButton paramsValue="playing" buttonText="Playing" />
+            <UserFilterButton paramsValue="finished" buttonText="Finished" />
+            <UserFilterButton paramsValue="dropped" buttonText="Dropped" />
           </div>
         </div>
 

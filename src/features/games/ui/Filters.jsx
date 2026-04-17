@@ -45,7 +45,7 @@ function Filters({
   if (isLoadingGenres || isLoadingThemes || isLoadingGameModes) return null;
   return (
     <div
-      className={`bg-bg-card border-stroke-medium mx-auto w-9/10 rounded-xl border-1 bg-linear-to-br from-white/5 to-transparent px-2 py-4 shadow-2xl backdrop-blur-xl ${className}`}
+      className={`bg-bg-card border-stroke-medium mx-auto w-9/10 rounded-xl border bg-linear-to-br from-white/5 to-transparent px-2 py-4 shadow-2xl backdrop-blur-xl ${className}`}
     >
       <div className="container flex flex-col flex-wrap items-start justify-between gap-x-8 gap-y-4 px-2 sm:flex-row">
         <div className="flex flex-wrap items-center gap-x-10 gap-y-5">
@@ -83,7 +83,7 @@ function Filters({
               const newParams = new URLSearchParams();
               setSearchParams(newParams);
             }}
-            className="bg-pulse-primary/80 group cursor-pointer rounded-full font-bold transition-all duration-200"
+            className="bg-pulse-primary  group cursor-pointer rounded-full font-bold transition-all duration-200"
           >
             <div className="flex items-center gap-x-2 px-4 py-2">
               <FaUndoAlt className="transition-transform duration-200 group-hover:-rotate-90" />

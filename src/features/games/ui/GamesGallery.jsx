@@ -5,7 +5,7 @@ function GamesGallery({ data, isLoading }) {
   if (isLoading) return <Spinner />;
 
   return (
-    <div className="mx-auto flex flex-wrap items-center justify-center gap-6 px-4 pt-8 pb-16 md:px-6 lg:px-8">
+    <div className="justify- mx-auto flex w-9/10 flex-wrap items-center justify-between gap-x-2 gap-y-4 pt-8 pb-16 md:gap-4 lg:px-8">
       {data?.length === 0 && (
         <span className="text-3xl font-bold">🔍 No Games Found</span>
       )}

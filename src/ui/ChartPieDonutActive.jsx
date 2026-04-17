@@ -54,7 +54,7 @@ export function ChartPieDonutActive({ chartData, field }) {
       </CardContent>
       <CardFooter className="flex flex-col items-center gap-2 text-sm">
         <div className="flex flex-col items-center gap-1">
-          <p className="text-base-content/80">
+          <p className="text-base-content ">
             Top Played:{" "}
             <span className="font-extrabold">{chartData[0]?.label}</span> (
             {chartData[0]?.number}){" "}
@@ -62,7 +62,7 @@ export function ChartPieDonutActive({ chartData, field }) {
           </p>
         </div>
         <div className="flex flex-col items-center gap-1">
-          <p className="text-base-content/80">
+          <p className="text-base-content ">
             Least Played:{" "}
             <span className="font-extrabold">
               {chartData[chartData.length - 1]?.label}

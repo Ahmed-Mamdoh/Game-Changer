@@ -15,7 +15,7 @@ function AuthFormCard({ children, btnText }) {
       <CardFooter className="px-0">
         <button
           type="submit"
-          className="bg-pulse-primary/80  w-full cursor-pointer rounded-full py-2 text-lg font-semibold"
+          className="bg-pulse-primary   w-full cursor-pointer rounded-full py-2 text-lg font-semibold"
         >
           {btnText}
         </button>

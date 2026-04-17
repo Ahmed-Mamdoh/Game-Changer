@@ -62,6 +62,7 @@
   /* --- 3. TYPOGRAPHY SYSTEM --- */
   --font-heading: "Space Grotesk", "Fira Code", sans-serif;
   --font-body: "Manrope", "Fira Sans", sans-serif;
+  --font-arabic: "Cairo", sans-serif;
 
   /* Fluid Scale (scales smoothly from mobile to 1280px+) */
   --font-size-hero: clamp(2.5rem, 8vw, 4rem);
@@ -96,6 +97,8 @@
   --z-modal: 300;
   --z-popover: 400;
   --z-toast: 500;
+
+  --breakpoint-xs: 480px;
 }
 
 @layer base {

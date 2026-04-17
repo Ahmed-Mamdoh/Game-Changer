@@ -31,23 +31,23 @@ function UserCharts({ user_games, isLoading }) {
     .reduce((acc, cur) => acc + cur || 0);
 
   return (
-    <div className="flex h-full flex-col items-center justify-between gap-2 py-1 pb-12 sm:gap-3 md:flex-row">
+    <div className="hidden h-full flex-col items-center justify-between gap-2 py-3   sm:gap-3 md:flex md:flex-row">
       {/* Full charts (hidden on mobile, shown on md and up) */}
-      <div className="hidden h-full w-full gap-3 md:flex">
+      <div className="flex h-full w-full gap-3 ">
         <div className="flex  flex-col gap-2">
           <StatsCard
             data={user_games?.length || 0}
             title="Total Games"
             className="hidden md:flex"
             icon={
-              <IoGameControllerOutline className="text-pulse-extra h-8 w-8" />
+              <IoGameControllerOutline className="text-text-brand mb-1 h-8 w-8" />
             }
           />
           <StatsCard
             data={totalHours}
             title="Total Hours"
             className="hidden md:flex"
-            icon={<GoClock className="text-pulse-extra mb-1 h-7 w-7" />}
+            icon={<GoClock className="text-text-brand mb-2 h-7 w-7" />}
           />
         </div>
         {!isLoading && (

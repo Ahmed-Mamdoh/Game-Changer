@@ -45,7 +45,7 @@ function Header() {
 
           {!supabaseToken && (
             <button
-              className="bg-pulse-primary/80 hover:bg-pulse-primary/60
+              className="bg-pulse-primary  hover:bg-pulse-primary/60
               md:text-md cursor-pointer rounded-full border-none px-3
               py-2 text-sm text-nowrap 
               transition-all duration-300 md:block md:px-4.5"
@@ -66,7 +66,7 @@ function Header() {
           <Drawer />
           <label
             htmlFor="my-drawer-4"
-            className="bg-pulse-primary/80 text-md flex items-center justify-center rounded-full  border-none px-2 py-2 transition-all duration-300 lg:hidden"
+            className="bg-pulse-primary  text-md flex items-center justify-center rounded-full  border-none px-2 py-2 transition-all duration-300 lg:hidden"
           >
             <Menu className="h-5 w-5 md:h-5 md:w-5" />
           </label>

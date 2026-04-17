@@ -31,7 +31,7 @@ function FilterButtons({
                     hover:shadow-pulse-primary/60  cursor-pointer rounded-full border px-3 py-1.5 text-sm
                     font-medium tracking-wide transition-all duration-200 hover:scale-105 hover:shadow-[0_0_6px_2px]
                     ${!showAll && i === 1 && !or ? "hidden sm:block" : ""}
-                    ${selected?.includes(item.id.toString()) ? "bg-pulse-primary/50 shadow-pulse-primary/60 shadow-[0_0_6px_2px]" : ""}`}
+                    ${selected?.includes(item.id.toString()) ? "bg-pulse-primary shadow-pulse-primary/60 shadow-[0_0_4px_1px]" : ""}`}
               onClick={() => {
                 setSelected((prev) =>
                   prev.includes(item.id.toString())

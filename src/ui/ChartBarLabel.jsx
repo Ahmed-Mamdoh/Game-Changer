@@ -35,13 +35,11 @@ export function ChartBarLabel({ chartData, title }) {
 
   return (
     <Card
-      className="bg-obsidian-deep/60 border-obsidian-border hover:border-pulse-extra/50
-      gap-0 rounded-2xl border-2 py-4 backdrop-blur-xs transition-all"
+      className="bg-bg-card border-stroke-medium hover:border-pulse-secondary
+      gap-0 rounded-xl border py-4 backdrop-blur-xl transition-all"
     >
       <CardHeader>
-        <CardTitle className="text-text-primary/80 text-lg font-normal">
-          {title}
-        </CardTitle>
+        <CardTitle className="text-text-dim text-lg">{title}</CardTitle>
       </CardHeader>
       <CardContent className="pr-1 pl-0">
         <ChartContainer
@@ -61,7 +59,7 @@ export function ChartBarLabel({ chartData, title }) {
               dataKey="game"
               type="category"
               tickLine={false}
-              tick={{ fill: "var(--color-text-secondary)" }} // Add this line
+              tick={{ fill: "var(--color-text-dim)" }} // Add this line
               tickMargin={2}
               axisLine={false}
               tickFormatter={(value) =>
@@ -76,14 +74,14 @@ export function ChartBarLabel({ chartData, title }) {
             />
             <Bar
               dataKey="number"
-              fill="var(--color-pulse-extra)"
+              fill="var(--color-pulse-secondary)"
               radius={5}
               barSize={20}
             >
               <LabelList
                 position="right"
                 offset={5}
-                className="fill-text-secondary"
+                className="fill-text-dim"
                 fontSize={10}
                 formatter={(value) => `${value}%`}
               />

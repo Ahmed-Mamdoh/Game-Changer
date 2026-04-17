@@ -30,17 +30,15 @@ function UserHeader() {
 
   return (
     <div
-      className="bg-obsidian-deep/60 border-obsidian-border hover:border-pulse-extra/50
-       flex flex-col items-start gap-4 rounded-2xl border-2 p-4 backdrop-blur-xs transition-all duration-300 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:p-6"
+      className="bg-bg-card border-stroke-medium hover:border-pulse-secondary
+      flex flex-col items-start gap-4 rounded-xl border p-4 backdrop-blur-xl transition-all duration-300 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:p-6"
     >
       {/* <DataField label="Username" value={username} /> */}
       <div className="flex items-center gap-1">
-        <h2 className="text-text-primary font-heading text-2xl font-bold sm:text-3xl">
-          {username}
-        </h2>
+        <h2>{username}</h2>
       </div>
       <button
-        className="bg-pulse-primary hover:bg-pulse-secondary focus:ring-pulse-glow w-full cursor-pointer rounded-full px-6 py-2 text-white transition-all duration-200 focus:ring-2 focus:outline-none sm:w-auto"
+        className="bg-pulse-primary hover:bg-pulse-primary focus:ring-pulse-glow w-full cursor-pointer rounded-full px-6 py-2 text-white transition-all duration-200 focus:ring-2 focus:outline-none sm:w-auto"
         aria-label="Log out"
         aria-labelledby="logout-btn"
         name="logout"

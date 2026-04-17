@@ -78,7 +78,7 @@ function GameItem({ game, className }) {
       </div>
       <div className="h-12 w-36 cursor-default text-center transition-colors duration-300 md:w-48">
         <Link to={`/game/${game.id}`} className="cursor-pointer">
-          <h3 className="group-hover:text-text-brand md:text-base">
+          <h3 className="group-hover:text-text-brand text-sm md:text-base">
             {game.name?.substring(0, 40)}
             {game.name?.length > 40 ? "..." : ""}
           </h3>

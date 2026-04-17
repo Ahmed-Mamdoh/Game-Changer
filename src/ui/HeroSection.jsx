@@ -20,28 +20,30 @@ function HeroSection() {
           className="absolute top-1/2 left-1/2 flex h-full w-full
         -translate-x-1/2 -translate-y-1/2 transform flex-col items-center gap-y-8"
         >
-          <div className="flex h-full w-full items-center justify-center ">
+          <div className="flex h-full w-full items-center justify-center">
             <div
-              className="xs:w-fit xs:h-[65%] relative aspect-[7/10] w-9/10 cursor-pointer transition-all duration-500 hover:scale-102 sm:mt-16
-              sm:aspect-[11/10] sm:h-[80%] md:aspect-[13/10] lg:aspect-[16/10] lg:h-[85%] xl:aspect-[20/10]"
+              className="xs:h-[75%] xs:aspect-[8/10] xs:w-auto relative aspect-[8/10] w-[80%]
+              cursor-pointer transition-all duration-500 hover:scale-102
+              sm:mt-16 sm:aspect-[11/10] sm:h-[80%] sm:w-auto
+              md:aspect-[13/10] lg:aspect-[16/10] lg:h-[85%] xl:aspect-[20/10]"
               onClick={() => navigate("/game/296831")}
             >
               <img
                 src={sts2}
                 alt="the-witcher"
-                className=" hidden h-full w-full rounded-2xl object-cover sm:block"
+                className=" hidden h-full w-full rounded-xl object-cover sm:block"
                 fetchPriority="high"
               />
               <img
                 src={sts2Poster}
                 alt="the-witcher"
-                className=" block h-full w-full rounded-2xl object-cover sm:hidden"
+                className=" block h-full w-full rounded-xl object-cover sm:hidden"
                 fetchPriority="high"
               />
 
               <div
                 className="from-pulse-primary/50 pointer-events-none absolute
-                  inset-0 rounded-2xl bg-gradient-to-t via-transparent to-transparent
+                  inset-0 rounded-xl bg-gradient-to-t via-transparent to-transparent
                   mix-blend-multiply"
               />
               <span

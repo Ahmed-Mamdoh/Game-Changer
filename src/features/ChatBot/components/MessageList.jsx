@@ -5,14 +5,16 @@ function MessageList({ messages, messagesRef, isLoading }) {
   return (
     <div
       ref={messagesRef}
-      className="flex max-h-[60dvh] min-h-[30dvh] flex-col gap-2 overflow-x-hidden  overflow-y-auto"
+      className="flex max-h-[60dvh] min-h-[30dvh] flex-col gap-2 overflow-x-hidden overflow-y-auto"
     >
       {messages.map((item, index) => {
         if (item.role === "user")
           return (
             <div key={index} className="chat chat-start">
-              <div className="chat-bubble bg-myGray text-text-primary font-arabic rounded-3xl">
-                <p dir="auto">{item.content}</p>
+              <div className="chat-bubble bg-bg-base font-arabic rounded-xl">
+                <p dir="auto" className="text-text-main">
+                  {item.content}
+                </p>
               </div>
             </div>
           );
@@ -21,7 +23,7 @@ function MessageList({ messages, messagesRef, isLoading }) {
             <div key={index} className="chat chat-end">
               <div
                 dir="auto"
-                className="chat-bubble bg-pulse-secondary text-text-primary font-arabic rounded-3xl"
+                className="chat-bubble bg-pulse-primary/70 text-text-main font-arabic rounded-xl"
               >
                 <Markdown
                   components={{
@@ -38,7 +40,7 @@ function MessageList({ messages, messagesRef, isLoading }) {
                           <Link
                             to={to}
                             {...props}
-                            className="hover:text-text-primary/80 text-text-primary transform underline transition-colors duration-200"
+                            className="hover:text-text-primary  text-text-primary transform underline transition-colors duration-200"
                           >
                             {children}
                           </Link>
@@ -58,7 +60,7 @@ function MessageList({ messages, messagesRef, isLoading }) {
                     },
 
                     p: ({ children, ...props }) => (
-                      <p {...props} dir="auto">
+                      <p {...props} dir="auto" className="text-text-main">
                         {children}
                       </p>
                     ),
@@ -73,7 +75,7 @@ function MessageList({ messages, messagesRef, isLoading }) {
       })}
       {isLoading && (
         <div className="chat chat-end">
-          <div className="chat-bubble bg-pulse-secondary text-text-primary">
+          <div className="chat-bubble bg-pulse-primary/70 text-text-main  rounded-3xl">
             <span className="loading loading-dots loading-xs"></span>
           </div>
         </div>

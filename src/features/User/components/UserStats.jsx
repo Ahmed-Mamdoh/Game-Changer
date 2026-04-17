@@ -29,49 +29,47 @@ function UserStats({ user_games, isLoading }) {
     "N/A";
   return (
     <>
-      <div className="grid grid-cols-1 gap-2 pt-2 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-2 pt-2 pb-2 sm:grid-cols-1 md:hidden md:grid-cols-2 lg:grid-cols-3">
         {/* Mobile View Stats */}
         <div
-          className={`bg-obsidian-deep/60 border-obsidian-border hover:border-pulse-extra/50 grid
-            w-full grid-cols-4 items-center justify-between rounded-2xl border-2
-            py-4 backdrop-blur-xs transition-all md:hidden`}
+          className={`bg-bg-card border-stroke-medium hover:border-pulse-secondary grid
+            w-full grid-cols-4 items-center justify-between rounded-xl border
+            py-4 backdrop-blur-xl transition-all `}
         >
           <div className="flex flex-col items-center gap-1 ">
-            <IoGameControllerOutline className="text-pulse-extra h-8 w-8 sm:h-10 sm:w-10" />
-            <p className="text-pulse-extra text-base font-bold sm:text-2xl">
+            <IoGameControllerOutline className="text-text-brand h-8 w-8 sm:h-10 sm:w-10" />
+            <p className="text-text-brand text-base font-bold sm:text-2xl">
               {user_games?.length}
             </p>
-            <span className="text-text-secondary text-xs sm:text-sm">
+            <span className="text-text-dim text-xs sm:text-sm">
               Games Played
-            </span>
-          </div>
-          <div className="flex flex-col items-center gap-1 ">
-            <GoClock className="text-pulse-extra h-8 w-8 sm:h-10 sm:w-10" />
-            <p className="text-pulse-extra text-base font-bold sm:text-2xl">
-              {totalHours}
-            </p>
-            <span className="text-text-secondary text-xs sm:text-sm">
-              Hours Played
-            </span>
-          </div>
-          <div className="flex flex-col items-center gap-1 ">
-            <PiSwordLight className="text-pulse-extra h-8 w-8 sm:h-10 sm:w-10" />
-            <p className="text-pulse-extra text-base font-bold sm:text-2xl">
-              {mostPlayedGenre}
-            </p>
-            <span className="text-text-secondary text-xs sm:text-sm">
-              Fav Genre
             </span>
           </div>
 
           <div className="flex flex-col items-center gap-1 ">
-            <GiScrollQuill className="text-pulse-extra h-8 w-8 sm:h-10 sm:w-10" />
-            <p className="text-pulse-extra text-base font-bold sm:text-2xl">
+            <GoClock className="text-text-brand h-8 w-8 sm:h-10 sm:w-10" />
+            <p className="text-text-brand text-base font-bold sm:text-2xl">
+              {totalHours}
+            </p>
+            <span className="text-text-dim text-xs sm:text-sm">
+              Hours Played
+            </span>
+          </div>
+
+          <div className="flex flex-col items-center gap-1 ">
+            <PiSwordLight className="text-text-brand h-8 w-8 sm:h-10 sm:w-10" />
+            <p className="text-text-brand text-base font-bold sm:text-2xl">
+              {mostPlayedGenre}
+            </p>
+            <span className="text-text-dim text-xs sm:text-sm">Fav Genre</span>
+          </div>
+
+          <div className="flex flex-col items-center gap-1 ">
+            <GiScrollQuill className="text-text-brand h-8 w-8 sm:h-10 sm:w-10" />
+            <p className="text-text-brand text-base font-bold sm:text-2xl">
               {mostPlayedTheme}
             </p>
-            <span className="text-text-secondary text-xs sm:text-sm">
-              Fav Theme
-            </span>
+            <span className="text-text-dim text-xs sm:text-sm">Fav Theme</span>
           </div>
         </div>
 
