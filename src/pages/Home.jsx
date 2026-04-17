@@ -8,7 +8,7 @@ import { Helmet } from "react-helmet-async";
 function Home() {
   const { data: games, isLoading: isLoadingGames } = useGetGameSection(
     "total_rating_count",
-    6,
+    5,
   );
 
   const {
@@ -18,7 +18,7 @@ function Home() {
   } = useGetFreeGamesToShow();
 
   const { data: upcomingGames, isLoading: isLoadingUpcomingGames } =
-    useGetUpcomingGames(6);
+    useGetUpcomingGames(5);
 
   return (
     <>
@@ -49,7 +49,7 @@ function Home() {
         />
         <HomeSection
           sectionName="Free Games"
-          data={freeGames}
+          data={freeGames.slice(0, 5)}
           isLoading={isLoadingFreeGamesIgdbData || isLoadingFreeGamesNames}
           route="freeGames"
         />
