@@ -27,7 +27,7 @@ function Header() {
         <div className="flex w-full items-center gap-x-2 md:gap-x-3">
           <div
             className="border-stroke-subtle focus-within:border-stroke-brand 
-            bg-bg-surface z-10 flex  w-full items-center gap-2 rounded-full 
+            bg-bg-surface/25 z-10 flex  w-full items-center gap-2 rounded-full 
           border-1 px-2 py-1.5 text-sm transition-colors"
           >
             <IoIosSearch className="h-5 w-5 md:h-6 md:w-6" />
