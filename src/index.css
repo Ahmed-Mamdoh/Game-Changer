@@ -99,6 +99,10 @@
   --z-toast: 500;
 
   --breakpoint-xs: 480px;
+
+  /* --- 6. GAME CARD DIMENSIONS --- */
+  --game-card-w-mobile: 193.6px;
+  --game-card-w-desktop: 241.6px;
 }
 
 @layer base {

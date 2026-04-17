@@ -159,7 +159,8 @@ function GameDetailsOverview({ data }) {
         return (
           <a
             href={link.url}
-            className={`flex items-center gap-x-2 rounded-full p-3 text-lg text-nowrap backdrop-blur-xs transition-all hover:scale-105 md:px-4 md:py-2 ${platform.bgColor}`}
+            className={`flex items-center gap-x-2 rounded-full p-3 text-lg text-nowrap
+              backdrop-blur-xs transition-all hover:scale-105 md:px-4 md:py-2 ${platform.bgColor}`}
             target="_blank"
             rel="noopener noreferrer"
             key={`${platform.name}-${link.url}`}
@@ -176,20 +177,20 @@ function GameDetailsOverview({ data }) {
 
   return (
     <>
-      <div className="relative  h-[100dvh] w-full overflow-hidden">
+      <div className="relative h-[100dvh] w-full overflow-hidden">
         {/* Cover */}
         <img
           src={imageUrl}
           className="absolute top-0 left-0 h-full w-full object-cover"
         />
-        <div className=" to-obsidian-muted pointer-events-none absolute inset-0 bg-gradient-to-b from-black/15" />
+        <div className="to-bg-base pointer-events-none absolute inset-0 bg-gradient-to-b from-black/15" />
 
         {/* Content */}
         <div className="absolute bottom-[25%] left-1/2 flex w-9/10 -translate-x-1/2 translate-y-1/2 flex-col gap-2">
           {/* Row 1 */}
           <div className="flex items-center justify-between">
             {/* Name */}
-            <h1 className="font-heading text-2xl md:text-[4rem]">{name}</h1>
+            <h1>{name}</h1>
             {/* Actions */}
             {new Date(releaseDate * 1000) < new Date() ? (
               userGame?.data?.length > 0 ? (
@@ -198,7 +199,7 @@ function GameDetailsOverview({ data }) {
                     <label className="swap tooltip" data-tip="Delete Game">
                       <button
                         onClick={handleDeleteGame}
-                        className="text-text-primary cursor-pointer bg-transparent text-2xl"
+                        className="cursor-pointer bg-transparent text-2xl"
                       >
                         <FaTrash />
                       </button>
