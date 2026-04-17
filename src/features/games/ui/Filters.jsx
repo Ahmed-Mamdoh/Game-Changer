@@ -83,7 +83,7 @@ function Filters({
               const newParams = new URLSearchParams();
               setSearchParams(newParams);
             }}
-            className="bg-pulse-secondary text-secondary-content group cursor-pointer rounded-full font-extrabold transition-all duration-200"
+            className="bg-pulse-primary/80 group cursor-pointer rounded-full font-bold transition-all duration-200"
           >
             <div className="flex items-center gap-x-2 px-4 py-2">
               <FaUndoAlt className="transition-transform duration-200 group-hover:-rotate-90" />
