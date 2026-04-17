@@ -53,13 +53,13 @@ function GameItem({ game, className }) {
 
   return (
     <div
-      className={`bg-obsidian-card/50 border-obsidian-border hover:border-pulse-primary/50 group
-        hover:shadow-pulse-primary/5 relative flex w-fit cursor-pointer flex-col items-center
-        justify-center gap-y-3 rounded-2xl border-1 p-3 backdrop-blur-xs transition-all duration-500
-        hover:-translate-y-2 hover:shadow-lg ${className}`}
+      className={`bg-bg-card border-stroke-subtle hover:border-stroke-brand group
+        hover:shadow-glow relative flex w-fit cursor-pointer flex-col items-center
+        justify-center gap-y-3 rounded-lg border-1 p-3 backdrop-blur-xs transition-all duration-500
+        hover:-translate-y-2 ${className}`}
     >
       <div
-        className="relative w-36 overflow-hidden rounded-xl md:w-48"
+        className="relative w-36 overflow-hidden rounded-lg md:w-48"
         onClick={() => navigate(`/game/${game.id}`)}
       >
         {imageUrl ? (
@@ -70,28 +70,28 @@ function GameItem({ game, className }) {
             fetchPriority="low"
           />
         ) : (
-          <div className="bg-obsidian-muted font-body text-text-muted flex aspect-[3/4] h-full w-full items-center justify-center rounded-xl text-xs">
+          <div className="bg-bg-surface font-body flex aspect-[3/4] h-full w-full items-center justify-center rounded-xl text-xs">
             No Image
           </div>
         )}
-        <div className="from-obsidian-base/40 absolute inset-0 bg-gradient-to-t via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+        <div className="from-bg-base/50 absolute inset-0 bg-gradient-to-t via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
       </div>
       <div className="h-12 w-36 cursor-default text-center transition-colors duration-300 md:w-48">
         <Link to={`/game/${game.id}`} className="cursor-pointer">
-          <p className="font-heading text-text-primary group-hover:text-pulse-accent text-sm leading-tight font-semibold md:text-base">
+          <h3 className="group-hover:text-text-brand md:text-base">
             {game.name?.substring(0, 40)}
             {game.name?.length > 40 ? "..." : ""}
-          </p>
+          </h3>
         </Link>
       </div>
       {game?.giveAwayLink && (
-        <div className="text-pulse-accent flex w-full items-center justify-between">
+        <div className="text-text-brand flex w-full items-center justify-between">
           <a
             onClick={(e) => e.stopPropagation()}
             href={game.giveAwayLink}
             target="_blank"
             rel="noreferrer"
-            className="font-body flex cursor-pointer items-center justify-center gap-2 text-xs font-semibold tracking-wider uppercase md:text-sm"
+            className="flex cursor-pointer items-center justify-center gap-2 text-xs font-semibold tracking-wider uppercase md:text-sm"
           >
             {game.freeOn === "Steam" ? <FaSteam className="h-4 w-4" /> : null}
             {game.freeOn === "Epic Games" ? (
@@ -101,7 +101,7 @@ function GameItem({ game, className }) {
             {game.freeOn}
           </a>
 
-          <div className="font-body flex items-center justify-center gap-1 text-xs font-bold md:text-sm">
+          <div className="flex items-center justify-center gap-1 text-xs font-bold md:text-sm">
             <Clock className="h-3.5 w-3.5" />
             <p>
               {countDown.days
@@ -119,30 +119,30 @@ function GameItem({ game, className }) {
       )}
       {game?.first_release_date &&
         game?.first_release_date > Math.floor(Date.now() / 1000) && (
-          <div className="text-pulse-accent flex items-center justify-center gap-x-2">
-            <p className="font-body text-xs font-bold md:text-sm">
+          <div className="flex items-center justify-center gap-x-2">
+            <p className="text-xs font-bold md:text-sm">
               {formatReleaseDate(game.first_release_date)}
             </p>
-            <CalendarCheck className="h-4 w-4" />
+            <CalendarCheck className="text-text-brand h-4 w-4" />
           </div>
         )}
       {game?.hoursPlayed && (
-        <div className="border-obsidian-border flex w-full items-center justify-between border-t pt-2">
-          <div className="text-text-secondary flex items-center gap-1.5">
+        <div className="border-stroke-medium flex w-full items-center justify-between border-t pt-2">
+          <div className="flex items-center gap-1.5">
             {game.status === "playing" ? (
               <CiPlay1 className="text-pulse-primary h-3.5 w-3.5" />
             ) : game.status === "finished" ? (
-              <Check className="h-3.5 w-3.5 text-green-500" />
+              <Check className="text-pulse-success h-3.5 w-3.5" />
             ) : (
               <CiStop1 className="h-3.5 w-3.5 text-red-500" />
             )}
-            <p className="font-body text-[10px] font-bold tracking-widest uppercase sm:text-xs">
+            <p className=" text-xs font-bold tracking-widest uppercase">
               {game.status}
             </p>
           </div>
-          <div className="text-text-secondary flex items-center gap-1">
-            <FaRegClock className="h-3 w-3" />
-            <p className="font-body text-xs font-bold">{game.hoursPlayed}h</p>
+          <div className="text-text-dim flex items-center gap-1">
+            <FaRegClock className="h-3.5 w-3.5" />
+            <p className="text-xs font-bold">{game.hoursPlayed}h</p>
           </div>
         </div>
       )}

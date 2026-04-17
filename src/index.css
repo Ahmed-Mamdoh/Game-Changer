@@ -1,152 +1,205 @@
 @import "tailwindcss";
 
-@plugin "daisyui";
-
-@plugin "daisyui/theme" {
-  name: "Game Changer";
-  default: true;
-  prefersdark: true;
-  color-scheme: "light";
-  --color-base-100: oklch(22% 0.019 237.69);
-  --color-base-200: oklch(20% 0.019 237.69);
-  --color-base-300: oklch(18% 0.019 237.69);
-  --color-base-content: oklch(77.383% 0.043 245.096);
-  --color-primary: oklch(0.9072 0.2474 130.87);
-  --color-primary-content: oklch(14.94% 0.031 39.947);
-  --color-secondary: oklch(0.4327 0.2329 292.5);
-  --color-secondary-content: oklch(92% 0.013 255.508);
-  --color-accent: oklch(71.294% 0.166 299.844);
-  --color-accent-content: oklch(14.258% 0.033 299.844);
-  --color-neutral: oklch(26% 0.019 237.69);
-  --color-neutral-content: oklch(70% 0.019 237.69);
-  --color-info: oklch(85.559% 0.085 206.015);
-  --color-info-content: oklch(17.111% 0.017 206.015);
-  --color-success: oklch(85.56% 0.085 144.778);
-  --color-success-content: oklch(17.112% 0.017 144.778);
-  --color-warning: oklch(79% 0.184 86.047);
-  --color-warning-content: oklch(17.113% 0.016 74.427);
-  --color-error: oklch(63% 0.237 25.331);
-  --color-error-content: oklch(17.102% 0.015 16.886);
-  --radius-selector: 2rem;
-  --radius-field: 0.5rem;
-  --radius-box: 0.5rem;
-  --size-selector: 0.25rem;
-  --size-field: 0.25rem;
-  --border: 1px;
-  --depth: 0;
-  --noise: 0;
-}
+/* 
+ * --------------------------------------------------------------------------
+ * GAME CHANGER - DESIGN SYSTEM v2.0 (Pure Tailwind)
+ * --------------------------------------------------------------------------
+ * Based on ui-ux-pro-max guidelines for Gaming & Dashboards.
+ * 
+ * CORE PRINCIPLES:
+ * 1. Semantic Intent: Classes reflect "what" it is, not just "how" it looks.
+ * 2. High Performance: Minimal layers, hardware-accelerated transitions.
+ * 3. Accessibility: WCAG AAA contrast for primary text.
+ * 4. Responsiveness: Fluid typography and grid systems.
+ */
 
 @theme {
-  /* Obsidian Surface Colors */
-  --color-obsidian-base: #000000;
-  --color-obsidian-surface: #0a0a0a;
-  --color-obsidian-card: rgba(18, 18, 18, 0.8);
-  --color-obsidian-muted: #1a1a1a;
-  --color-obsidian-border: rgba(255, 255, 255, 0.05);
-  --color-obsidian-deep: #252129;
+  /* --- 1. PRIMITIVE COLOR PALETTE --- */
+  /* Deep Obsidian (Surface/Backgrounds) */
+  --color-obsidian-950: #020617;
+  /* True Deep Background */
+  --color-obsidian-900: #0f172a;
+  /* Raised Surfaces */
+  --color-obsidian-800: #1e293b;
+  /* Secondary Surfaces */
+  --color-obsidian-700: #334155;
+  /* Muted Elements */
 
-  --color-myGray: #35343f;
-  /* Pulse Accent Colors */
+  /* Pulse Accents (Interactive/Brand) */
   --color-pulse-primary: #7c3aed;
-  --color-pulse-secondary: #5b21b6;
+  /* Primary Action */
+  --color-pulse-secondary: #9e6cd3;
+  /* Secondary Action */
   --color-pulse-accent: #a78bfa;
-  --color-pulse-extra: #9e6cd3;
-  --color-pulse-glow: rgba(168, 85, 247, 0.1);
+  /* High-contrast Accent */
+  --color-pulse-success: #22c55e;
+  /* Positive/Success CTA */
+
+  /* --- 2. SEMANTIC DESIGN TOKENS --- */
+
+  /* Surfaces & Layers */
+  --color-bg-base: var(--color-obsidian-950);
+  --color-bg-surface: var(--color-obsidian-900);
+  --color-bg-card: rgba(255, 255, 255, 0.03);
+  /* Phantom Glass (Ultra-Thin) */
+  --color-bg-overlay: rgba(2, 6, 23, 0.85);
+
+  /* Borders & Dividers */
+  --color-stroke-subtle: rgba(255, 255, 255, 0.1);
+  /* Sharper definition for thin glass */
+  --color-stroke-medium: rgba(255, 255, 255, 0.15);
+  --color-stroke-brand: rgba(124, 58, 237, 0.5);
 
   /* Typography Colors */
-  --color-text-primary: #ffffff;
-  --color-text-secondary: #a1a1aa;
-  --color-text-muted: #71717a;
-  --color-text-dark: #18181b;
-  --font-heading: "Space Grotesk", sans-serif;
-  --font-body: "Manrope", sans-serif;
-  --font-arabic: "Cairo", sans-serif;
+  --color-text-main: #f8fafc;
+  /* Primary Content (WCAG AAA) */
+  --color-text-dim: #94a3b8;
+  /* Secondary Content */
+  --color-text-muted: #64748b;
+  /* Metadata/Captions */
+  --color-text-brand: var(--color-pulse-accent);
 
-  /* Typography Scale */
-  --font-size-heading-1: 4rem;
-  --font-size-heading-2: 2rem;
-  --font-size-body: 1rem;
-  --font-size-label: 0.75rem;
+  /* --- 3. TYPOGRAPHY SYSTEM --- */
+  --font-heading: "Space Grotesk", "Fira Code", sans-serif;
+  --font-body: "Manrope", "Fira Sans", sans-serif;
 
-  --letter-spacing-heading-1: -0.05em;
-  --letter-spacing-heading-2: -0.025em;
-  --letter-spacing-label: 0.1em;
+  /* Fluid Scale (scales smoothly from mobile to 1280px+) */
+  --font-size-hero: clamp(2.5rem, 8vw, 4rem);
+  /* Page headers */
+  --font-size-title: clamp(1.5rem, 4vw, 2.25rem);
+  /* Section headers */
+  --font-size-subtitle: clamp(1.125rem, 2vw, 1.5rem);
+  /* Card titles */
+  --font-size-base: 1rem;
+  /* Default body */
+  --font-size-sm: 0.875rem;
+  /* Labels/Stats */
+  --font-size-xs: 0.75rem;
+  /* Tiny metadata */
 
-  --line-height-body: 1.6;
+  /* --- 4. LAYOUT & EFFECTS --- */
+  --radius-xl: 1.5rem;
+  /* Large sections/containers */
+  --radius-lg: 1rem;
+  /* Standard game cards */
+  --radius-md: 0.5rem;
+  /* Buttons/Inputs */
+  --radius-full: 9999px;
+  /* Badges/Pills */
 
-  --font-weight-heading-1: 700;
-  --font-weight-heading-2: 600;
-  --font-weight-body: 400;
-  --font-weight-label: 500;
+  --shadow-glow: 0 0 20px rgba(124, 58, 237, 0.15);
 
-  /* Border Radius */
-  --radius-selector: 2rem;
-  --radius-field: 0.5rem;
-  --radius-box: 0.5rem;
-
-  /* Screens (breakpoints) */
-  --breakpoint-xs: 375px;
-  --breakpoint-sm: 640px;
-  --breakpoint-md: 768px;
-  --breakpoint-lg: 1024px;
-  --breakpoint-xl: 1280px;
-  --breakpoint-2xl: 1536px;
-
-  /* Container Configuration */
-  --container-center: true;
-  --container-padding-default: 1rem;
-  --container-padding-sm: 2rem;
-  --container-padding-lg: 4rem;
-  --container-padding-xl: 5rem;
-  --container-padding-2xl: 6rem;
+  /* --- 5. SEMANTIC Z-INDEX --- */
+  --z-base: 1;
+  --z-sticky: 100;
+  --z-overlay: 200;
+  --z-modal: 300;
+  --z-popover: 400;
+  --z-toast: 500;
 }
 
 @layer base {
   html {
-    @apply scroll-smooth;
+    @apply scroll-smooth antialiased;
   }
 
   body {
-    @apply text-text-primary font-body bg-obsidian-muted min-h-screen;
+    @apply bg-bg-base text-text-main font-body min-h-screen selection:bg-pulse-primary/30;
+    font-size: var(--font-size-base);
   }
 
-  h1 {
-    font-size: 4rem;
-    letter-spacing: -0.05em;
-    font-weight: 700;
-    font-family: var(--font-heading), sans-serif;
+  /* AUTOMATIC HEADING STYLES */
+  h1,
+  .h1 {
+    @apply font-heading font-bold leading-tight tracking-tight text-text-main;
+    font-size: var(--font-size-hero);
   }
 
-  h2 {
-    font-size: 2rem;
-    letter-spacing: -0.025em;
-    font-weight: 600;
-    font-family: var(--font-heading), sans-serif;
+  h2,
+  .h2 {
+    @apply font-heading font-semibold leading-tight tracking-tight text-text-main;
+    font-size: var(--font-size-title);
   }
 
-  body {
-    font-size: 1rem;
-    line-height: 1.6;
-    font-weight: 400;
+  h3,
+  .h3 {
+    @apply font-heading font-semibold leading-snug text-text-main;
+    font-size: var(--font-size-subtitle);
   }
 
-  .label {
-    font-size: 0.75rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    font-weight: 500;
+  p {
+    @apply text-text-dim leading-relaxed;
+    font-size: var(--font-size-base);
   }
 
-  /* Hide scrollbar but keep functionality */
+  /* CUSTOM SCROLLBAR (Optimized for Dark Mode) */
+  ::-webkit-scrollbar {
+    @apply w-1.5;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-bg-base;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-obsidian-800 rounded-full hover:bg-text-muted transition-colors;
+  }
+
+  /* UTILITY: No Scrollbar but keeping scroll logic */
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
+}
 
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    /* IE and Edge */
-    scrollbar-width: none;
-    /* Firefox */
+@layer components {
+  /* 
+   * REUSABLE COMPONENT PATTERNS
+   * Use these to maintain 100% consistency across the app.
+   */
+
+  /* THE GAME CARD: Optimized for Phantom Glass (Ultra-Modern) */
+  .game-card {
+    @apply bg-bg-card border-stroke-subtle rounded-xl border-1 backdrop-blur-2xl transition-all duration-500 transform-gpu;
+    @apply hover:bg-white/[0.06] hover:border-white/20 hover:translate-y-[-4px] hover:shadow-2xl hover:shadow-pulse-primary/10;
+
+    /* Subtle inner reflection for thin glass */
+    background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+  }
+
+  /* THE ACTION BUTTON: Primary CTA style */
+  .btn-action {
+    @apply bg-pulse-primary text-white rounded-md px-6 py-2 font-semibold transition-all duration-200;
+    @apply hover:bg-pulse-secondary hover:scale-[1.02] hover:shadow-lg active:scale-95;
+    @apply focus-visible:ring-2 focus-visible:ring-pulse-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg-base outline-none;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* THE SUCCESS BUTTON: Use for confirmations/adds */
+  .btn-success {
+    @apply bg-pulse-success text-white rounded-md px-6 py-2 font-semibold transition-all duration-200;
+    @apply hover:brightness-110 hover:scale-[1.02] active:scale-95;
+    @apply focus-visible:ring-2 focus-visible:ring-pulse-success focus-visible:ring-offset-2 focus-visible:ring-offset-bg-base outline-none;
+  }
+
+  /* GLASS INPUT: Standardized form styling to match the theme */
+  .glass-input {
+    @apply bg-white/[0.03] border-stroke-subtle rounded-md px-4 py-2 text-text-main backdrop-blur-md transition-all duration-300;
+    @apply hover:border-stroke-medium focus:bg-white/[0.06] focus:border-pulse-primary focus:ring-1 focus:ring-pulse-primary outline-none;
+  }
+
+  /* GLASS BADGE: Standardized tag styling */
+  .glass-badge {
+    @apply bg-white/[0.05] border-stroke-subtle rounded-full px-3 py-1 text-xs font-medium text-text-brand backdrop-blur-sm;
+  }
+
+  /* CLICKABLE FEEDBACK */
+  .interactive {
+    @apply cursor-pointer transition-all duration-200 active:scale-[0.98];
+    @apply focus-visible:ring-2 focus-visible:ring-pulse-accent outline-none rounded-sm;
   }
 }

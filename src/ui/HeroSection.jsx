@@ -14,7 +14,7 @@ function HeroSection() {
           className="h-[100dvh] w-full mask-b-from-50% mask-b-to-transparent object-cover object-top"
           fetchPriority="high"
         />
-        <div className="absolute inset-0 bg-black/60" />
+        <div className="bg-bg-base/60 absolute inset-0" />
 
         <div
           className="absolute top-1/2 left-1/2 flex h-full w-full

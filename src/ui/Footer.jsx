@@ -2,11 +2,11 @@ import { IoLogoGithub, IoLogoLinkedin } from "react-icons/io5";
 
 function Footer() {
   return (
-    <div className="border-obsidian-border bg-obsidian-deep/40 w-full border-t-3 py-4 backdrop-blur-2xl md:py-6">
+    <div className="border-stroke-subtle bg-bg-surface w-full border-t-3 py-4  md:py-6">
       <div className="mx-auto flex w-11/12 flex-col items-center justify-between gap-4 md:w-8/10 md:flex-row">
         <div className="flex flex-col items-center gap-x-2 gap-y-2 md:flex-row md:items-center">
-          <h2 className="text-[1.5rem] md:text-[1.75rem]">Ahmed Mamdoh</h2>
-          <p className="text-text-secondary text-sm md:text-base">
+          <h3>Ahmed Mamdoh</h3>
+          <p className="text-text-dim text-sm md:text-base">
             ahmedmamdoh.cs@gmail.com
           </p>
         </div>
