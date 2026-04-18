@@ -1,5 +1,5 @@
 const NUM_OF_STARS = 5;
-function Rating({ bgColor, rating }) {
+function RatingReadOnly({ bgColor, rating }) {
   return (
     <div className="rating rating-sm">
       {Array.from({ length: NUM_OF_STARS }, (_, i) => {
@@ -7,7 +7,7 @@ function Rating({ bgColor, rating }) {
           <>
             <div
               className={`mask mask-star-2  ${bgColor}`}
-              aria-current={(i) < rating / (100 / NUM_OF_STARS)}
+              aria-current={i < rating / (100 / NUM_OF_STARS)}
               key={i}
             />
           </>
@@ -17,4 +17,4 @@ function Rating({ bgColor, rating }) {
   );
 }
 
-export default Rating;
+export default RatingReadOnly;

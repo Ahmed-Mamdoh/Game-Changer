@@ -31,6 +31,8 @@ export async function addGame({
   game_cover,
   genres,
   themes,
+  review,
+  rating,
 }) {
   const { data, error } = await supabase
     .from("user_games")
@@ -48,6 +50,9 @@ export async function addGame({
       },
     ])
     .select();
+  if (error) return { data: null, error };
+  console.log({ user_id, game_id, review, rating });
+  await addReview({ user_id, game_id, review, rating });
   return { data, error };
 }
 
@@ -108,4 +113,33 @@ export async function updateUser({ email, password, username }) {
 export async function logoutUser() {
   let { error } = await supabase.auth.signOut();
   return { error };
+}
+
+// Reviews
+export async function addReview({ user_id, game_id, review, rating }) {
+  console.log({ user_id, game_id, review, rating });
+  if (!user_id || !game_id || !rating) return { data: null, error: null };
+  const { data, error } = await supabase
+    .from("game_reviews")
+    .insert([
+      {
+        user_id,
+        game_id,
+        review,
+        rating,
+      },
+    ])
+    .select();
+  return { data, error };
+}
+
+export async function getUserGameReview(user_id, game_id) {
+  if (!user_id || !game_id) return { data: null, error: null };
+
+  let { data, error } = await supabase
+    .from("game_reviews")
+    .select("*")
+    .eq("user_id", user_id)
+    .eq("game_id", game_id);
+  return { data, error };
 }

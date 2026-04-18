@@ -1,28 +1,27 @@
 import { deleteUserGame, updateUserGame } from "@/api/supabase";
 import { useGetUserGame } from "@/features/User/hooks/useGetUserGame";
-import Rating from "@/ui/Rating";
+import useScreenWidth from "@/hooks/useScreenWidth";
+import RatingReadOnly from "@/ui/RatingReadOnly";
 import Spinner from "@/ui/Spinner";
 import { useQueryClient } from "@tanstack/react-query";
 import { formatDate } from "date-fns";
 import toast from "react-hot-toast";
 import {
+  FaBook,
+  FaCalendarAlt,
+  FaFlagCheckered,
   FaHeart,
   FaRegHeart,
   FaSteam,
   FaTrash,
-  FaCalendarAlt,
-  FaStar,
-  FaClock,
   FaTrophy,
-  FaFlagCheckered,
-  FaBook,
 } from "react-icons/fa";
 import { SiEpicgames, SiGogdotcom } from "react-icons/si";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useGetTimeToBeat } from "../hooks/useGetTimeToBeat";
 import AddGameModal from "./AddGameModal";
-import useScreenWidth from "@/hooks/useScreenWidth";
+import { useGetUserGameReview } from "@/features/User/hooks/useGetUserGameReview";
 
 function GameDetailsOverview({ data }) {
   const {
@@ -50,6 +49,8 @@ function GameDetailsOverview({ data }) {
   const { data: timeToBeat } = useGetTimeToBeat();
   const { data: userGame, isLoading: isLoadingUserGame } =
     useGetUserGame(user_id);
+  const { data: userGameReview, isLoading: isLoadingUserGameReview } =
+    useGetUserGameReview(user_id);
 
   //  gets the full quality image instead of low quality
   const chosenArtwork =
@@ -66,7 +67,7 @@ function GameDetailsOverview({ data }) {
       ?.replace("t_thumb", "t_1080p_2x")
       ?.replace("jpg", "webp") || null;
 
-  if (isLoadingUserGame) return <Spinner />;
+  if (isLoadingUserGame || isLoadingUserGameReview) return <Spinner />;
 
   function handleDeleteGame() {
     Swal.fire({
@@ -222,6 +223,7 @@ function GameDetailsOverview({ data }) {
                       game_id={id}
                       releaseDate={releaseDate}
                       userGame={userGame.data[0]}
+                      userGameReview={userGameReview.data[0]}
                       game_cover={
                         cover?.url
                           ?.replace("t_thumb", "t_720p_2x")
@@ -272,7 +274,10 @@ function GameDetailsOverview({ data }) {
                 <div className="flex flex-row md:flex-col">
                   <h4 className=" hidden md:block">Rating:</h4>
                   <div className="flex items-center gap-1">
-                    <Rating bgColor="bg-pulse-primary" rating={rating} />
+                    <RatingReadOnly
+                      bgColor="bg-pulse-primary"
+                      rating={rating}
+                    />
                     <p className="pt-1">{rating?.toFixed(0)}%</p>
                     <p className="self-center pt-1">({ratingCount})</p>
                   </div>
