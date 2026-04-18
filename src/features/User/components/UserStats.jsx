@@ -6,9 +6,9 @@ import { GiScrollQuill } from "react-icons/gi";
 import UserCharts from "./UserCharts";
 
 function UserStats({ user_games, isLoading }) {
-  const totalHours = user_games
-    ?.map((game) => game.hours_played)
-    .reduce((acc, cur) => acc + cur || 0);
+  const totalHours = user_games?.length
+    ? user_games.reduce((acc, game) => acc + (game.hours_played || 0), 0)
+    : 0;
   const genresCount = user_games
     ?.map((game) => game.genres)
     .flat()

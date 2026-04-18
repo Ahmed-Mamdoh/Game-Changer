@@ -26,9 +26,9 @@ function UserCharts({ user_games, isLoading }) {
     genresData = prepareChartData({ user_games, field: "genres" });
     themesData = prepareChartData({ user_games, field: "themes" });
   }
-  const totalHours = user_games
-    ?.map((game) => game.hours_played)
-    .reduce((acc, cur) => acc + cur || 0);
+  const totalHours = user_games?.length
+    ? user_games.reduce((acc, game) => acc + (game.hours_played || 0), 0)
+    : 0;
 
   return (
     <div className="hidden h-full flex-col items-center justify-between gap-2 py-3   sm:gap-3 md:flex md:flex-row">

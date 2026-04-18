@@ -1,4 +1,4 @@
-import { addGame, updateUserGame } from "@/api/supabase";
+import { addUserGame, updateUserGame } from "@/api/supabase";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -32,7 +32,11 @@ function AddGameModal({
 }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { register, handleSubmit, formState, control, watch } = useForm();
+  const { register, handleSubmit, formState, control, watch } = useForm({
+    defaultValues: {
+      review: userGameReview?.review || "",
+    },
+  });
   const { errors } = formState;
   const userToken = localStorage.getItem("sb-kapovyqqncfsoangqppi-auth-token");
   const user_id = JSON.parse(userToken || "{}")?.user?.id;
@@ -47,13 +51,16 @@ function AddGameModal({
     console.log(data);
     if (isLoadingRef.current === true) return;
     isLoadingRef.current = true;
-    data.date_finished = new Date(data.date_finished)
-      .toISOString()
-      .split("T")[0];
+    data.date_finished =
+      data.status === "playing"
+        ? null
+        : data.date_finished
+          ? new Date(data.date_finished).toISOString().split("T")[0]
+          : null;
     toast
       .promise(
         async () => {
-          const { error } = await addGame({
+          const { error } = await addUserGame({
             game_id,
             user_id,
             genres,
@@ -88,9 +95,12 @@ function AddGameModal({
   function handleUpdateGame(data) {
     if (isLoadingRef.current === true) return;
     isLoadingRef.current = true;
-    data.date_finished = new Date(data.date_finished)
-      .toISOString()
-      .split("T")[0];
+    data.date_finished =
+      data.status === "playing"
+        ? null
+        : data.date_finished
+          ? new Date(data.date_finished).toISOString().split("T")[0]
+          : null;
     toast
       .promise(
         async () => {
@@ -145,13 +155,13 @@ function AddGameModal({
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="bg-bg-card border-stroke-medium border backdrop-blur-xl sm:max-w-xl md:max-w-3xl lg:max-w-4xl">
+      <DialogContent className="bg-bg-card border-stroke-medium rounded-xl border backdrop-blur-xl sm:max-w-xl md:max-w-3xl lg:max-w-4xl">
         <div className="flex w-full items-start gap-x-10">
           {/* Game Data */}
           <div className="hidden h-full flex-col items-start justify-between sm:flex">
             <img
               src={game_cover}
-              className="w-70 rounded-xl object-contain"
+              className="w-72 rounded-xl object-contain"
               alt=""
               fetchPriority="high"
             />
@@ -168,9 +178,9 @@ function AddGameModal({
           {/* Game Form */}
           <form
             onSubmit={handleSubmit(isUpdate ? handleUpdateGame : handleAddGame)}
-            className="w-full"
+            className="h-full w-full"
           >
-            <div className="grid w-full gap-4">
+            <div className="flex w-full flex-col gap-4 ">
               {/* Form header */}
               <div className="flex w-full flex-col items-center justify-center gap-1">
                 <h2>{isUpdate ? "Update Game" : "Add Game"}</h2>
@@ -184,7 +194,7 @@ function AddGameModal({
               {/* Status and Rating fields */}
               <div className="justify flex flex-col items-start gap-3 md:flex-row md:items-center">
                 {/* Status field */}
-                <div className="flex w-full flex-col gap-3 md:w-fit">
+                <div className="flex w-full flex-col gap-3 ">
                   <div className="flex items-center justify-between">
                     <Label htmlFor="status">Status *</Label>
                     {errors["status"] && (
@@ -199,9 +209,8 @@ function AddGameModal({
                     defaultValue={userGame?.status || ""}
                   />
                 </div>
-                <div className="flex-1"></div>
                 {/* Rating field */}
-                <div className="flex w-full flex-col gap-3 md:w-[40%]">
+                <div className="flex w-full flex-col gap-3">
                   <div className="flex w-full items-center justify-between">
                     <Label htmlFor="rating" className="text-sm">
                       Rating *
@@ -219,49 +228,70 @@ function AddGameModal({
                   />
                 </div>
               </div>
-              {/* Hours Played field */}
-              <div className="grid gap-3">
-                <div className="flex items-center justify-between">
+
+              {/* Hours Played and Date Finished fields */}
+              <div className="flex items-center gap-3">
+                {/* Hours Played field */}
+                <div className="flex w-full flex-col gap-3">
                   <Label htmlFor="hours_played">Hours Played *</Label>
-                  {errors["hours_played"] && (
-                    <p className="text-error text-sm leading-0">
-                      {errors["hours_played"].message}
-                    </p>
-                  )}
+                  <Input
+                    id="hours_played"
+                    name="hours_played"
+                    type="number"
+                    className="border-stroke-subtle bg-bg-card rounded-full border focus-visible:ring-0"
+                    min={1}
+                    defaultValue={userGame?.hours_played || ""}
+                    {...register("hours_played", {
+                      required: "Hours played is required",
+                    })}
+                  />
+
+                  <p className="text-error text-sm leading-0">
+                    {errors["hours_played"] && errors["hours_played"].message}
+                  </p>
                 </div>
-                <Input
-                  id="hours_played"
-                  name="hours_played"
-                  type="number"
-                  className="border-stroke-subtle bg-bg-card rounded-full border focus-visible:ring-0"
-                  min={1}
-                  defaultValue={userGame?.hours_played || ""}
-                  {...register("hours_played", {
-                    required: "Hours played is required",
-                  })}
-                />
-              </div>
-              {/* Date Finished field */}
-              <div className="grid gap-3">
-                <div className="flex items-center justify-between">
+                {/* Date Finished field */}
+                <div className="flex w-full flex-col gap-3">
                   <Label htmlFor="date_finished">Date {status}</Label>
-                  {errors["date_finished"] && (
+                  <ModalDate
+                    name="date_finished"
+                    control={control}
+                    disabled={status === "playing" || status === undefined}
+                    minDate={releaseDate}
+                    defaultValue={userGame?.date_finished || null}
+                  />
+                  {
                     <p className="text-error text-sm leading-0">
-                      {errors["date_finished"].message}
+                      {errors["date_finished"] &&
+                        errors["date_finished"].message}
                     </p>
-                  )}
+                  }
                 </div>
-                <ModalDate
-                  name="date_finished"
-                  control={control}
-                  disabled={status === "playing" || status === undefined}
-                  minDate={releaseDate}
-                  defaultValue={userGame?.date_finished || null}
-                />
+              </div>
+
+              {/* Review field */}
+              <div className="flex w-full flex-col gap-3 pt-3">
+                <div className="flex w-full items-center justify-between">
+                  <Label htmlFor="review">Review</Label>
+                  <p className="text-error text-sm leading-0">
+                    {errors["review"] && errors["review"].message}
+                  </p>
+                </div>
+                <textarea
+                  name="review"
+                  id="review"
+                  {...register("review", {
+                    maxLength: {
+                      value: 2000,
+                      message: "Review must be less than 2000 characters",
+                    },
+                  })}
+                  className="bg-bg-card border-stroke-subtle min-h-24 w-full rounded-xl border p-3 focus-within:outline-0"
+                ></textarea>
               </div>
             </div>
             {/* Form footer */}
-            <DialogFooter className="pt-4">
+            <DialogFooter className=" pt-4">
               <DialogClose asChild>
                 <button className=" bg-bg-card border-stroke-subtle cursor-pointer rounded-full border px-5 py-2">
                   Cancel

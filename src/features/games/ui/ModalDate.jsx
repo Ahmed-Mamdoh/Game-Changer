@@ -1,4 +1,4 @@
-import { ChevronDownIcon } from "lucide-react";
+import { ChevronDownIcon, Trash, TrashIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
@@ -10,12 +10,14 @@ import {
 import { useState } from "react";
 import { useController } from "react-hook-form";
 import { MyDatePicker } from "./MyDatePicker";
+import { CiTrash } from "react-icons/ci";
 
 function ModalDate({ name, control, minDate, defaultValue, disabled }) {
   const [open, setOpen] = useState(false);
   const [date, setDate] = useState(
     defaultValue ? new Date(defaultValue) : null,
   );
+  console.log(defaultValue, date);
   const { field } = useController({
     name,
     control,
@@ -33,32 +35,43 @@ function ModalDate({ name, control, minDate, defaultValue, disabled }) {
   });
 
   return (
-    <div className="flex flex-col gap-3">
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            id="date"
-            disabled={disabled}
-            className=" bg-bg-card border-stroke-subtle w-full justify-between rounded-full border"
+    <div className="flex  items-center gap-3">
+      <div className="w-full">
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              id="date"
+              disabled={disabled}
+              className=" bg-bg-card border-stroke-subtle w-full justify-between rounded-full border"
+            >
+              {date ? date.toLocaleDateString() : "Select date"}
+              <div className="flex items-center gap-2">
+                <ChevronDownIcon />
+              </div>
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent
+            className="bg-bg-card border-stroke-subtle w-auto overflow-hidden border p-0 backdrop-blur-xl"
+            align="start"
           >
-            {date ? date.toLocaleDateString() : "Select date"}
-            <ChevronDownIcon />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent
-          className="bg-bg-card border-stroke-subtle w-auto overflow-hidden border p-0 backdrop-blur-xl"
-          align="start"
-        >
-          <MyDatePicker
-            onSelect={(date) => {
-              field.onChange(date);
-              setDate(date);
-              setOpen(false);
-            }}
-          />
-        </PopoverContent>
-      </Popover>
+            <MyDatePicker
+              onSelect={(date) => {
+                field.onChange(date);
+                setDate(date);
+                setOpen(false);
+              }}
+            />
+          </PopoverContent>
+        </Popover>
+      </div>
+      <Trash
+        className="h-5 w-5 cursor-pointer text-red-400"
+        onClick={() => {
+          setDate(null);
+          field.onChange(null);
+        }}
+      />
     </div>
   );
 }

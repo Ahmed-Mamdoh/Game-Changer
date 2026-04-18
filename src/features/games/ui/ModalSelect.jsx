@@ -19,8 +19,11 @@ function ModalSelect({ control, name, defaultValue }) {
         flex cursor-pointer items-center gap-2 rounded-full border
         px-3 py-1.5 text-sm font-medium tracking-wide transition-all duration-200 hover:scale-105
         
-        ${field.value === item ? "bg-pulse-primary/50  " : ""}`}
-          onClick={() => field.onChange(item)}
+        ${field.value === item ? "bg-pulse-primary/50" : ""}`}
+          onClick={(e) => {
+            e.preventDefault();
+            field.onChange(item);
+          }}
         >
           {field.value === item ? <FaCheck className="mt-0.5 h-3 w-3" /> : null}
           {item}

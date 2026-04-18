@@ -81,8 +81,8 @@ function Account() {
     .map((game) => {
       return {
         id: game.game_id,
-        name: game.game_name,
-        cover: { url: game.game_cover },
+        name: game.name,
+        cover: { url: game.cover },
         status: game.status,
         hoursPlayed: game.hours_played,
         dateFinished: game.date_finished,

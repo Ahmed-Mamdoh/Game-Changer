@@ -69,7 +69,7 @@ export function ChartBarLabel({ chartData, title }) {
             />
             <XAxis
               type="number"
-              domain={[0, Number(finalChartData[0].number)]}
+              domain={[0, Number(finalChartData[0]?.number || 0)]}
               hide={true}
             />
             <Bar

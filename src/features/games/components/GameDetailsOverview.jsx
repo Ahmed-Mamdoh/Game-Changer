@@ -50,7 +50,7 @@ function GameDetailsOverview({ data }) {
   const { data: userGame, isLoading: isLoadingUserGame } =
     useGetUserGame(user_id);
   const { data: userGameReview, isLoading: isLoadingUserGameReview } =
-    useGetUserGameReview(user_id);
+    useGetUserGameReview({ user_game_id: userGame?.data?.[0]?.id });
 
   //  gets the full quality image instead of low quality
   const chosenArtwork =
@@ -222,8 +222,8 @@ function GameDetailsOverview({ data }) {
                       isUpdate={true}
                       game_id={id}
                       releaseDate={releaseDate}
-                      userGame={userGame.data[0]}
-                      userGameReview={userGameReview.data[0]}
+                      userGame={userGame?.data?.[0]}
+                      userGameReview={userGameReview?.data?.[0]}
                       game_cover={
                         cover?.url
                           ?.replace("t_thumb", "t_720p_2x")

@@ -64,10 +64,10 @@ function App() {
   return (
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
-        {/* <ReactQueryDevtools
+        <ReactQueryDevtools
           initialIsOpen={false}
           buttonPosition="bottom-left"
-        /> */}
+        />
         <RouterProvider router={router} />
         <Analytics />
         <SpeedInsights />
