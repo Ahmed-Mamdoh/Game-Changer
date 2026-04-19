@@ -55,7 +55,7 @@ export async function addUserGame({
     .select();
   if (error) return { data: null, error };
   console.log(data);
-  await addReview({ user_game_id: data[0].id, game_id, review, rating });
+  await addReview({ user_id, game_id, review, rating });
   return { data, error };
 }
 
@@ -72,7 +72,7 @@ export async function updateUserGame({ game_id, user_id, ...formData }) {
     .select();
   if (error) return { data: null, error };
   await updateReview({
-    user_game_id: data[0].id,
+    user_id,
     game_id,
     review: formData.review,
     rating: formData.rating,
@@ -103,25 +103,12 @@ export async function getUserGame(user_id, game_id) {
 export async function getUserGames(user_id) {
   let { data: user_games, error } = await supabase
     .from("user_games")
-    .select("*")
+    .select(`*,game:games(*)`)
     .eq("user_id", user_id);
 
   if (error) return { user_games: [], error };
 
-  const { data: gamesDetails } = await getUserGamesDetails({
-    games_ids: user_games?.map((game) => game.game_id),
-  });
-
-  // Create a map for quick lookup by game_id
-  const detailsMap = new Map(gamesDetails?.map((game) => [game.game_id, game]));
-
-  // Merge details back into user_games while preserving the original order
-  const mergedGames = user_games.map((userGame) => ({
-    ...userGame,
-    ...(detailsMap.get(userGame.game_id) || {}),
-  }));
-
-  return { user_games: mergedGames, error };
+  return { user_games, error };
 }
 
 export async function updateUser({ email, password, username }) {
@@ -145,14 +132,14 @@ export async function logoutUser() {
 }
 
 // Reviews
-export async function addReview({ user_game_id, game_id, review, rating }) {
-  console.log({ user_game_id, game_id, review, rating });
-  if (!user_game_id || !game_id || !rating) return { data: null, error: null };
+export async function addReview({ user_id, game_id, review, rating }) {
+  console.log({ user_id, game_id, review, rating });
+  if (!user_id || !game_id || !rating) return { data: null, error: null };
   const { data, error } = await supabase
     .from("game_reviews")
     .insert([
       {
-        user_game_id,
+        user_id,
         game_id,
         review,
         rating,
@@ -162,24 +149,34 @@ export async function addReview({ user_game_id, game_id, review, rating }) {
   return { data, error };
 }
 
-export async function updateReview({ user_game_id, game_id, review, rating }) {
-  console.log({ user_game_id, game_id, review, rating });
-  if (!user_game_id || !game_id || !rating) return { data: null, error: null };
+export async function updateReview({ user_id, game_id, review, rating }) {
+  console.log({ user_id, game_id, review, rating });
+  if (!user_id || !game_id || !rating) return { data: null, error: null };
   const { data, error } = await supabase
     .from("game_reviews")
     .update({ review, rating })
-    .eq("user_game_id", user_game_id)
+    .eq("user_id", user_id)
     .select();
   return { data, error };
 }
 
-export async function getUserGameReview({ user_game_id }) {
-  if (!user_game_id) return { data: null, error: null };
+export async function getGameReviews({ game_id }) {
+  if (!game_id) return { data: null, error: null };
+  let { data, error } = await supabase
+    .from("game_reviews")
+    .select("*")
+    .eq("game_id", game_id);
+  return { data, error };
+}
+
+export async function getUserGameReview({ user_id, game_id }) {
+  if (!user_id || !game_id) return { data: null, error: null };
 
   let { data, error } = await supabase
     .from("game_reviews")
     .select("*")
-    .eq("user_game_id", user_game_id);
+    .eq("user_id", user_id)
+    .eq("game_id", game_id);
   return { data, error };
 }
 

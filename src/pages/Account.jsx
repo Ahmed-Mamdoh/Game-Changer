@@ -43,28 +43,29 @@ function Account() {
     themes?.filter((theme) => theme?.id === +themeParam)[0]?.name;
 
   const GalleryData = user_games
-    .filter((game) => {
+    .filter((userGame) => {
       if (!genreParam) return true;
-      return game?.genres?.includes(genreName);
+      return userGame?.game?.genres?.includes(genreName);
     })
-    .filter((game) => {
+    .filter((userGame) => {
       if (!themeParam) return true;
-      return game?.themes?.includes(themeName);
+      return userGame?.game?.themes?.includes(themeName);
     })
-    .filter((game) => {
+    .filter((userGame) => {
       if (!statusParam) return true;
-      return game?.status === statusParam;
+      return userGame?.game?.status === statusParam;
     })
-    .filter((game) => {
+    .filter((userGame) => {
       if (!isFavoriteParam) return true;
-      return game.is_favorite === true;
+      return userGame?.game?.is_favorite === true;
     })
     .sort((a, b) => {
       if (sortByParam === "hours_played")
-        return b.hours_played - a.hours_played;
+        return b.game?.hours_played - a.game?.hours_played;
       if (sortByParam === "date_finished")
         return (
-          new Date(b.date_finished) - new Date(a.date_finished || Date.now())
+          new Date(b.game?.date_finished) -
+          new Date(a.game?.date_finished || Date.now())
         );
       const getStatusRank = (status) => {
         if (status === "playing") return 1;
@@ -73,20 +74,20 @@ function Account() {
         return 4; // For any other status
       };
 
-      const rankA = getStatusRank(a.status);
-      const rankB = getStatusRank(b.status);
+      const rankA = getStatusRank(a.game?.status);
+      const rankB = getStatusRank(b.game?.status);
 
       return rankA - rankB;
     })
-    .map((game) => {
+    .map((userGame) => {
       return {
-        id: game.game_id,
-        name: game.name,
-        cover: { url: game.cover },
-        status: game.status,
-        hoursPlayed: game.hours_played,
-        dateFinished: game.date_finished,
-        isFavorite: game.is_favorite,
+        id: userGame?.game?.game_id,
+        name: userGame?.game?.name,
+        cover: { url: userGame?.game?.cover },
+        status: userGame?.status,
+        hoursPlayed: userGame?.hours_played,
+        dateFinished: userGame?.date_finished,
+        isFavorite: userGame?.is_favorite,
       };
     });
 

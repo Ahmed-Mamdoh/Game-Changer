@@ -1,10 +1,12 @@
 import { getUserGameReview } from "@/api/supabase";
 import { useQuery } from "@tanstack/react-query";
+import { useParams } from "react-router-dom";
 
-export function useGetUserGameReview({ user_game_id }) {
+export function useGetUserGameReview({ user_id }) {
+  const { gameId } = useParams();
   const { data, isLoading, error } = useQuery({
-    queryKey: ["user_game_review", user_game_id],
-    queryFn: () => getUserGameReview({ user_game_id }),
+    queryKey: ["user_game_review", user_id, gameId],
+    queryFn: () => getUserGameReview({ user_id, game_id: gameId }),
   });
   return { data, isLoading, error };
 }
