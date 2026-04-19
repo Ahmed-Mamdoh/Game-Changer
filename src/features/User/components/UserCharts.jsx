@@ -7,7 +7,9 @@ import { PiSwordLight } from "react-icons/pi";
 import { GoClock } from "react-icons/go";
 
 function prepareChartData({ user_games, field }) {
-  const data = user_games?.map((game) => game[field]).flat();
+  const data = user_games
+    ?.map((userGame) => userGame?.game?.[field] || [])
+    .flat();
   const dataCount = data.reduce((acc, item) => {
     return { ...acc, [item]: (acc[item] || 0) + 1 };
   }, {});

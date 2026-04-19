@@ -7,16 +7,19 @@ import UserCharts from "./UserCharts";
 
 function UserStats({ user_games, isLoading }) {
   const totalHours = user_games?.length
-    ? user_games.reduce((acc, game) => acc + (game.hours_played || 0), 0)
+    ? user_games.reduce(
+        (acc, userGame) => acc + (userGame.hours_played || 0),
+        0,
+      )
     : 0;
   const genresCount = user_games
-    ?.map((game) => game.genres)
+    ?.map((userGame) => userGame?.game?.genres || [])
     .flat()
     .reduce((acc, item) => {
       return { ...acc, [item]: (acc[item] || 0) + 1 };
     }, {});
   const ThemesCount = user_games
-    ?.map((game) => game.themes)
+    ?.map((userGame) => userGame?.game?.themes || [])
     .flat()
     .reduce((acc, item) => {
       return { ...acc, [item]: (acc[item] || 0) + 1 };
