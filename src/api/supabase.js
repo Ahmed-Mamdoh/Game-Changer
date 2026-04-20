@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
-const supabaseUrl = "https://kapovyqqncfsoangqppi.supabase.co";
-const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+export const supabase = createClient(supabaseUrl, supabaseKey);
 
 export async function signUp({ email, password, ...userData }) {
   const { data, error } = await supabase.auth.signUp({
@@ -86,6 +86,7 @@ export async function deleteUserGame({ game_id, user_id }) {
     .delete()
     .eq("game_id", game_id)
     .eq("user_id", user_id);
+  await deleteReview({ user_id, game_id });
   return { error };
 }
 
@@ -149,6 +150,16 @@ export async function addReview({ user_id, game_id, review, rating }) {
   return { data, error };
 }
 
+export async function deleteReview({ user_id, game_id }) {
+  if (!user_id || !game_id) return { data: null, error: null };
+  const { error } = await supabase
+    .from("game_reviews")
+    .delete()
+    .eq("user_id", user_id)
+    .eq("game_id", game_id);
+  return { error };
+}
+
 export async function updateReview({ user_id, game_id, review, rating }) {
   console.log({ user_id, game_id, review, rating });
   if (!user_id || !game_id || !rating) return { data: null, error: null };
@@ -164,7 +175,7 @@ export async function getGameReviews({ game_id }) {
   if (!game_id) return { data: null, error: null };
   let { data, error } = await supabase
     .from("game_reviews")
-    .select("*")
+    .select("*,user:profiles(*)")
     .eq("game_id", game_id);
   return { data, error };
 }
@@ -186,15 +197,5 @@ export async function insertGame({ game_id, genres, themes, name, cover }) {
     .from("games")
     .insert([{ game_id, genres, themes, name, cover }])
     .select();
-  return { data, error };
-}
-
-export async function getUserGamesDetails({ games_ids }) {
-  if (!games_ids) return { data: null, error: null };
-
-  let { data, error } = await supabase
-    .from("games")
-    .select("*")
-    .in("game_id", games_ids);
   return { data, error };
 }
