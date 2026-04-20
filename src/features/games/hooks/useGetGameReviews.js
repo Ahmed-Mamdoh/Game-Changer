@@ -4,7 +4,7 @@ import { getGameReviews } from "@/api/supabase";
 export function useGetGameReviews() {
   const { gameId } = useParams();
   const { data, isLoading, error } = useQuery({
-    queryKey: ["games-reviews", gameId],
+    queryKey: ["game_reviews", gameId],
     queryFn: () => getGameReviews({ game_id: gameId }),
   });
 

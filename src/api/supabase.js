@@ -175,8 +175,9 @@ export async function getGameReviews({ game_id }) {
   if (!game_id) return { data: null, error: null };
   let { data, error } = await supabase
     .from("game_reviews")
-    .select("*,user:profiles(*)")
+    .select("*,user:profiles(*),stats:user_stats(games_count, reviews_count)")
     .eq("game_id", game_id);
+
   return { data, error };
 }
 

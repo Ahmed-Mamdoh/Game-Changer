@@ -82,13 +82,20 @@ function AddGameModal({
       )
       .finally(() => {
         const gameId = String(game_id);
-        queryClient.invalidateQueries({
+        queryClient.refetchQueries({
           queryKey: ["user_game", user_id, gameId],
         });
         queryClient.invalidateQueries({
           queryKey: ["user_games", user_id],
         });
+        queryClient.refetchQueries({
+          queryKey: ["game_reviews", gameId],
+        });
+        queryClient.refetchQueries({
+          queryKey: ["user_game_review", user_id, gameId],
+        });
         isLoadingRef.current = false;
+        setOpen(false);
       });
   }
 
@@ -123,11 +130,17 @@ function AddGameModal({
       )
       .finally(() => {
         const gameId = String(game_id);
-        queryClient.invalidateQueries({
+        queryClient.refetchQueries({
           queryKey: ["user_game", user_id, gameId],
         });
         queryClient.invalidateQueries({
           queryKey: ["user_games", user_id],
+        });
+        queryClient.refetchQueries({
+          queryKey: ["game_reviews", gameId],
+        });
+        queryClient.refetchQueries({
+          queryKey: ["user_game_review", user_id, gameId],
         });
         isLoadingRef.current = false;
         setOpen(false);
