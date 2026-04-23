@@ -11,10 +11,12 @@ import {
   FaCalendarAlt,
   FaFlagCheckered,
   FaHeart,
+  FaPlaystation,
   FaRegHeart,
   FaSteam,
   FaTrash,
   FaTrophy,
+  FaXbox,
 } from "react-icons/fa";
 import { SiEpicgames, SiGogdotcom } from "react-icons/si";
 import { useNavigate } from "react-router-dom";
@@ -145,6 +147,18 @@ function GameDetailsOverview({ data }) {
         urlPattern: "epic",
         icon: <SiEpicgames className="h-5 w-5" />,
         bgColor: "bg-black/50",
+      },
+      {
+        name: "PlayStation",
+        urlPattern: "playstation",
+        icon: <FaPlaystation className="h-5 w-5" />,
+        bgColor: "bg-[#0170cc50]",
+      },
+      {
+        name: "Xbox",
+        urlPattern: "xbox",
+        icon: <FaXbox className="h-5 w-5" />,
+        bgColor: "bg-[#107C1050]",
       },
     ];
 

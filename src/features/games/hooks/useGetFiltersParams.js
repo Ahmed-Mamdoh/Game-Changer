@@ -8,6 +8,8 @@ function useGetFiltersParams() {
   const themes = searchParams.get("theme");
   const gameMode = searchParams.get("gameMode");
   const sortBy = search ? null : searchParams.get("sortBy");
+  const platform = searchParams.get("platform");
+
   let filters = [];
   if (genre) {
     filters.push(`genres = [${genre.split("-")}]`);
@@ -18,7 +20,7 @@ function useGetFiltersParams() {
   if (gameMode) {
     filters.push(`game_modes = (${gameMode.split("-")})`);
   }
-  return { filters, sortBy, page, search };
+  return { filters, sortBy, platform, page, search };
 }
 
 export default useGetFiltersParams;

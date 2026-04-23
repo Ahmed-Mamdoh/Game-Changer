@@ -15,6 +15,7 @@ function Filters({
   isAccount = false,
   showFavorite = false,
   isUpcoming = false,
+  showPlatform = true,
   className = "",
 }) {
   const { data: genres, isLoading: isLoadingGenres } = useGetGenres();
@@ -38,6 +39,15 @@ function Filters({
     { id: "finished", name: "Finished" },
     { id: "playing", name: "Playing" },
     { id: "dropped", name: "Dropped" },
+  ];
+  const platforms = [
+    { id: "all", name: "All" },
+    { id: "6", name: "PC" },
+    { id: "48", name: "PlayStation 4" },
+    { id: "167", name: "PlayStation 5" },
+    { id: "49", name: "Xbox One" },
+    { id: "169", name: "Xbox Series X|S" },
+    { id: "130", name: "Nintendo Switch" },
   ];
   const [searchParams, setSearchParams] = useSearchParams();
   const search = searchParams.get("search");
@@ -67,6 +77,17 @@ function Filters({
 
           {showStatus && (
             <FilterButtons category={status} name="Status" paramName="status" />
+          )}
+
+          {showPlatform && (
+            <FilterButtons
+              category={platforms}
+              name="Platform"
+              paramName="platform"
+              defaultValue={["all"]}
+              sort={false}
+              or={true}
+            />
           )}
 
           {!search && showSortBy && (

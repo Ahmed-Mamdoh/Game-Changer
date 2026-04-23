@@ -2,6 +2,7 @@ import { LIMIT } from "@/constants/constant";
 
 export async function getAllGames({
   filters = [],
+  platform,
   sortBy,
   page = 1,
   search,
@@ -19,6 +20,10 @@ export async function getAllGames({
       : "";
 
   const searchString = search ? `search "${search}";` : "";
+  const platformString =
+    platform === "all" || !platform
+      ? "& platforms = (6,48,167,49,169,130)"
+      : ` & platforms = (${platform})`;
 
   const releaseDateString = search
     ? ``
@@ -35,7 +40,7 @@ export async function getAllGames({
       limit ${limit || LIMIT};
       offset ${offset};
       ${sortByString}
-      where game_type = (0,8,9) & version_parent = null & platforms = (6) &
+      where game_type = (0,8,9) & version_parent = null ${platformString} &
       themes != (42) 
       ${releaseDateString}
       ${filtersString};
@@ -122,6 +127,19 @@ export async function getNumberOfResults({
   return data;
 }
 
+export async function getPlatforms() {
+  const response = await fetch("/api/igdbProvider", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      endpoint: "platforms",
+      query: `fields name; limit 500;`,
+    }),
+  });
+  const data = await response.json();
+  return data;
+}
+console.log(await getPlatforms());
 export async function getGenres() {
   const response = await fetch("/api/igdbProvider", {
     method: "POST",

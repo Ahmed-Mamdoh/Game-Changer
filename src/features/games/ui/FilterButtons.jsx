@@ -5,6 +5,7 @@ function FilterButtons({
   category,
   name,
   paramName,
+  sort = true,
   or = false,
   defaultValue = [],
 }) {
@@ -22,9 +23,9 @@ function FilterButtons({
     >
       <p className="text-text-main">{name}: </p>
       {category
-        .sort((a, b) => a.name.localeCompare(b.name))
-        .filter((_, i) => showAll || i < 2)
-        .map((item, i) => {
+        ?.sort((a, b) => (sort ? a.name.localeCompare(b.name) : 0))
+        ?.filter((_, i) => showAll || i < 2)
+        ?.map((item, i) => {
           return (
             <button
               className={`border-stroke-brand hover:bg-pulse-primary/30
