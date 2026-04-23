@@ -6,6 +6,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import YoutubeEmbed from "@/ui/YoutubeEmbed";
+import { formatIGDBImage } from "@/utils/igdbImage";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 function GameDetailsMedia({ data }) {
@@ -33,9 +34,7 @@ function GameDetailsMedia({ data }) {
                     <CarouselItem key={screenshot.id} className="px-1 md:pl-4">
                       <div className="aspect-[4/3] rounded-xl md:aspect-[16/9]">
                         <img
-                          src={screenshot?.url
-                            ?.replace("t_thumb", "t_1080p_2x")
-                            ?.replace("jpg", "webp")}
+                          src={formatIGDBImage(screenshot?.url, "t_1080p_2x")}
                           alt=""
                           className="h-full w-full cursor-grab rounded-xl object-cover select-none active:cursor-grabbing"
                         />

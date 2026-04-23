@@ -17,21 +17,21 @@ function Drawer() {
   // Navigation items data for cleaner mapping
   const navItems = [
     {
-      to: "/allGames",
+      to: "/games/allGames",
       text: "All Games",
       icon: (
         <Gamepad2 className="text-pulse-accent group-hover:text-pulse-primary h-5 w-5" />
       ),
     },
     {
-      to: "/freeGames",
+      to: "/games/freeGames",
       text: "Free Games",
       icon: (
         <Gift className="text-pulse-accent group-hover:text-pulse-primary h-5 w-5" />
       ),
     },
     {
-      to: "/upcomingGames",
+      to: "/games/upcomingGames",
       text: "Upcoming",
       icon: (
         <Calendar className="text-pulse-accent group-hover:text-pulse-primary h-5 w-5" />

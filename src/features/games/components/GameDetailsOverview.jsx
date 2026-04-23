@@ -24,6 +24,7 @@ import Swal from "sweetalert2";
 import { useGetTimeToBeat } from "../hooks/useGetTimeToBeat";
 import AddGameModal from "./AddGameModal";
 import { useGetUserGameReview } from "@/features/User/hooks/useGetUserGameReview";
+import { formatIGDBImage } from "@/utils/igdbImage";
 
 function GameDetailsOverview({ data }) {
   const {
@@ -64,10 +65,7 @@ function GameDetailsOverview({ data }) {
         artworks?.find((a) => a.artwork_type === 4) ||
         artworks?.[0] ||
         cover;
-  const imageUrl =
-    chosenArtwork?.url
-      ?.replace("t_thumb", "t_1080p_2x")
-      ?.replace("jpg", "webp") || null;
+  const imageUrl = formatIGDBImage(chosenArtwork?.url, "t_1080p_2x") || null;
 
   if (isLoadingUserGame || isLoadingUserGameReview) return <Spinner />;
 
@@ -239,9 +237,7 @@ function GameDetailsOverview({ data }) {
                       userGame={userGame?.data?.[0]}
                       userGameReview={userGameReview?.data?.[0]}
                       game_cover={
-                        cover?.url
-                          ?.replace("t_thumb", "t_720p_2x")
-                          ?.replace("jpg", "webp") || null
+                        formatIGDBImage(cover?.url, "t_720p_2x") || null
                       }
                       game_name={name}
                     />
@@ -253,11 +249,7 @@ function GameDetailsOverview({ data }) {
                   releaseDate={releaseDate}
                   genresData={genres}
                   themesData={themes}
-                  game_cover={
-                    cover?.url
-                      ?.replace("t_thumb", "t_720p_2x")
-                      ?.replace("jpg", "webp") || null
-                  }
+                  game_cover={formatIGDBImage(cover?.url, "t_720p_2x") || null}
                   game_name={name}
                 />
               )

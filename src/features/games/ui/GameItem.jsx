@@ -1,3 +1,4 @@
+import { formatIGDBImage } from "@/utils/igdbImage";
 import { formatDate, intervalToDuration, formatDistanceToNow } from "date-fns";
 import { CalendarCheck, Check, Clock } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -7,10 +8,7 @@ import { SiEpicgames, SiGogdotcom } from "react-icons/si";
 import { Link, useNavigate } from "react-router-dom";
 
 function GameItem({ game, className }) {
-  let imageUrl = game.cover?.url
-    ? game.cover?.url?.replace("jpg", "webp")
-    : null;
-  imageUrl = imageUrl?.replace("t_thumb", "t_cover_big");
+  let imageUrl = formatIGDBImage(game?.cover?.url, "t_cover_big");
   const navigate = useNavigate();
 
   const formatReleaseDate = (timestamp) => {

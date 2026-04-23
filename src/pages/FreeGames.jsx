@@ -6,15 +6,10 @@ function FreeGames() {
   const { dataToShow, isLoadingFreeGamesIgdbData, isLoadingFreeGamesNames } =
     useGetFreeGamesToShow();
   return (
-    <div className="relative mx-auto min-h-screen w-full py-20">
-      <FadingBackground first={true} />
-      <div className="h-full w-full">
-        <GamesGallery
-          isLoading={isLoadingFreeGamesNames || isLoadingFreeGamesIgdbData}
-          data={dataToShow}
-        />
-      </div>
-    </div>
+    <GamesGallery
+      isLoading={isLoadingFreeGamesNames || isLoadingFreeGamesIgdbData}
+      data={dataToShow}
+    />
   );
 }
 

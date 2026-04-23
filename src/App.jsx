@@ -14,6 +14,7 @@ const Account = lazy(() => import("./pages/Account"));
 import RouteErrorFallback from "./pages/RouteErrorFallback";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
+import GameDiscoveryLayout from "./pages/GameDiscoveryLayout";
 
 function App() {
   const queryClient = new QueryClient({
@@ -35,20 +36,26 @@ function App() {
           element: <Home />,
         },
         {
-          path: "/allGames",
-          element: <AllGames />,
+          path: "/games",
+          element: <GameDiscoveryLayout />,
+          children: [
+            {
+              path: "allGames",
+              element: <AllGames />,
+            },
+            {
+              path: "upcomingGames",
+              element: <UpcomingGames />,
+            },
+            {
+              path: "freeGames",
+              element: <FreeGames />,
+            },
+          ],
         },
         {
           path: "/game/:gameId",
           element: <GameDetails />,
-        },
-        {
-          path: "/freeGames",
-          element: <FreeGames />,
-        },
-        {
-          path: "/upcomingGames",
-          element: <UpcomingGames />,
         },
         {
           path: "/auth",

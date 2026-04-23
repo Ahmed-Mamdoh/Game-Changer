@@ -7,19 +7,7 @@ import GamesGallery from "../features/games/ui/GamesGallery";
 function AllGames() {
   const { data, isLoading } = useGetAllGames();
 
-  return (
-    <div className="relative min-h-screen py-20">
-      <FadingBackground first={true} />
-      {/* Content section */}
-      <div className="z-10 w-full">
-        <div className="mx-auto">
-          <Filters />
-          <GamesGallery data={data} isLoading={isLoading} />
-          <FullPagination />
-        </div>
-      </div>
-    </div>
-  );
+  return <GamesGallery data={data} isLoading={isLoading} />;
 }
 
 export default AllGames;

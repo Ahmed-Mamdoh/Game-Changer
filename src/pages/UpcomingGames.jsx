@@ -7,17 +7,7 @@ import FadingBackground from "@/features/games/ui/FadingBackground";
 function UpcomingGames() {
   const { data, isLoading } = useGetUpcomingGames();
 
-  return (
-    <div className="relative mx-auto">
-      <FadingBackground first={true} />
-      {/* Content section */}
-      <div className=" z-10 w-full py-20">
-        <Filters isUpcoming={true} className="w-3/4" />
-        <GamesGallery data={data} isLoading={isLoading} />
-        <FullPagination />
-      </div>
-    </div>
-  );
+  return <GamesGallery data={data} isLoading={isLoading} />;
 }
 
 export default UpcomingGames;

@@ -1,5 +1,16 @@
 import { LIMIT } from "@/constants/constant";
 
+async function igdbFetch(endpoint, query) {
+  const response = await fetch("/api/igdbProvider", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ endpoint, query }),
+  });
+  const data = await response.json();
+
+  return data;
+}
+
 export async function getAllGames({
   filters = [],
   platform,
@@ -36,12 +47,9 @@ export async function getAllGames({
       ? ` & first_release_date > ${Math.floor(Date.now() / 1000)}`
       : ` & first_release_date <= ${Math.floor(Date.now() / 1000)}`;
 
-  const response = await fetch("/api/igdbProvider", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      endpoint: "games",
-      query: `fields name,cover.url,first_release_date,game_status;
+  return igdbFetch(
+    "games",
+    `fields name,cover.url,first_release_date,game_status;
       limit ${limit || LIMIT};
       offset ${offset};
       ${sortByString}
@@ -51,40 +59,24 @@ export async function getAllGames({
       ${player_perspectivesString} 
       ${releaseDateString}
       ${filtersString};
-      ${searchString}
-      `,
-    }),
-  });
-  const data = await response.json();
-
-  return data;
+      ${searchString}`,
+  );
 }
 
 export async function getFreeGameData(search) {
   const searchString = search ? `search "${search}";` : "";
-  const response = await fetch("/api/igdbProvider", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      endpoint: "games",
-
-      query: `fields name,cover.url;
+  return igdbFetch(
+    "games",
+    `fields name,cover.url;
       ${searchString};limit 1;
       `,
-    }),
-  });
-  const data = await response.json();
-  return data;
+  );
 }
 
 export async function getOneGame(id) {
-  const response = await fetch("/api/igdbProvider", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      endpoint: "games",
-
-      query: `fields name,cover.url,artworks.url,artworks.artwork_type,first_release_date,summary,
+  return igdbFetch(
+    "games",
+    `fields name,cover.url,artworks.url,artworks.artwork_type,first_release_date,summary,
       age_ratings.rating,age_ratings.category,
       total_rating,total_rating_count,
       genres.name,themes.name,
@@ -100,10 +92,7 @@ export async function getOneGame(id) {
       game_modes.name;
       where id = ${id};
       `,
-    }),
-  });
-  const data = await response.json();
-  return data;
+  );
 }
 
 export async function getNumberOfResults({
@@ -115,77 +104,32 @@ export async function getNumberOfResults({
   const filtersString = filters.length !== 0 ? " & " + filters.join(" & ") : "";
 
   const searchString = search ? `search "${search}";` : "";
-
-  const response = await fetch("/api/igdbProvider", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      endpoint: "games/count",
-
-      query: `fields name,cover.url;
+  return igdbFetch(
+    "games/count",
+    `fields name,cover.url;
       where game_type = (0,1,8,9) & version_parent = null & platforms = (6) &
       first_release_date ${isUpcoming ? ">" : "<="} ${Math.floor(Date.now() / 1000)} & themes != (42)
     ${filtersString};
     ${searchString}
       `,
-    }),
-  });
-  const data = await response.json();
-  return data;
+  );
 }
 
 export async function getGenres() {
-  const response = await fetch("/api/igdbProvider", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      endpoint: "genres",
-
-      query: `fields name; limit 500;`,
-    }),
-  });
-  const data = await response.json();
-  return data;
+  return igdbFetch("genres", `fields name; limit 500;`);
 }
 
 export async function getGameModes() {
-  const response = await fetch("/api/igdbProvider", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      endpoint: "game_modes",
-
-      query: `fields name; limit 500;`,
-    }),
-  });
-  const data = await response.json();
-  return data;
+  return igdbFetch("game_modes", `fields name; limit 500;`);
 }
 
 export async function getThemes() {
-  const response = await fetch("/api/igdbProvider", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      endpoint: "themes",
-
-      query: `fields name; limit 500;`,
-    }),
-  });
-  const data = await response.json();
-  return data;
+  return igdbFetch("themes", `fields name; limit 500;`);
 }
 
 export async function getTimeToBeat(id) {
-  const response = await fetch("/api/igdbProvider", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      endpoint: "game_time_to_beats",
-
-      query: `fields completely,hastily,normally; limit 500; where game_id = ${id};`,
-    }),
-  });
-  const data = await response.json();
-  return data;
+  return igdbFetch(
+    "game_time_to_beats",
+    `fields completely,hastily,normally; limit 500; where game_id = ${id};`,
+  );
 }
