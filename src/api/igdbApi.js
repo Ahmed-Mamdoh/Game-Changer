@@ -127,19 +127,6 @@ export async function getNumberOfResults({
   return data;
 }
 
-export async function getPlatforms() {
-  const response = await fetch("/api/igdbProvider", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      endpoint: "platforms",
-      query: `fields name; limit 500;`,
-    }),
-  });
-  const data = await response.json();
-  return data;
-}
-console.log(await getPlatforms());
 export async function getGenres() {
   const response = await fetch("/api/igdbProvider", {
     method: "POST",

@@ -18,9 +18,7 @@ function FilterButtons({
   const [showAll, setShowAll] = useState(false);
 
   return (
-    <div
-      className={`flex ${or ? "flex-nowrap" : "flex-wrap"} items-center gap-2`}
-    >
+    <div className={`flex flex-wrap items-center gap-2`}>
       <p className="text-text-main">{name}: </p>
       {category
         ?.sort((a, b) => (sort ? a.name.localeCompare(b.name) : 0))
