@@ -10,7 +10,7 @@ function AuthFormField({ field, validations, register, formState }) {
           {field.charAt(0).toUpperCase() + field.slice(1)}:
         </Label>
         {errors?.[field]?.message && (
-          <p className=" rounded-full px-3 py-1 text-[1rem] font-medium tracking-wide text-red-500">
+          <p className=" text-text-error rounded-full px-3 py-1 text-[1rem] font-medium tracking-wide">
             {errors[field].message}
           </p>
         )}

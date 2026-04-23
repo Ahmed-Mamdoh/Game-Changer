@@ -1,4 +1,5 @@
 import { addUserGame, updateUserGame } from "@/api/supabase";
+import Rating from "@/components/Rating";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -9,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { UserToken } from "@/hooks/useUserToken";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -17,7 +19,6 @@ import { FaPen, FaPlus } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import ModalDate from "../ui/ModalDate";
 import ModalSelect from "../ui/ModalSelect";
-import Rating from "@/components/Rating";
 
 function AddGameModal({
   game_id,
@@ -38,8 +39,7 @@ function AddGameModal({
     },
   });
   const { errors } = formState;
-  const userToken = localStorage.getItem("sb-kapovyqqncfsoangqppi-auth-token");
-  const user_id = JSON.parse(userToken || "{}")?.user?.id;
+  const user_id = UserToken()?.user?.id;
 
   const genres = genresData?.map((genre) => genre.name) || [];
   const themes = themesData?.map((theme) => theme.name) || [];

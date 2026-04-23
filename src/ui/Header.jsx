@@ -6,13 +6,12 @@ import { IoIosSearch } from "react-icons/io";
 import Tabs from "./Tabs";
 import Drawer from "./Drawer";
 import { Menu } from "lucide-react";
+import { UserToken } from "@/hooks/useUserToken";
 
 function Header() {
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
-  const supabaseToken = localStorage.getItem(
-    "sb-kapovyqqncfsoangqppi-auth-token",
-  );
+  const supabaseToken = UserToken();
 
   function handleSearch() {
     if (!search) return;

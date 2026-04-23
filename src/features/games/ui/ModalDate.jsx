@@ -66,7 +66,7 @@ function ModalDate({ name, control, minDate, defaultValue, disabled }) {
         </Popover>
       </div>
       <Trash
-        className="h-5 w-5 cursor-pointer text-red-400"
+        className="text-text-error h-5 w-5 cursor-pointer"
         onClick={() => {
           setDate(null);
           field.onChange(null);

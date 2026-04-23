@@ -12,9 +12,9 @@ function GamesGallery({ data, isLoading }) {
       {data?.length === 0 && (
         <h2 className="col-span-full">🔍 No Games Found</h2>
       )}
-      {data?.message && <h2 className="text-red-500">{data?.message}</h2>}
+      {data?.message && <h2 className="text-text-error">{data?.message}</h2>}
       {data?.[0]?.message && (
-        <h2 className="text-red-500">{data?.[0]?.message}</h2>
+        <h2 className="text-text-error">{data?.[0]?.message}</h2>
       )}
       {data?.length > 0 &&
         data?.map((game) => {

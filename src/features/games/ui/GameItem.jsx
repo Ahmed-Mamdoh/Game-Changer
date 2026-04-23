@@ -132,7 +132,7 @@ function GameItem({ game, className }) {
             ) : game.status === "finished" ? (
               <Check className="text-pulse-success h-3.5 w-3.5" />
             ) : (
-              <CiStop1 className="h-3.5 w-3.5 text-red-500" />
+              <CiStop1 className="h-3.5 w-3.5 text-text-error" />
             )}
             <p className=" text-xs font-bold tracking-widest uppercase">
               {game.status}

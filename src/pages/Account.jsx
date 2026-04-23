@@ -6,6 +6,7 @@ import UserFilterButton from "@/features/User/components/UserFilterButton";
 import UserHeader from "@/features/User/components/UserHeader";
 import UserStats from "@/features/User/components/UserStats";
 import { useGetUserGames } from "@/features/User/hooks/useGetUserGames";
+import { UserToken } from "@/hooks/useUserToken";
 import Spinner from "@/ui/Spinner";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
@@ -18,18 +19,14 @@ function Account() {
   const sortByParam = searchParams.get("sortBy");
   const isFavoriteParam = searchParams.get("isFavorite");
 
-  const supabaseToken = localStorage.getItem(
-    "sb-kapovyqqncfsoangqppi-auth-token",
-  );
-  const userData = JSON.parse(supabaseToken || "{}");
-  const user_id = userData?.user?.id;
+  const user_id = UserToken()?.user?.id;
   const { data: genres, isLoading: isLoadingGenres } = useGetGenres();
   const { data: themes, isLoading: isLoadingThemes } = useGetThemes();
 
   const { data, isLoading } = useGetUserGames(user_id);
   const user_games = data?.user_games || [];
 
-  if (!supabaseToken) {
+  if (!user_id) {
     navigate("/auth");
   }
 

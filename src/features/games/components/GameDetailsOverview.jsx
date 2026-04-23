@@ -25,6 +25,8 @@ import { useGetTimeToBeat } from "../hooks/useGetTimeToBeat";
 import AddGameModal from "./AddGameModal";
 import { useGetUserGameReview } from "@/features/User/hooks/useGetUserGameReview";
 import { formatIGDBImage } from "@/utils/igdbImage";
+import { UserToken } from "@/hooks/useUserToken";
+import { MySwal } from "@/lib/swal";
 
 function GameDetailsOverview({ data }) {
   const {
@@ -46,8 +48,7 @@ function GameDetailsOverview({ data }) {
   const queryClient = useQueryClient();
   const screenWidth = useScreenWidth();
 
-  const userToken = localStorage.getItem("sb-kapovyqqncfsoangqppi-auth-token");
-  const user_id = JSON.parse(userToken || "{}")?.user?.id;
+  const user_id = UserToken()?.user?.id;
 
   const { data: timeToBeat } = useGetTimeToBeat();
   const { data: userGame, isLoading: isLoadingUserGame } =
@@ -70,15 +71,11 @@ function GameDetailsOverview({ data }) {
   if (isLoadingUserGame || isLoadingUserGameReview) return <Spinner />;
 
   function handleDeleteGame() {
-    Swal.fire({
+    MySwal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "oklch(63% 0.237 25.331)",
-      background: "oklch(22% 0.019 237.69)",
-      color: "oklch(77.383% 0.043 245.096)",
-      cancelButtonColor: "oklch(26% 0.019 237.69)",
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {

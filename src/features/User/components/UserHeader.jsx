@@ -1,5 +1,7 @@
 import { logoutUser, updateUser } from "@/api/supabase";
 import { Input } from "@/components/ui/input";
+import { UserToken } from "@/hooks/useUserToken";
+import { MySwal } from "@/lib/swal";
 import { useState } from "react";
 import { FaCheck, FaPen } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
@@ -7,20 +9,15 @@ import Swal from "sweetalert2";
 
 function UserHeader() {
   const navigate = useNavigate();
-  const supabaseToken = localStorage.getItem(
-    "sb-kapovyqqncfsoangqppi-auth-token",
-  );
-  const userData = JSON.parse(supabaseToken || "{}");
-  const { username } = userData?.user?.user_metadata || {};
+
+  const { username } = UserToken()?.user?.user_metadata || {};
 
   function handleLogout() {
-    Swal.fire({
+    MySwal.fire({
       title: "Are you sure you want to log out?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Log Out",
-      background: "oklch(22% 0.019 237.69)",
-      color: "oklch(77.383% 0.043 245.096)",
     }).then((result) => {
       if (result.isConfirmed) {
         logoutUser().then(() => navigate("/"));
@@ -61,14 +58,12 @@ function DataField({ label, value }) {
       return;
     }
     if (isEditing) {
-      Swal.fire({
+      MySwal.fire({
         title: "Do you want to save the changes?",
         showDenyButton: true,
         showCancelButton: true,
         confirmButtonText: "Save",
         denyButtonText: `Don't save`,
-        background: "oklch(22% 0.019 237.69)",
-        color: "oklch(77.383% 0.043 245.096)",
         text: `are you sure you want to update ${label} to ${inputValue}?`,
         icon: "warning",
       }).then((result) => {
@@ -80,29 +75,23 @@ function DataField({ label, value }) {
           updateUser(dataToUpdate)
             .then(({ error }) => {
               if (error) {
-                Swal.fire({
+                MySwal.fire({
                   title: "Error",
                   icon: "error",
                   html: error.message,
-                  background: "oklch(22% 0.019 237.69)",
-                  color: "oklch(77.383% 0.043 245.096)",
                 });
                 return;
               }
-              Swal.fire({
+              MySwal.fire({
                 title: "Saved!",
                 icon: "success",
-                background: "oklch(22% 0.019 237.69)",
-                color: "oklch(77.383% 0.043 245.096)",
               });
             })
             .finally(setIsEditing(false));
         } else if (result.isDenied) {
-          Swal.fire({
+          MySwal.fire({
             title: "Changes are not saved",
             icon: "info",
-            background: "oklch(22% 0.019 237.69)",
-            color: "oklch(77.383% 0.043 245.096)",
           });
           setIsEditing(false);
         }

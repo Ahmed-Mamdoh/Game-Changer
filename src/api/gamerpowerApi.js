@@ -4,7 +4,7 @@ export async function getFreePcGames() {
   const options = {
     method: "GET",
     headers: {
-      "x-rapidapi-key": "182911d47bmsh071ddf662bcd0a0p178efajsn2dfdba312ded",
+      "x-rapidapi-key": import.meta.env.VITE_RAPID_API_KEY,
       "x-rapidapi-host": "gamerpower.p.rapidapi.com",
     },
   };

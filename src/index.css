@@ -34,6 +34,10 @@
   /* High-contrast Accent */
   --color-pulse-success: #22c55e;
   /* Positive/Success CTA */
+  --color-pulse-error: #ff4d4d;
+  /* Error/Destructive */
+  --color-pulse-warning: #ff9f43;
+  /* Warning/Alert */
 
   /* --- 2. SEMANTIC DESIGN TOKENS --- */
 
@@ -58,6 +62,8 @@
   --color-text-muted: #64748b;
   /* Metadata/Captions */
   --color-text-brand: var(--color-pulse-accent);
+  --color-text-error: var(--color-pulse-error);
+  --color-text-warning: var(--color-pulse-warning);
 
   /* --- 3. TYPOGRAPHY SYSTEM --- */
   --font-heading: "Space Grotesk", "Fira Code", sans-serif;

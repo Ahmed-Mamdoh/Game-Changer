@@ -1,9 +1,8 @@
+import { UserToken } from "@/hooks/useUserToken";
 import Tab from "./Tab";
 
 function Tabs() {
-  const supabaseToken = localStorage.getItem(
-    "sb-kapovyqqncfsoangqppi-auth-token",
-  );
+  const supabaseToken = UserToken();
 
   return (
     <nav
