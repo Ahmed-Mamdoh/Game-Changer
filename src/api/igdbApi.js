@@ -36,12 +36,12 @@ export async function getAllGames({
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       endpoint: "games",
-      query: `fields name,cover.url,first_release_date;
+      query: `fields name,cover.url,first_release_date,game_status;
       limit ${limit || LIMIT};
       offset ${offset};
       ${sortByString}
       where game_type = (0,8,9) & version_parent = null ${platformString} &
-      themes != (42) 
+      themes != (42)  & (game_status = null | game_status != (5,6,7,8));
       ${releaseDateString}
       ${filtersString};
       ${searchString}

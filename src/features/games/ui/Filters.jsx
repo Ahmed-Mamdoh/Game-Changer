@@ -49,6 +49,7 @@ function Filters({
     { id: "169", name: "Xbox Series X|S" },
     { id: "130", name: "Nintendo Switch" },
   ];
+  // TODO: add perspective filter (player_perspectives)
   const [searchParams, setSearchParams] = useSearchParams();
   const search = searchParams.get("search");
 
