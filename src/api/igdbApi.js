@@ -8,6 +8,7 @@ export async function getAllGames({
   search,
   limit,
   isUpcoming,
+  player_perspectives,
 }) {
   // if there is filters split them by &
   const filtersString =
@@ -24,6 +25,10 @@ export async function getAllGames({
     platform === "all" || !platform
       ? "& platforms = (6,48,167,49,169,130)"
       : ` & platforms = (${platform})`;
+  const player_perspectivesString =
+    player_perspectives === "all" || !player_perspectives
+      ? ""
+      : ` & player_perspectives = ${player_perspectives}`;
 
   const releaseDateString = search
     ? ``
@@ -40,8 +45,10 @@ export async function getAllGames({
       limit ${limit || LIMIT};
       offset ${offset};
       ${sortByString}
-      where game_type = (0,8,9) & version_parent = null ${platformString} &
+      where game_type = (0,8,9) & version_parent = null &
       themes != (42)  & (game_status = null | game_status != (5,6,7,8))
+      ${platformString}
+      ${player_perspectivesString} 
       ${releaseDateString}
       ${filtersString};
       ${searchString}

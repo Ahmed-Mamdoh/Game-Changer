@@ -16,6 +16,7 @@ function Filters({
   showFavorite = false,
   isUpcoming = false,
   showPlatform = true,
+  showPerspective = true,
   className = "",
 }) {
   const { data: genres, isLoading: isLoadingGenres } = useGetGenres();
@@ -49,7 +50,17 @@ function Filters({
     { id: "169", name: "Xbox Series X|S" },
     { id: "130", name: "Nintendo Switch" },
   ];
-  // TODO: add perspective filter (player_perspectives)
+  const perspectives = [
+    { id: "all", name: "All" },
+    { id: "1", name: "First person" },
+    { id: "2", name: "Third person" },
+    { id: "3", name: "Bird view / Isometric" },
+    { id: "4", name: "Side view" },
+    { id: "5", name: "Text" },
+    { id: "6", name: "Auditory" },
+    { id: "7", name: "Virtual Reality" },
+    { id: "8", name: "Augmented Reality" },
+  ];
   const [searchParams, setSearchParams] = useSearchParams();
   const search = searchParams.get("search");
 
@@ -78,6 +89,17 @@ function Filters({
 
           {showStatus && (
             <FilterButtons category={status} name="Status" paramName="status" />
+          )}
+
+          {showPerspective && (
+            <FilterButtons
+              category={perspectives}
+              defaultValue={["all"]}
+              or={true}
+              sort={false}
+              name="Perspective"
+              paramName="player_perspectives"
+            />
           )}
 
           {showPlatform && (

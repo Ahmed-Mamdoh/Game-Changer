@@ -9,6 +9,7 @@ function useGetFiltersParams() {
   const gameMode = searchParams.get("gameMode");
   const sortBy = search ? null : searchParams.get("sortBy");
   const platform = searchParams.get("platform");
+  const player_perspectives = searchParams.get("player_perspectives");
 
   let filters = [];
   if (genre) {
@@ -20,7 +21,8 @@ function useGetFiltersParams() {
   if (gameMode) {
     filters.push(`game_modes = (${gameMode.split("-")})`);
   }
-  return { filters, sortBy, platform, page, search };
+
+  return { filters, sortBy, platform, page, search, player_perspectives };
 }
 
 export default useGetFiltersParams;
