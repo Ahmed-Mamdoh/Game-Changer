@@ -134,31 +134,31 @@ function GameDetailsOverview({ data }) {
         name: "Steam",
         urlPattern: "steam",
         icon: <FaSteam className="h-5 w-5" />,
-        bgColor: "bg-[#2a475e50]",
+        bgColor: "bg-[#2a475e25]",
       },
       {
         name: "GOG",
         urlPattern: "gog",
         icon: <SiGogdotcom className="h-5 w-5" />,
-        bgColor: "bg-[#310E7650]",
+        bgColor: "bg-[#310E7625]",
       },
       {
         name: "Epic Games",
         urlPattern: "epic",
         icon: <SiEpicgames className="h-5 w-5" />,
-        bgColor: "bg-black/50",
+        bgColor: "bg-black/25",
       },
       {
         name: "PlayStation",
         urlPattern: "playstation",
         icon: <FaPlaystation className="h-5 w-5" />,
-        bgColor: "bg-[#0170cc50]",
+        bgColor: "bg-[#0170cc25]",
       },
       {
         name: "Xbox",
         urlPattern: "xbox",
         icon: <FaXbox className="h-5 w-5" />,
-        bgColor: "bg-[#107C1050]",
+        bgColor: "bg-[#107C1025]",
       },
     ];
 
