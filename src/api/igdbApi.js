@@ -41,7 +41,7 @@ export async function getAllGames({
       offset ${offset};
       ${sortByString}
       where game_type = (0,8,9) & version_parent = null ${platformString} &
-      themes != (42)  & (game_status = null | game_status != (5,6,7,8));
+      themes != (42)  & (game_status = null | game_status != (5,6,7,8))
       ${releaseDateString}
       ${filtersString};
       ${searchString}
