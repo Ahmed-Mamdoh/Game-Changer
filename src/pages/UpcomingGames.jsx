@@ -7,7 +7,12 @@ import FadingBackground from "@/features/games/ui/FadingBackground";
 function UpcomingGames() {
   const { data, isLoading } = useGetUpcomingGames();
 
-  return <GamesGallery data={data} isLoading={isLoading} />;
+  return (
+    <>
+      <Filters isUpcoming />
+      <GamesGallery data={data} isLoading={isLoading} />;
+    </>
+  );
 }
 
 export default UpcomingGames;

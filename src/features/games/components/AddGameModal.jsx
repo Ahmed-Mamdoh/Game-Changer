@@ -22,6 +22,7 @@ import ModalSelect from "../ui/ModalSelect";
 
 function AddGameModal({
   game_id,
+  keywords,
   releaseDate,
   genresData,
   themesData,
@@ -67,6 +68,7 @@ function AddGameModal({
             themes,
             game_name,
             game_cover: game_cover,
+            keywords,
             ...data,
           });
           if (error) {

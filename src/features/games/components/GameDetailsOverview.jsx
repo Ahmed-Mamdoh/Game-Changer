@@ -42,7 +42,9 @@ function GameDetailsOverview({ data }) {
     themes,
     game_modes,
     external_games,
+    keywords,
   } = data[0];
+  const keywordsNames = keywords?.map((k) => k.name) || [];
 
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -230,6 +232,7 @@ function GameDetailsOverview({ data }) {
                     <AddGameModal
                       isUpdate={true}
                       game_id={id}
+                      keywords={keywordsNames}
                       releaseDate={releaseDate}
                       userGame={userGame?.data?.[0]}
                       userGameReview={userGameReview?.data?.[0]}
@@ -243,6 +246,7 @@ function GameDetailsOverview({ data }) {
               ) : (
                 <AddGameModal
                   game_id={id}
+                  keywords={keywordsNames}
                   releaseDate={releaseDate}
                   genresData={genres}
                   themesData={themes}

@@ -74,6 +74,13 @@ function GameItem({ game, className }) {
         )}
         <div className="from-bg-base/50 absolute inset-0 bg-gradient-to-t via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
       </div>
+      {game.matchScore && (
+        <div className="absolute top-2 right-1 z-10">
+          <div className="bg-bg-surface/80 border-stroke-subtle text-pulse-accent rounded-full border px-2 py-0.5 text-xs font-bold backdrop-blur-md">
+            {Math.min(game.matchScore, 100)}% Match
+          </div>
+        </div>
+      )}
       <div className="h-12 w-36 cursor-default text-center transition-colors duration-300 md:w-48">
         <Link to={`/game/${game.id}`} className="cursor-pointer">
           <h3 className="group-hover:text-text-brand text-sm md:text-base">
@@ -132,7 +139,7 @@ function GameItem({ game, className }) {
             ) : game.status === "finished" ? (
               <Check className="text-pulse-success h-3.5 w-3.5" />
             ) : (
-              <CiStop1 className="h-3.5 w-3.5 text-text-error" />
+              <CiStop1 className="text-text-error h-3.5 w-3.5" />
             )}
             <p className=" text-xs font-bold tracking-widest uppercase">
               {game.status}

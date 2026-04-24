@@ -31,12 +31,14 @@ export async function addUserGame({
   game_cover,
   genres,
   themes,
+  keywords,
   review,
   rating,
 }) {
   await insertGame({
     game_id,
     genres,
+    keywords,
     themes,
     name: game_name,
     cover: game_cover,
@@ -104,7 +106,21 @@ export async function getUserGame(user_id, game_id) {
 export async function getUserGames(user_id) {
   let { data: user_games, error } = await supabase
     .from("user_games")
-    .select(`*,game:games(*)`)
+    .select(
+      `
+  *,
+  game:games(
+    *,
+    reviews:game_reviews(
+      rating,
+      review,
+      user_id
+    )
+  )
+`,
+    )
+    .eq("user_id", user_id)
+    .eq("games.game_reviews.user_id", user_id)
     .eq("user_id", user_id);
 
   if (error) return { user_games: [], error };
@@ -193,10 +209,17 @@ export async function getUserGameReview({ user_id, game_id }) {
 }
 
 // games
-export async function insertGame({ game_id, genres, themes, name, cover }) {
+export async function insertGame({
+  game_id,
+  genres,
+  themes,
+  name,
+  cover,
+  keywords,
+}) {
   const { data, error } = await supabase
     .from("games")
-    .insert([{ game_id, genres, themes, name, cover }])
+    .insert([{ game_id, genres, themes, name, cover, keywords }])
     .select();
   return { data, error };
 }

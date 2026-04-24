@@ -12,9 +12,6 @@ function GameDiscoveryLayout() {
       <FadingBackground first={true} />
       {/* Content section */}
       <div className="z-10 w-full">
-        {location.pathname !== "/games/freeGames" && (
-          <Filters isUpcoming={location.pathname === "/games/upcomingGames"} />
-        )}
         <Suspense fallback={<Spinner />} key={location.pathname}>
           <Outlet />
         </Suspense>

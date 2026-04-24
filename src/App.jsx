@@ -11,6 +11,7 @@ const UpcomingGames = lazy(() => import("./pages/UpcomingGames"));
 const Home = lazy(() => import("./pages/Home"));
 const Auth = lazy(() => import("./pages/Auth"));
 const Account = lazy(() => import("./pages/Account"));
+const ForYouPage = lazy(() => import("./pages/ForYouPage"));
 import RouteErrorFallback from "./pages/RouteErrorFallback";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
@@ -50,6 +51,10 @@ function App() {
             {
               path: "freeGames",
               element: <FreeGames />,
+            },
+            {
+              path: "forYou",
+              element: <ForYouPage />,
             },
           ],
         },

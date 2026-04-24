@@ -7,7 +7,12 @@ import GamesGallery from "../features/games/ui/GamesGallery";
 function AllGames() {
   const { data, isLoading } = useGetAllGames();
 
-  return <GamesGallery data={data} isLoading={isLoading} />;
+  return (
+    <>
+      <Filters />
+      <GamesGallery data={data} isLoading={isLoading} />;
+    </>
+  );
 }
 
 export default AllGames;

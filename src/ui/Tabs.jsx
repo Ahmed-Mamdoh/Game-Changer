@@ -11,6 +11,11 @@ function Tabs() {
     >
       <Tab to="/games/allGames" sectionName="All" lineStartAnimation="left" />
       <Tab
+        to="/games/forYou"
+        sectionName="For-You"
+        lineStartAnimation="center"
+      />
+      <Tab
         to="/games/freeGames"
         sectionName="Free"
         lineStartAnimation="center"
