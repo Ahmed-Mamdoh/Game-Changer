@@ -10,11 +10,13 @@ function Tabs() {
       className="hidden items-center justify-center gap-x-3 lg:flex"
     >
       <Tab to="/games/allGames" sectionName="All" lineStartAnimation="left" />
-      <Tab
-        to="/games/forYou"
-        sectionName="For-You"
-        lineStartAnimation="center"
-      />
+      {supabaseToken && (
+        <Tab
+          to="/games/forYou"
+          sectionName="For-You"
+          lineStartAnimation="center"
+        />
+      )}
       <Tab
         to="/games/freeGames"
         sectionName="Free"

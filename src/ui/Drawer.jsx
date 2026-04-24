@@ -13,7 +13,7 @@ function Drawer() {
       drawerCheckboxRef.current.checked = false;
     }
   };
-
+  //TODO: add for you page
   // Navigation items data for cleaner mapping
   const navItems = [
     {
