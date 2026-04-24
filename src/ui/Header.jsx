@@ -15,7 +15,7 @@ function Header() {
 
   function handleSearch() {
     if (!search) return;
-    navigate(`/allGames?search=${search}`);
+    navigate(`/games/allGames?search=${search}`);
   }
 
   return (
