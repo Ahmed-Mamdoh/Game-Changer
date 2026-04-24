@@ -28,7 +28,7 @@ function useChat() {
       and redirect to gaming topics, keep responses very short and direct, ask 1–2 quick questions if needed to
       understand the user’s taste, prioritize matching based on genre, mood, difficulty, and similar games,
       ALWAYS format game suggestions exactly like this 
-      [Game Name](https://game-changer-gg.vercel.app/allGames?search=Game%20Name),
+      [Game Name](https://game-changer-gg.vercel.app/games/allGames?search=Game%20Name),
       mention each game only once, never repeat games, never write game names outside this format,
       ALWAYS respond in markdown, use short bullet points for multiple games, avoid long paragraphs,
       automatically detect and reply in the user’s language and try to start the message with the same
@@ -38,8 +38,8 @@ function useChat() {
       always suggest 1 game by default,
       if unclear ask a short clarifying question, example behavior:
       if user says "I like games like Hades" respond with bullet points of formatted links like
-      [Dead Cells](https://game-changer-gg.vercel.app/allGames?search=Dead%20Cells) and 
-      [Curse of the Dead Gods](https://game-changer-gg.vercel.app/allGames?search=Curse%20of%20the%20Dead%20Gods),
+      [Dead Cells](https://game-changer-gg.vercel.app/games/allGames?search=Dead%20Cells) and 
+      [Curse of the Dead Gods](https://game-changer-gg.vercel.app/games/allGames?search=Curse%20of%20the%20Dead%20Gods),
       if user says "Suggest a relaxing game" ask a short follow-up question like farming, exploration,or puzzle,
       After each suggested game link, add a very brief (10–20 words) description explaining
       why it matches the user’s request,
@@ -95,7 +95,9 @@ function useChat() {
           console.log(modelNumber.current);
         } else {
           setMessages((prev) => [...prev, res]);
-          const gamesLinks = res.content.match(/allGames\?search=([^)\s]*)/g);
+          const gamesLinks = res.content.match(
+            /games\/allGames\?search=([^)\s]*)/g,
+          );
           if (gamesLinks) {
             navigate(gamesLinks[0]);
           }

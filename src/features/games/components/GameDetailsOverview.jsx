@@ -351,7 +351,7 @@ function GameDetailsOverview({ data }) {
                     <button
                       className="bg-bg-card text-text-dim cursor-pointer rounded-full px-4 py-1 text-sm whitespace-nowrap backdrop-blur-md transition-all hover:scale-105 hover:bg-gray-400/20"
                       onClick={() => {
-                        navigate(`/allGames?genre=${genre.id}`);
+                        navigate(`/games/allGames?genre=${genre.id}`);
                       }}
                       key={genre.id}
                     >
@@ -371,7 +371,7 @@ function GameDetailsOverview({ data }) {
                     <button
                       className="bg-bg-card text-text-dim cursor-pointer rounded-full px-4 py-1 text-sm whitespace-nowrap backdrop-blur-md transition-all hover:scale-105 hover:bg-gray-400/20"
                       onClick={() => {
-                        navigate(`/allGames?theme=${theme.id}`);
+                        navigate(`/games/allGames?theme=${theme.id}`);
                       }}
                       key={theme.id}
                     >
@@ -391,7 +391,7 @@ function GameDetailsOverview({ data }) {
                     <button
                       className="bg-bg-card text-text-dim cursor-pointer rounded-full px-4 py-1 text-sm whitespace-nowrap backdrop-blur-md transition-all hover:scale-105 hover:bg-gray-400/20"
                       onClick={() => {
-                        navigate(`/allGames?gameMode=${mode.id}`);
+                        navigate(`/games/allGames?gameMode=${mode.id}`);
                       }}
                       key={mode.id}
                     >
