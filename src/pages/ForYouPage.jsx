@@ -2,14 +2,24 @@ import { useGetRecommendations } from "@/features/games/hooks/useGetRecommendati
 import Filters from "@/features/games/ui/Filters";
 import GameItem from "@/features/games/ui/GameItem";
 import GamesGallery from "@/features/games/ui/GamesGallery";
+import { useGetUserGames } from "@/features/User/hooks/useGetUserGames";
 import { UserToken } from "@/hooks/useUserToken";
 import Spinner from "@/ui/Spinner";
-import { useNavigate } from "react-router-dom";
+import { Sparkles } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 
 function ForYouPage() {
   const user_id = UserToken()?.user?.id;
   const navigate = useNavigate();
-  const { recommendations, isLoading, error } = useGetRecommendations(user_id);
+  const { data: user_games_response, isLoading: isLoadingUserGames } =
+    useGetUserGames(user_id);
+  const user_games = isLoadingUserGames
+    ? []
+    : user_games_response?.user_games || [];
+  const { recommendations, isLoading, error } = useGetRecommendations(
+    user_id,
+    user_games,
+  );
   if (error)
     return (
       <div className="text-text-error p-4 text-center">
@@ -18,8 +28,32 @@ function ForYouPage() {
     );
   if (!user_id) {
     navigate("/auth");
+    return null;
   }
-  // todo : add ui for empty user games
+
+  if (isLoadingUserGames) return <Spinner />;
+
+  if (user_games.length === 0) {
+    return (
+      <div className="relative flex min-h-[70vh] flex-col items-center justify-center px-4 text-center">
+        <div className="bg-bg-card mb-6 rounded-full p-6">
+          <Sparkles className="text-pulse-primary h-12 w-12" />
+        </div>
+        <h2 className="mb-2">Your Recommendation Engine is Ready!</h2>
+        <p className="text-text-dim mb-8 max-w-md">
+          To get personalized recommendations, start by adding and rating some
+          games to your collection.
+        </p>
+        <Link
+          to="/games/allGames"
+          className="bg-pulse-primary hover:bg-pulse-primary/80 rounded-full px-8 py-3 font-bold text-white transition-all duration-300 hover:scale-105"
+        >
+          Explore Games
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <>
       <Filters

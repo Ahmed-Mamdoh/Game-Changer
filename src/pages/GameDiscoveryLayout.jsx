@@ -8,14 +8,15 @@ import { Outlet } from "react-router-dom";
 
 function GameDiscoveryLayout() {
   return (
-    <div className="relative py-20">
+    <div className="relative min-h-[100dvh] py-20">
       <FadingBackground first={true} />
       {/* Content section */}
       <div className="z-10 w-full">
         <Suspense fallback={<Spinner />} key={location.pathname}>
           <Outlet />
         </Suspense>
-        {location.pathname !== "/games/freeGames" && <FullPagination />}
+        {location.pathname !== "/games/freeGames" &&
+          location.pathname !== "/games/forYou" && <FullPagination />}
       </div>
     </div>
   );

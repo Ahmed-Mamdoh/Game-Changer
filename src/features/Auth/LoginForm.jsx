@@ -38,7 +38,7 @@ function LoginForm() {
       });
 
     if (userData) {
-      navigate("/");
+      navigate("/account");
     }
   }
   return (

@@ -7,13 +7,13 @@ function Tabs() {
   return (
     <nav
       role="tablist"
-      className="hidden items-center justify-center gap-x-3 lg:flex"
+      className="hidden items-center justify-center gap-x-5 lg:flex"
     >
       <Tab to="/games/allGames" sectionName="All" lineStartAnimation="left" />
       {supabaseToken && (
         <Tab
           to="/games/forYou"
-          sectionName="For-You"
+          sectionName="For You"
           lineStartAnimation="center"
         />
       )}

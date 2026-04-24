@@ -1,4 +1,4 @@
-import { Calendar, Gamepad2, Gift, User } from "lucide-react";
+import { Calendar, Gamepad2, Gift, Sparkles, User } from "lucide-react";
 import { useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -21,6 +21,13 @@ function Drawer() {
       text: "All Games",
       icon: (
         <Gamepad2 className="text-pulse-accent group-hover:text-pulse-primary h-5 w-5" />
+      ),
+    },
+    {
+      to: "/games/forYou",
+      text: "For You",
+      icon: (
+        <Sparkles className="text-pulse-accent group-hover:text-pulse-primary h-5 w-5" />
       ),
     },
     {

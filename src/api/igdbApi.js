@@ -134,33 +134,17 @@ export async function getTimeToBeat(id) {
   );
 }
 
-export async function getGamesForRecommending({
-  filters = [],
-  platform,
-  page = 1,
-  player_perspectives,
-  playedGamesIds,
-}) {
-  // if there is filters split them by &
-  const filtersString =
-    filters?.length !== 0 ? " & " + filters.join(" & ") : "";
-  const offset = (page - 1) * LIMIT;
-
+export async function getGamesForRecommending({ platform, playedGamesIds }) {
   const platformString =
     platform === "all" || !platform
       ? "& platforms = (6,48,167,49,169,130)"
       : ` & platforms = (${platform})`;
-  const player_perspectivesString =
-    player_perspectives === "all" || !player_perspectives
-      ? ""
-      : ` & player_perspectives = ${player_perspectives}`;
 
   return igdbFetch(
     "games",
     `fields name,cover.url,total_rating,genres.name,themes.name,keywords.name,first_release_date,summary;
     limit 500;
     sort total_rating_count desc;
-    offset ${offset};
               where  
                     id != (${playedGamesIds.join(",")}) & 
                     version_parent = null & 
@@ -168,9 +152,7 @@ export async function getGamesForRecommending({
                     themes != (42) & 
                     first_release_date > ${Math.floor(Date.now() / 1000) - 15 * 365 * 24 * 60 * 60} &
                     (game_status = null | game_status != (5,6,7,8))
-                    ${platformString}
-                    ${player_perspectivesString}
-                    ${filtersString};
+                    ${platformString};
       `,
   );
 }

@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { useGetUserGames } from "@/features/User/hooks/useGetUserGames";
 import {
   buildWeightedProfile,
   calculateGameScore,
@@ -7,40 +6,21 @@ import {
 import { getGamesForRecommending } from "@/api/igdbApi";
 import useGetFiltersParams from "./useGetFiltersParams";
 
-export function useGetRecommendations(user_id) {
-  const { filters, sortBy, page, platform, player_perspectives } =
-    useGetFiltersParams();
-  const { data: user_games_response, isLoading: isLoadingUserGames } =
-    useGetUserGames(user_id);
-  const user_games = isLoadingUserGames
-    ? []
-    : user_games_response?.user_games || [];
+export function useGetRecommendations(user_id, user_games) {
+  const { platform } = useGetFiltersParams();
 
   const playedIds = user_games?.map((ug) => ug?.game_id) || [];
 
   const userProfile = buildWeightedProfile(user_games || []);
 
   const { data, isLoading, error } = useQuery({
-    queryKey: [
-      "recommendations",
-      user_id,
-      playedIds,
-      filters,
-      sortBy,
-      page,
-      platform,
-      player_perspectives,
-    ],
+    queryKey: ["recommendations", user_id, playedIds, platform],
     queryFn: () =>
       getGamesForRecommending({
         playedGamesIds: playedIds,
-        filters,
-        sortBy,
-        page,
         platform,
-        player_perspectives,
       }),
-    enabled: !!playedIds,
+    enabled: !!playedIds && playedIds.length > 0,
     staleTime: Infinity, // Recommendations never change
   });
 
@@ -52,7 +32,7 @@ export function useGetRecommendations(user_id) {
     // Filter out negative or zero matches if we have enough candidates
     .filter((game) => game.matchScore > 0)
     .sort((a, b) => b.matchScore - a.matchScore)
-    .slice(0, 20); // Return top 10
+    .slice(0, 60); // Return top 60
 
   return {
     recommendations,
