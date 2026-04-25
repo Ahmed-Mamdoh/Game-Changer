@@ -7,12 +7,9 @@ function Logo() {
       <Link to="/">
         <IoGameController className="h-8 w-8" />
       </Link>
-      <Link
-        to="/"
-        className="font-heading hidden text-center text-base font-bold sm:block md:text-2xl"
-      >
-        Game Changer
-      </Link>
+      <h1 className="font-heading hidden text-center text-base font-bold sm:block md:text-2xl">
+        <Link to="/">Game Changer</Link>
+      </h1>
     </div>
   );
 }

@@ -31,11 +31,10 @@ function Home() {
           content="Discover the best games on Game-Changer. Browse popular games, find free-to-play titles, and stay updated with upcoming releases. Your ultimate gaming destination."
         />
         <meta
-          name="keywords"
-          content="games, video games, free games, upcoming games, popular games, gaming, game discovery"
+          property="og:description"
+          content="Discover the best games on Game-Changer. Browse popular games, find free-to-play titles, and stay updated with upcoming releases. Your ultimate gaming destination."
         />
-        <meta name="author" content="Ahmed Mamdoh" />
-        <link rel="canonical" href="https://game-changer-gg.vercel.app" />
+        <link rel="canonical" href="https://game-changer-gg.vercel.app/" />
       </Helmet>
 
       <div className="pb-32">

@@ -64,6 +64,8 @@ function GameItem({ game, className }) {
           <img
             src={imageUrl}
             alt={game.name}
+            title={game.name}
+            loading="lazy"
             className="aspect-[3/4] h-full w-full object-cover transition-transform duration-700"
             fetchPriority="low"
           />

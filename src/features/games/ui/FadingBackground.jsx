@@ -8,7 +8,9 @@ function FadingBackground() {
       <img
         src={spaceBackground}
         alt="space background"
+        title="space background"
         className="h-full w-full object-cover"
+        loading="eager"
       />
       <div
         className={`to-bg-base from-bg-base/60 pointer-events-none absolute inset-0 bg-gradient-to-b  `}

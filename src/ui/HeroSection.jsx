@@ -11,8 +11,10 @@ function HeroSection() {
         <img
           src={background}
           alt="background"
+          title="background"
           className="h-[100dvh] w-full mask-b-from-50% mask-b-to-transparent object-cover object-top"
           fetchPriority="high"
+          loading="eager"
         />
         <div className="bg-bg-base/60 absolute inset-0" />
 
@@ -30,15 +32,19 @@ function HeroSection() {
             >
               <img
                 src={sts2}
-                alt="the-witcher"
+                alt="Slay the spire 2"
+                title="Slay the spire 2"
                 className=" hidden h-full w-full rounded-xl object-cover sm:block"
                 fetchPriority="high"
+                loading="eager"
               />
               <img
                 src={sts2Poster}
-                alt="the-witcher"
+                alt="STS2 poster"
+                title="STS2 poster"
                 className=" block h-full w-full rounded-xl object-cover sm:hidden"
                 fetchPriority="high"
+                loading="eager"
               />
 
               <div

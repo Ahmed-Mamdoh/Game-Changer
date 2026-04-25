@@ -8,6 +8,7 @@ import UserStats from "@/features/User/components/UserStats";
 import { useGetUserGames } from "@/features/User/hooks/useGetUserGames";
 import { UserToken } from "@/hooks/useUserToken";
 import Spinner from "@/ui/Spinner";
+import { Helmet } from "react-helmet-async";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 function Account() {
@@ -89,29 +90,47 @@ function Account() {
     });
 
   return (
-    <div className="relative mx-auto min-h-[150dvh] py-20">
-      <FadingBackground first />
+    <>
+      <Helmet>
+        {/* Basic SEO Meta Tags */}
+        <title>My Account | Game-Changer</title>
+        <meta
+          name="description"
+          content="Manage your personal game library, track your progress, and organize your favorites on Game-Changer."
+        />
+        <meta
+          property="og:description"
+          content="Manage your personal game library, track your progress, and organize your favorites on Game-Changer."
+        />
+        <link
+          rel="canonical"
+          href="https://game-changer-gg.vercel.app/account"
+        />
+      </Helmet>
+      <div className="relative mx-auto min-h-[150dvh] py-20">
+        <FadingBackground first />
 
-      <div className="relative z-10 mx-auto w-full">
-        <div className="mx-auto w-full px-4 md:w-9/10">
-          <UserHeader />
-          <UserStats user_games={user_games} isLoading={isLoading} />
+        <div className="relative z-10 mx-auto w-full">
+          <div className="mx-auto w-full px-4 md:w-9/10">
+            <UserHeader />
+            <UserStats user_games={user_games} isLoading={isLoading} />
 
-          <div
-            className="bg-bg-card border-stroke-medium hover:border-pulse-secondary
-          grid w-full grid-cols-2 gap-x-3 gap-y-3 rounded-xl border p-4 backdrop-blur-xl
-          transition-all sm:grid-cols-4"
-          >
-            <UserFilterButton paramsValue="" buttonText="All" />
-            <UserFilterButton paramsValue="playing" buttonText="Playing" />
-            <UserFilterButton paramsValue="finished" buttonText="Finished" />
-            <UserFilterButton paramsValue="dropped" buttonText="Dropped" />
+            <div
+              className="bg-bg-card border-stroke-medium hover:border-pulse-secondary
+            grid w-full grid-cols-2 gap-x-3 gap-y-3 rounded-xl border p-4 backdrop-blur-xl
+            transition-all sm:grid-cols-4"
+            >
+              <UserFilterButton paramsValue="" buttonText="All" />
+              <UserFilterButton paramsValue="playing" buttonText="Playing" />
+              <UserFilterButton paramsValue="finished" buttonText="Finished" />
+              <UserFilterButton paramsValue="dropped" buttonText="Dropped" />
+            </div>
           </div>
-        </div>
 
-        <GamesGallery data={GalleryData} isLoading={isLoading} />
+          <GamesGallery data={GalleryData} isLoading={isLoading} />
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

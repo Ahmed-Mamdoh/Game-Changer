@@ -177,8 +177,10 @@ function AddGameModal({
             <img
               src={game_cover}
               className="w-72 rounded-xl object-contain"
-              alt=""
+              alt={game_name}
+              title={game_name}
               fetchPriority="high"
+              loading="lazy"
             />
 
             <div className="flex flex-col gap-1">

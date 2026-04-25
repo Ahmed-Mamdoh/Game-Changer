@@ -56,6 +56,8 @@ function GameDetailsReviews({ reviewsData }) {
                   <img
                     src={review.user.avatar_url || GG}
                     alt={review.user.username}
+                    title={review.user.username}
+                    loading="lazy"
                     className=" h-12 w-12 rounded-full object-cover transition-transform duration-300"
                   />
 

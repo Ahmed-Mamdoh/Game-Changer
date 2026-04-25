@@ -193,6 +193,10 @@ function GameDetailsOverview({ data }) {
         {/* Cover */}
         <img
           src={imageUrl}
+          alt="Hero Image"
+          title="Hero Image"
+          loading="eager"
+          fetchPriority="high"
           className="absolute top-0 left-0 h-full w-full object-cover object-top"
         />
         <div className="to-bg-base pointer-events-none absolute inset-0 bg-gradient-to-b from-black/15" />

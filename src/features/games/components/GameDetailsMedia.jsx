@@ -10,7 +10,7 @@ import { formatIGDBImage } from "@/utils/igdbImage";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 function GameDetailsMedia({ data }) {
-  const { screenshots, videos } = data[0];
+  const { screenshots, videos, name } = data[0];
   return (
     <>
       {(screenshots?.length > 0 || videos?.length > 0) && (
@@ -29,13 +29,15 @@ function GameDetailsMedia({ data }) {
               py-0 pr-0 md:w-[80%] md:py-4 md:pr-4"
             >
               <CarouselContent className="mx-auto">
-                {screenshots?.map((screenshot) => {
+                {screenshots?.map((screenshot, index) => {
                   return (
                     <CarouselItem key={screenshot.id} className="px-1 md:pl-4">
                       <div className="aspect-[4/3] rounded-xl md:aspect-[16/9]">
                         <img
                           src={formatIGDBImage(screenshot?.url, "t_1080p_2x")}
-                          alt=""
+                          alt={name + " " + index}
+                          title={name + " " + index}
+                          loading="lazy"
                           className="h-full w-full cursor-grab rounded-xl object-cover select-none active:cursor-grabbing"
                         />
                       </div>
