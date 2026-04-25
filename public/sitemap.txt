@@ -1,7 +1,0 @@
-https://game-changer-gg.vercel.app/
-https://game-changer-gg.vercel.app/games/allGames
-https://game-changer-gg.vercel.app/games/upcomingGames
-https://game-changer-gg.vercel.app/games/freeGames
-https://game-changer-gg.vercel.app/games/forYou
-https://game-changer-gg.vercel.app/auth
-https://game-changer-gg.vercel.app/account

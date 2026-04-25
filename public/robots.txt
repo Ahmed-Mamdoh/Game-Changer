@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 
 # Sitemaps
-Sitemap: https://game-changer-gg.vercel.app/sitemap.txt
+Sitemap: https://game-changer-gg.vercel.app/sitemap.xml
