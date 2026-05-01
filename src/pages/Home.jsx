@@ -44,19 +44,19 @@ function Home() {
           sectionName="Popular Games"
           data={games}
           isLoading={isLoadingGames}
-          route="allGames"
+          route="games/allGames"
         />
         <HomeSection
           sectionName="Free Games"
           data={freeGames.slice(0, 5)}
           isLoading={isLoadingFreeGamesIgdbData || isLoadingFreeGamesNames}
-          route="freeGames"
+          route="games/freeGames"
         />
         <HomeSection
           sectionName="Upcoming Games"
           data={upcomingGames}
           isLoading={isLoadingUpcomingGames}
-          route="upcomingGames"
+          route="games/upcomingGames"
         />
       </div>
     </>
