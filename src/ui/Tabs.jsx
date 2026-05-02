@@ -7,7 +7,7 @@ function Tabs() {
   return (
     <nav
       role="tablist"
-      className="hidden items-center justify-center gap-x-5 lg:flex"
+      className="col-span-2 hidden items-center justify-center gap-x-5 lg:flex"
     >
       <Tab to="/games/allGames" sectionName="All" lineStartAnimation="left" />
       {supabaseToken && (
