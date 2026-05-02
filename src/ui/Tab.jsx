@@ -12,7 +12,7 @@ function Tab({ to, sectionName }) {
       }
     >
       {({ isActive }) => (
-        <div>
+        <div className="text-nowrap">
           {sectionName}
           <hr
             className={`bg-pulse-primary h-[1px] scale-x-0 border-0 transition-transform duration-200 group-hover:scale-x-100 ${isActive ? "scale-x-100" : ""}`}
