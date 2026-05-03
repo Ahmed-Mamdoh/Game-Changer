@@ -189,6 +189,7 @@ export async function updateReview({ user_id, game_id, review, rating }) {
     .from("game_reviews")
     .update({ review, rating })
     .eq("user_id", user_id)
+    .eq("game_id", game_id)
     .select();
   return { data, error };
 }
