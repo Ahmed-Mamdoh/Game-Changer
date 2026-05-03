@@ -31,6 +31,9 @@ function AddGameModal({
   isUpdate = false,
   userGame,
   userGameReview,
+  game_modes,
+  player_perspectives,
+  involved_companies,
 }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -44,6 +47,11 @@ function AddGameModal({
 
   const genres = genresData?.map((genre) => genre.name) || [];
   const themes = themesData?.map((theme) => theme.name) || [];
+  const modes = game_modes?.map((mode) => mode.name) || [];
+  const perspectives =
+    player_perspectives?.map((perspective) => perspective.name) || [];
+  const companies =
+    involved_companies?.map((company) => company.company.name) || [];
   const status = watch("status") || userGame?.status;
   const isLoadingRef = useRef(false);
   const [open, setOpen] = useState(false);
@@ -69,6 +77,9 @@ function AddGameModal({
             game_name,
             game_cover: game_cover,
             keywords,
+            modes,
+            perspectives,
+            companies,
             ...data,
           });
           if (error) {

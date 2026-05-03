@@ -77,7 +77,7 @@ export async function getOneGame(id) {
   return igdbFetch(
     "games",
     `fields name,cover.url,artworks.url,artworks.artwork_type,first_release_date,summary,keywords.name,
-      age_ratings.rating,age_ratings.category,
+      age_ratings.rating,age_ratings.category,player_perspectives.name,
       total_rating,total_rating_count,
       genres.name,themes.name,
       involved_companies.company.name,
@@ -142,7 +142,8 @@ export async function getGamesForRecommending({ platform, playedGamesIds }) {
 
   return igdbFetch(
     "games",
-    `fields name,cover.url,total_rating,genres.name,themes.name,keywords.name,first_release_date,summary;
+    `fields name,cover.url,total_rating,genres.name,themes.name,keywords.name,first_release_date,summary,
+    game_modes.name,player_perspectives.name,involved_companies.company.name;
     limit 500;
     sort total_rating_count desc;
               where  

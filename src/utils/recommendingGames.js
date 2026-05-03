@@ -8,6 +8,9 @@ export function buildWeightedProfile(userGames) {
     genres: {},
     themes: {},
     keywords: {},
+    modes: {},
+    perspectives: {},
+    companies: {},
   };
 
   if (!userGames || userGames.length === 0) return profile;
@@ -40,6 +43,24 @@ export function buildWeightedProfile(userGames) {
       const name = typeof keyword === "string" ? keyword : keyword.name;
       if (name) profile.keywords[name] = (profile.keywords[name] || 0) + weight;
     });
+    // Process Modes
+    ug.game?.modes?.forEach((mode) => {
+      const name = typeof mode === "string" ? mode : mode.name;
+      if (name) profile.modes[name] = (profile.modes[name] || 0) + weight;
+    });
+    // Process Perspectives
+    ug.game?.perspectives?.forEach((perspective) => {
+      const name =
+        typeof perspective === "string" ? perspective : perspective.name;
+      if (name)
+        profile.perspectives[name] = (profile.perspectives[name] || 0) + weight;
+    });
+    // Process Companies
+    ug.game?.companies?.forEach((company) => {
+      const name = typeof company === "string" ? company : company.company.name;
+      if (name)
+        profile.companies[name] = (profile.companies[name] || 0) + weight;
+    });
   });
 
   // Normalize scores by total games count to get a ratio (-1 to 1)
@@ -53,6 +74,10 @@ export function buildWeightedProfile(userGames) {
   normalize(profile.genres);
   normalize(profile.themes);
   normalize(profile.keywords);
+  normalize(profile.modes);
+  normalize(profile.perspectives);
+  normalize(profile.companies);
+
   return profile;
 }
 
@@ -67,44 +92,69 @@ export function calculateGameScore(game, userProfile) {
   let genreScore = 0;
   let themeScore = 0;
   let keywordScore = 0;
+  let modeScore = 0;
+  let perspectiveScore = 0;
+  let companyScore = 0;
 
-  // Score based on genres (Max 25 points)
   if (game.genres?.length) {
     const sum = game.genres.reduce(
       (acc, g) => acc + (userProfile.genres[g.name] || 0),
       0,
     );
-    // Average affinity across game genres, scaled to 20
-    genreScore = sum * 35;
+    genreScore = (sum / game.genres.length) * 65;
   }
 
-  // Score based on themes (Max 20 points)
   if (game.themes?.length) {
     const sum = game.themes.reduce(
       (acc, t) => acc + (userProfile.themes[t.name] || 0),
       0,
     );
-    // Average affinity across game themes, scaled to 20
-    themeScore = sum * 20;
+    themeScore = (sum / game.themes.length) * 60;
   }
 
-  // Score based on keywords (Max 40 points)
   if (game.keywords?.length) {
     const sum = game.keywords.reduce(
       (acc, k) => acc + (userProfile.keywords[k.name] || 0),
       0,
     );
-    // Average affinity across game keywords, scaled to 40
-    keywordScore = sum * 13;
+    keywordScore = (sum / game.keywords.length) * 300;
   }
 
-  // Small bonus for highly rated games in IGDB (Max 10 points)
-  const ratingScore = (game.total_rating || 0) / 10;
+  if (game.player_perspectives?.length) {
+    const sum = game.player_perspectives.reduce(
+      (acc, p) => acc + (userProfile.perspectives[p.name] || 0),
+      0,
+    );
+    perspectiveScore = (sum / game.player_perspectives.length) * 34;
+  }
 
-  // Total score clamped to 0-100
+  if (game?.involved_companies?.length) {
+    const sum = game.involved_companies.reduce(
+      (acc, c) => acc + (userProfile.companies[c.company.name] || 0),
+      0,
+    );
+    companyScore = (sum / game.involved_companies.length) * 250;
+  }
+
+  if (game.game_modes?.length) {
+    const sum = game.game_modes.reduce(
+      (acc, m) => acc + (userProfile.modes[m.name] || 0),
+      0,
+    );
+    modeScore = (sum / game.game_modes.length) * 20;
+  }
+
   const totalScore = Math.max(
     0,
-    Math.min(1000000, genreScore + themeScore + keywordScore),
+    Math.min(
+      100,
+      genreScore +
+        themeScore +
+        keywordScore +
+        modeScore +
+        perspectiveScore +
+        companyScore,
+    ),
   );
 
   return Math.round(totalScore);

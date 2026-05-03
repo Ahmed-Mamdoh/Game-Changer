@@ -32,6 +32,9 @@ export async function addUserGame({
   genres,
   themes,
   keywords,
+  modes,
+  perspectives,
+  companies,
   review,
   rating,
 }) {
@@ -42,6 +45,9 @@ export async function addUserGame({
     themes,
     name: game_name,
     cover: game_cover,
+    modes,
+    perspectives,
+    companies,
   });
   const { data, error } = await supabase
     .from("user_games")
@@ -216,10 +222,37 @@ export async function insertGame({
   name,
   cover,
   keywords,
+  modes,
+  perspectives,
+  companies,
 }) {
   const { data, error } = await supabase
     .from("games")
-    .insert([{ game_id, genres, themes, name, cover, keywords }])
+    .insert([
+      {
+        game_id,
+        genres,
+        themes,
+        name,
+        cover,
+        keywords,
+        modes,
+        perspectives,
+        companies,
+      },
+    ])
     .select();
+  if (error) {
+    const { update, error } = await supabase
+      .from("games")
+      .update({
+        modes,
+        perspectives,
+        companies,
+      })
+      .eq("game_id", game_id)
+      .select();
+    return { update, error };
+  }
   return { data, error };
 }

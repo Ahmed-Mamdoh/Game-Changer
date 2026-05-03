@@ -43,6 +43,8 @@ function GameDetailsOverview({ data }) {
     game_modes,
     external_games,
     keywords,
+    player_perspectives,
+    involved_companies,
   } = data[0];
   const keywordsNames = keywords?.map((k) => k.name) || [];
 
@@ -240,6 +242,9 @@ function GameDetailsOverview({ data }) {
                       releaseDate={releaseDate}
                       userGame={userGame?.data?.[0]}
                       userGameReview={userGameReview?.data?.[0]}
+                      game_modes={game_modes}
+                      player_perspectives={player_perspectives}
+                      involved_companies={involved_companies}
                       game_cover={
                         formatIGDBImage(cover?.url, "t_720p_2x") || null
                       }
@@ -254,6 +259,9 @@ function GameDetailsOverview({ data }) {
                   releaseDate={releaseDate}
                   genresData={genres}
                   themesData={themes}
+                  game_modes={game_modes}
+                  player_perspectives={player_perspectives}
+                  involved_companies={involved_companies}
                   game_cover={formatIGDBImage(cover?.url, "t_720p_2x") || null}
                   game_name={name}
                 />
