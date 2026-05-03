@@ -21,11 +21,9 @@ export function buildWeightedProfile(userGames) {
 
     if (rating === 5) weight = 1;
     else if (rating === 4) weight = 0.5;
-    else if (rating === 3) weight = 0;
+    else if (rating === 3) weight = 0.1;
     else if (rating === 2) weight = -0.5;
     else if (rating === 1) weight = -1;
-
-    if (weight === 0) return;
 
     // Process Genres
     ug.game?.genres?.forEach((genre) => {
