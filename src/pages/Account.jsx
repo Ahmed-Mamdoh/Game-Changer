@@ -51,7 +51,7 @@ function Account() {
     })
     .filter((userGame) => {
       if (!statusParam) return true;
-      return userGame?.game?.status === statusParam;
+      return userGame?.status === statusParam;
     })
     .filter((userGame) => {
       if (!isFavoriteParam) return true;

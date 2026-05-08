@@ -278,23 +278,6 @@ function AddGameModal({
                     {errors["hours_played"] && errors["hours_played"].message}
                   </p>
                 </div>
-                {/* Date Finished field */}
-                <div className="flex w-full flex-col gap-3">
-                  <Label htmlFor="date_finished">Date {status}</Label>
-                  <ModalDate
-                    name="date_finished"
-                    control={control}
-                    disabled={status === "playing" || status === undefined}
-                    minDate={releaseDate}
-                    defaultValue={userGame?.date_finished || null}
-                  />
-                  {
-                    <p className="text-error text-sm leading-0">
-                      {errors["date_finished"] &&
-                        errors["date_finished"].message}
-                    </p>
-                  }
-                </div>
               </div>
 
               {/* Review field */}

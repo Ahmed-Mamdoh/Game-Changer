@@ -19,7 +19,7 @@ function Header() {
   }
 
   return (
-    <nav className="absolute top-0 z-50 flex w-full items-center justify-center bg-transparent shadow-md backdrop-blur-xs">
+    <nav className="bg-bg-surface/20 fixed top-0 z-50 flex w-full items-center justify-center shadow-md backdrop-blur-xs">
       <div className="flex w-full items-center gap-x-3 px-5 py-3 sm:grid sm:grid-cols-2 md:px-5 lg:grid-cols-4 lg:px-20 xl:px-40">
         <Logo />
         <Tabs />

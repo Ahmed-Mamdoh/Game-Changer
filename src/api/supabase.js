@@ -25,7 +25,6 @@ export async function addUserGame({
   user_id,
   status,
   hours_played,
-  date_finished,
   game_id,
   game_name,
   game_cover,
@@ -56,7 +55,6 @@ export async function addUserGame({
         user_id,
         status,
         hours_played,
-        date_finished,
         game_id,
       },
     ])
@@ -73,7 +71,6 @@ export async function updateUserGame({ game_id, user_id, ...formData }) {
     .update({
       status: formData.status,
       hours_played: formData.hours_played,
-      date_finished: formData.date_finished,
     })
     .eq("game_id", game_id)
     .eq("user_id", user_id)
