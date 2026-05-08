@@ -90,6 +90,18 @@ function GameItem({ game, className }) {
             {game.name?.length > 40 ? "..." : ""}
           </h3>
         </Link>
+        {game.recommendationReasons?.length > 0 && (
+          <div className="mt-1 hidden flex-wrap justify-center gap-1 group-hover:flex">
+            {game.recommendationReasons.map((reason, i) => (
+              <span
+                key={i}
+                className="bg-pulse-primary/10 text-pulse-primary rounded-xs px-1.5 py-0.5 text-[10px] font-medium whitespace-nowrap"
+              >
+                {reason}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
       {game?.giveAwayLink && (
         <div className="text-text-brand flex w-full items-center justify-between">

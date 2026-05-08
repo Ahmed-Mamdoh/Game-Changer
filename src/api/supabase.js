@@ -60,7 +60,6 @@ export async function addUserGame({
     ])
     .select();
   if (error) return { data: null, error };
-  console.log(data);
   await addReview({ user_id, game_id, review, rating });
   return { data, error };
 }
@@ -153,7 +152,6 @@ export async function logoutUser() {
 
 // Reviews
 export async function addReview({ user_id, game_id, review, rating }) {
-  console.log({ user_id, game_id, review, rating });
   if (!user_id || !game_id || !rating) return { data: null, error: null };
   const { data, error } = await supabase
     .from("game_reviews")
@@ -180,7 +178,6 @@ export async function deleteReview({ user_id, game_id }) {
 }
 
 export async function updateReview({ user_id, game_id, review, rating }) {
-  console.log({ user_id, game_id, review, rating });
   if (!user_id || !game_id || !rating) return { data: null, error: null };
   const { data, error } = await supabase
     .from("game_reviews")

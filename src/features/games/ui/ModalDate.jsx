@@ -17,7 +17,6 @@ function ModalDate({ name, control, minDate, defaultValue, disabled }) {
   const [date, setDate] = useState(
     defaultValue ? new Date(defaultValue) : null,
   );
-  console.log(defaultValue, date);
   const { field } = useController({
     name,
     control,

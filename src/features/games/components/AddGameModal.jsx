@@ -57,7 +57,6 @@ function AddGameModal({
   const [open, setOpen] = useState(false);
 
   function handleAddGame(data) {
-    console.log(data);
     if (isLoadingRef.current === true) return;
     isLoadingRef.current = true;
     data.date_finished =

@@ -92,7 +92,6 @@ function useChat() {
           if (modelNumber.current >= models.length) {
             modelNumber.current = 0;
           }
-          console.log(modelNumber.current);
         } else {
           setMessages((prev) => [...prev, res]);
           const gamesLinks = res.content.match(

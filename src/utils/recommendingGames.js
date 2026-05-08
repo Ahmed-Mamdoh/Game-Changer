@@ -11,6 +11,7 @@ export function buildWeightedProfile(userGames) {
     modes: {},
     perspectives: {},
     companies: {},
+    playedGames: {}, // { name: weight }
   };
 
   if (!userGames || userGames.length === 0) return profile;
@@ -24,6 +25,9 @@ export function buildWeightedProfile(userGames) {
     else if (rating === 3) weight = 0.1;
     else if (rating === 2) weight = -0.5;
     else if (rating === 1) weight = -1;
+
+    const gameName = ug.game?.name;
+    if (gameName) profile.playedGames[gameName.toLowerCase()] = weight;
 
     // Process Genres
     ug.game?.genres?.forEach((genre) => {
@@ -39,7 +43,9 @@ export function buildWeightedProfile(userGames) {
     // Process Keywords
     ug.game?.keywords?.forEach((keyword) => {
       const name = typeof keyword === "string" ? keyword : keyword.name;
-      if (name) profile.keywords[name] = (profile.keywords[name] || 0) + weight;
+      if (name && !isJunkKeyword(name)) {
+        profile.keywords[name] = (profile.keywords[name] || 0) + weight;
+      }
     });
     // Process Modes
     ug.game?.modes?.forEach((mode) => {
@@ -79,6 +85,35 @@ export function buildWeightedProfile(userGames) {
   return profile;
 }
 
+const REDUNDANT_TERMS = [
+  "remastered",
+  "remaster",
+  "remake",
+  "definitive edition",
+  "game of the year edition",
+  "goty",
+  "deluxe edition",
+  "enhanced edition",
+  "collector's edition",
+];
+
+const JUNK_KEYWORDS = [
+  "xbox",
+  "steam",
+  "controller",
+  "playstation",
+  "nintendo",
+  "the game awards",
+  "available on",
+  "handheld",
+  "multiplayer",
+];
+
+const isJunkKeyword = (name) => {
+  const lower = name?.toLowerCase() || "";
+  return JUNK_KEYWORDS.some((term) => lower.includes(term));
+};
+
 /**
  * Scores a candidate game against the user profile.
  * Returns a score between 0 and 100.
@@ -93,6 +128,55 @@ export function calculateGameScore(game, userProfile) {
   let modeScore = 0;
   let perspectiveScore = 0;
   let companyScore = 0;
+  let titleScore = 0;
+
+  if (game.name && userProfile.playedGames) {
+    const candidateName = game.name.toLowerCase();
+
+    // 1. Redundancy Check (Remasters/Remakes)
+    const isRedundant = Object.keys(userProfile.playedGames).some(
+      (playedName) => {
+        if (candidateName === playedName) return true;
+        return REDUNDANT_TERMS.some((term) => {
+          const withTerm = `${playedName} ${term}`;
+          const withTermAlt = `${playedName}: ${term}`;
+          const playedWithTerm = `${candidateName} ${term}`;
+          const playedWithTermAlt = `${candidateName}: ${term}`;
+
+          return (
+            candidateName === withTerm ||
+            candidateName === withTermAlt ||
+            playedName === playedWithTerm ||
+            playedName === playedWithTermAlt
+          );
+        });
+      },
+    );
+
+    if (isRedundant) return 0;
+
+    // 2. Sequel/Prequel Matching
+    Object.entries(userProfile.playedGames).forEach(([playedName, weight]) => {
+      if (candidateName === playedName) return;
+
+      const escapedPlayed = playedName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const escapedCandidate = candidateName.replace(
+        /[.*+?^${}()|[\]\\]/g,
+        "\\$&",
+      );
+
+      const isSequel = new RegExp(`^${escapedPlayed}\\b`, "i").test(
+        candidateName,
+      );
+      const isPrequel = new RegExp(`^${escapedCandidate}\\b`, "i").test(
+        playedName,
+      );
+
+      if (isSequel || isPrequel) {
+        titleScore += weight * 50;
+      }
+    });
+  }
 
   if (game.genres?.length) {
     const sum = game.genres.reduce(
@@ -111,11 +195,14 @@ export function calculateGameScore(game, userProfile) {
   }
 
   if (game.keywords?.length) {
-    const sum = game.keywords.reduce(
-      (acc, k) => acc + (userProfile.keywords[k.name] || 0),
-      0,
-    );
-    keywordScore = (sum / game.keywords.length) * 300;
+    const validKeywords = game.keywords.filter((k) => !isJunkKeyword(k.name));
+    if (validKeywords.length > 0) {
+      const sum = validKeywords.reduce(
+        (acc, k) => acc + (userProfile.keywords[k.name] || 0),
+        0,
+      );
+      keywordScore = (sum / validKeywords.length) * 300;
+    }
   }
 
   if (game.player_perspectives?.length) {
@@ -151,7 +238,8 @@ export function calculateGameScore(game, userProfile) {
         keywordScore +
         modeScore +
         perspectiveScore +
-        companyScore,
+        companyScore +
+        titleScore,
     ),
   );
 

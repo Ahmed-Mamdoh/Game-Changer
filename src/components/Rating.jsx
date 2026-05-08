@@ -9,7 +9,6 @@ function Rating({ defaultValue, control, name }) {
       required: "Rating is required",
     },
   });
-  console.log(field.value);
   return (
     <div className="rating rating-lg">
       {[1, 2, 3, 4, 5].map((num) => (

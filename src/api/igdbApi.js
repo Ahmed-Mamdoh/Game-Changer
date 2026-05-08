@@ -140,20 +140,33 @@ export async function getGamesForRecommending({ platform, playedGamesIds }) {
       ? "& platforms = (6,48,167,49,169,130)"
       : ` & platforms = (${platform})`;
 
-  return igdbFetch(
-    "games",
-    `fields name,cover.url,total_rating,genres.name,themes.name,keywords.name,first_release_date,summary,
-    game_modes.name,player_perspectives.name,involved_companies.company.name;
-    limit 500;
-    sort total_rating_count desc;
-              where  
-                    id != (${playedGamesIds.join(",")}) & 
-                    version_parent = null & 
-                    game_type = (0,8,9) & 
-                    themes != (42) & 
-                    first_release_date > ${Math.floor(Date.now() / 1000) - 15 * 365 * 24 * 60 * 60} &
-                    (game_status = null | game_status != (5,6,7,8))
-                    ${platformString};
-      `,
+  const fifteenYearsAgo = Math.floor(Date.now() / 1000) - 15 * 365 * 24 * 60 * 60;
+  const playedIdsFilter = playedGamesIds?.length > 0 ? `id != (${playedGamesIds.join(",")}) &` : "";
+
+  // Common query parts
+  const fields = "name,cover.url,total_rating,genres.name,themes.name,keywords.name,first_release_date,game_modes.name,player_perspectives.name,involved_companies.company.name";
+  const whereClause = `
+    ${playedIdsFilter} 
+    version_parent = null & 
+    game_type = (0,8,9) & 
+    themes != (42) & 
+    first_release_date > ${fifteenYearsAgo} &
+    (game_status = null | game_status != (5,6,7,8))
+    ${platformString}
+  `;
+
+  // Fetch 4 batches of 500 games in parallel (Total 2000 games)
+  const batchPromises = [0, 500, 1000, 1500].map((offset) =>
+    igdbFetch(
+      "games",
+      `fields ${fields};
+       limit 500;
+       offset ${offset};
+       sort total_rating_count desc;
+       where ${whereClause};`,
+    ),
   );
+
+  const results = await Promise.all(batchPromises);
+  return results.flat();
 }
