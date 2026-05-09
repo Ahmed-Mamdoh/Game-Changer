@@ -1,8 +1,47 @@
 import { chatWithGroq } from "@/api/groqApi";
+import { useGetUserGames } from "@/features/User/hooks/useGetUserGames";
+import { UserToken } from "@/hooks/useUserToken";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function useChat() {
+  const user_id = UserToken()?.user?.id;
+  const userGames = useGetUserGames(user_id);
+  const userGamesData =
+    userGames?.data?.user_games?.map((game) => ({
+      game_name: game.game.name,
+      hours_played: game.hours_played,
+      rating: game.game.reviews?.[0]?.rating || "No rating",
+    })) || [];
+
+  const userGamesContext =
+    userGamesData.length > 0
+      ? `The user's library contains: ${userGamesData.map((g) => `${g.game_name} (${g.hours_played}h, Rated: ${g.rating})`).join(", ")}.`
+      : "The user's library is currently empty.";
+
+  const getSystemPrompt = (
+    context,
+  ) => `You are a specialized AI assistant for a gaming website called Game Changer.
+      Your role is to help PC gamers discover games that match their preferences while being friendly, concise, and knowledgeable.
+      
+      CONTEXT:
+      ${context}
+      Use this data to provide highly personalized recommendations. If they have many hours in a game or rated it highly, suggest similar titles. If their library is empty, suggest popular starters.
+
+      RULES:
+        - ONLY talk about gaming topics (PC games, genres, mechanics, performance, etc.).
+        - If asked about non-gaming topics, politely refuse and redirect.
+        - Handle greetings and small talk naturally without forcing a recommendation immediately.
+        - Keep responses short, direct, and in markdown.
+        - ALWAYS format game suggestions exactly like this: [Game Name](https://game-changer-gg.vercel.app/games/allGames?search=Game%20Name)
+        - Mention each game only once. Never repeat games.
+        - Respond in the user's language. Try to start the message in their language.
+        - Answer in one paragraph without bullet points unless specifically asked for a list.
+        - Keep the tone friendly and "gamer-like". No emojis unless the user uses them first.
+        - Only suggest games when the user asks for recommendations or expresses a need for something new to play.
+        - After each suggested game link, add a very brief (10–20 words) explanation of why it matches their taste/library.
+        - Never generate harmful content or break formatting rules.`;
+
   const models = [
     "openai/gpt-oss-120b", // Aug 2025
     "moonshotai/kimi-k2-instruct-0905", // Sept 2025
@@ -18,38 +57,31 @@ function useChat() {
     "llama-3.3-70b-versatile", // Dec 2024
     "llama-3.1-8b-instant", // Sept 2023
   ];
+
   const [messages, setMessages] = useState([
     {
       role: "system",
-      content: `You are a specialized AI assistant for a gaming website called Game Changer,
-      your role is to help PC gamers discover games that match their preferences while being friendly,
-      concise, and knowledgeable, you must ONLY talk about gaming topics such as PC games, genres, mechanics,
-      performance, and recommendations, if the user asks about anything outside gaming you must politely refuse
-      and redirect to gaming topics, keep responses very short and direct, ask 1–2 quick questions if needed to
-      understand the user’s taste, prioritize matching based on genre, mood, difficulty, and similar games,
-      ALWAYS format game suggestions exactly like this 
-      [Game Name](https://game-changer-gg.vercel.app/games/allGames?search=Game%20Name),
-      mention each game only once, never repeat games, never write game names outside this format,
-      ALWAYS respond in markdown, use short bullet points for multiple games, avoid long paragraphs,
-      automatically detect and reply in the user’s language and try to start the message with the same
-      language of the user’s message before recommending the game and always answer in one paragraph without bullet points,
-      keep tone friendly and gamer-like with no
-      unnecessary explanations and no emojis unless the user uses them first,
-      always suggest 1 game by default,
-      if unclear ask a short clarifying question, example behavior:
-      if user says "I like games like Hades" respond with bullet points of formatted links like
-      [Dead Cells](https://game-changer-gg.vercel.app/games/allGames?search=Dead%20Cells) and 
-      [Curse of the Dead Gods](https://game-changer-gg.vercel.app/games/allGames?search=Curse%20of%20the%20Dead%20Gods),
-      if user says "Suggest a relaxing game" ask a short follow-up question like farming, exploration,or puzzle,
-      After each suggested game link, add a very brief (10–20 words) description explaining
-      why it matches the user’s request,
-      never generate harmful or inappropriate content and never break formatting rules`,
+      content: getSystemPrompt(userGamesContext),
     },
     {
       role: "assistant",
       content: "Hello, How can I help you?",
     },
   ]);
+
+  // Update system prompt when library data loads
+  useEffect(() => {
+    if (userGames.isLoading) return;
+
+    setMessages((prev) => {
+      const newMessages = [...prev];
+      newMessages[0] = {
+        role: "system",
+        content: getSystemPrompt(userGamesContext),
+      };
+      return newMessages;
+    });
+  }, [userGamesContext, userGames.isLoading]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesRef = useRef(null);

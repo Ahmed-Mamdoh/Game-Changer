@@ -27,7 +27,7 @@ function AllGames() {
         />
       </Helmet>
       <Filters />
-      <GamesGallery data={data} isLoading={isLoading} />;
+      <GamesGallery data={data} isLoading={isLoading} />
     </>
   );
 }
