@@ -11,12 +11,13 @@ function useChat() {
     userGames?.data?.user_games?.map((game) => ({
       game_name: game.game.name,
       hours_played: game.hours_played,
+      review: game.game.reviews?.[0]?.review || "No review",
       rating: game.game.reviews?.[0]?.rating || "No rating",
     })) || [];
 
   const userGamesContext =
     userGamesData.length > 0
-      ? `The user's library contains: ${userGamesData.map((g) => `${g.game_name} (${g.hours_played}h, Rated: ${g.rating})`).join(", ")}.`
+      ? `The user's library contains: ${userGamesData.map((g) => `${g.game_name} (${g.hours_played}h, Rated: ${g.rating}, Review: ${g.review})`).join(", ")}.`
       : "The user's library is currently empty.";
 
   const getSystemPrompt = (
