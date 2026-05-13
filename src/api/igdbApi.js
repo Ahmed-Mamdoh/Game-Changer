@@ -140,11 +140,14 @@ export async function getGamesForRecommending({ platform, playedGamesIds }) {
       ? "& platforms = (6,48,167,49,169,130)"
       : ` & platforms = (${platform})`;
 
-  const fifteenYearsAgo = Math.floor(Date.now() / 1000) - 15 * 365 * 24 * 60 * 60;
-  const playedIdsFilter = playedGamesIds?.length > 0 ? `id != (${playedGamesIds.join(",")}) &` : "";
+  const fifteenYearsAgo =
+    Math.floor(Date.now() / 1000) - 15 * 365 * 24 * 60 * 60;
+  const playedIdsFilter =
+    playedGamesIds?.length > 0 ? `id != (${playedGamesIds.join(",")}) &` : "";
 
   // Common query parts
-  const fields = "name,cover.url,total_rating,genres.name,themes.name,keywords.name,first_release_date,game_modes.name,player_perspectives.name,involved_companies.company.name";
+  const fields =
+    "name,cover.url,total_rating,genres.name,themes.name,keywords.name,first_release_date,game_modes.name,player_perspectives.name,involved_companies.company.name";
   const whereClause = `
     ${playedIdsFilter} 
     version_parent = null & 

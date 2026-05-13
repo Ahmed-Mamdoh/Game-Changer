@@ -181,7 +181,7 @@
 
 /* Firefox Support */
 * {
-  scrollbar-width: thin;
+  scrollbar-width: none;
   scrollbar-color: #1e293b #020617;
 }
 
