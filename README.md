@@ -1,120 +1,67 @@
-# 🎮 Game Changer
+<div align="center">
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:38BDF8,100:818CF8&height=200&section=header&text=Game-Changer&fontSize=50&fontColor=fff&animation=twinkling"/>
 
-Game Changer is a full-stack gaming platform that helps players track, discover, and analyze their gaming habits — featuring live game data, user stats, and personalized collections.
+# Game-Changer
 
----
+### Discover, track, and analyze video games with AI insights.
 
-## 🚀 Features
+[![Stars](https://img.shields.io/github/stars/Ahmed-Mamdoh/Game-Changer?style=for-the-badge&color=7C3AED)](https://github.com/Ahmed-Mamdoh/Game-Changer/stargazers)
+[![Forks](https://img.shields.io/github/forks/Ahmed-Mamdoh/Game-Changer?style=for-the-badge&color=58A6FF)](https://github.com/Ahmed-Mamdoh/Game-Changer/forks)
+[![Issues](https://img.shields.io/github/issues/Ahmed-Mamdoh/Game-Changer?style=for-the-badge&color=F59E0B)](https://github.com/Ahmed-Mamdoh/Game-Changer/issues)
 
-### 🏠 Home Page
-- Hero section highlighting the platform  
-- Popular games section  
-- Upcoming and Free Now games  
-
----
-
-### 🎮 Game Pages
-- Game details (cover, release date, genres, themes, description, ratings, time to beat, etc.)  
-- Embedded media: screenshots and YouTube videos  
-- Similar games, DLCs, franchises, and supported languages  
-- Buttons to mark a game as **Played / Playing / Dropped** with:  
-  - Hours played  
-  - Date finished  
-  - Favorite status  
+</div>
 
 ---
 
-### 👤 Account Page
-- Displays user info  
-- Gallery of games added by the user  
-- Filters: status, favorites, sorting by hours or date finished  
-- Two charts:  
-  - Genre distribution  
-  - Theme distribution
+## 📖 Overview
 
- ---
+Game-Changer is an easy-to-use website built for everyone who loves video games. Its main goal is to help you keep track of the games you play, find your next favorite title, and understand your own gaming habits better.
 
-### 🌐 All Games, Upcoming Games, Free Games
-- **All Games:** full library with filters and pagination  
-- **Upcoming Games:** unreleased titles only  
-- **Free Games:** integrated with GamerPower API + IGDB for rich game info  
+With so many games available today, it is hard to stay organized. Game-Changer solves this by giving you one simple place to manage everything. You can mark games as "Playing" or "Finished," keep track of how many hours you’ve spent, and see your progress at a glance. What makes us different is our smart AI helper . It learns what you like and gives you personalized suggestions, so you never have to wonder what to play next.
+
+The platform is built with modern tools like React and Supabase , which means it is fast, secure, and works perfectly on your phone or computer. You can also see cool charts of your favorite game types and get alerts whenever a game becomes free to keep on popular stores.
+
+Whether you are a serious gamer with a huge collection or just someone who plays for fun on the weekends, Game-Changer is here to be your ultimate gaming companion . We make it simple to stay organized and find the fun in every game you play.
 
 ---
 
-### 🔐 Authentication
-- Sign up / Login via Supabase  
-- Secure session management is handled automatically  
+## ✨ Features
+
+- **AI-Powered Personalization:** Receive tailored game recommendations based on your unique playstyle and library history.
+- **Intelligent Chat Assistant:** Query an integrated AI chatbot for instant game details, trivia, and smart platform navigation.
+- **Unified Game Tracking:** Organize your backlog by marking titles as Played, Playing, or Dropped with detailed logs for hours and dates.
+- **Visual Gaming Analytics:** Uncover patterns in your habits with interactive charts visualizing your most-played genres and themes.
+- **Real-Time Free Game Tracker:** Never miss a deal with live monitoring of free-to-claim games across Steam, Epic Games, and GOG.
+- **Global Discovery Engine:** Explore a massive database of titles with real-time metadata, high-quality trailers, and screenshots.
+- **Deep-Dive Metadata:** Access critical info at a glance, including "Time to Beat" stats, multi-platform support, and language availability.
+- **Community Reviews & Ratings:** Share your personal critiques and browse community feedback to help decide your next adventure.
+- **Upcoming Releases Dashboard:** Stay ahead of the curve with a dedicated feed for the most anticipated future launches.
+- **Advanced Library Filtering:** Find the perfect game using powerful multi-criteria filters for genres, themes, and release periods.
+- **Seamless Cloud Sync:** Keep your collection safe and accessible across all devices with secure, real-time database synchronization.
 
 ---
 
-### ⚙️ Tech Stack
+## 🚀 Tech Stack
 
-#### 🧱 Core
-- **React** – Main frontend framework  
-- **Vite** – Lightning-fast development and build tool  
-- **React Router DOM** – Handles multi-page routing and navigation  
-- **React Query** – Manages server state, caching, and API data fetching  
-- **React Hook Form** – Efficient and simple form handling and validation  
-
-#### 🎨 Styling & UI
-- **Tailwind CSS** – Utility-first CSS framework for fast, responsive design  
-- **shadcn/ui** – Pre-built, accessible UI components with modern design  
-- **DaisyUI** – Tailwind component library used for alerts, modals, and loading states  
-- **React Icons** – For consistent, scalable icons across the app  
-
-#### 🗄️ Backend & Auth
-- **Supabase** – Used for authentication, database management, and RLS (Row Level Security)  
-
-#### 🌐 APIs Integrated
-- **IGDB API** – Game information, details, media, and metadata  
-- **GamerPower API** – Fetches current free games on Steam, Epic, and GOG 
-
-#### ☁️ Deployment
-- **Vercel** – Hosting and continuous deployment platform
-
-
----
-
-## 🧠 Key Highlights
-- Real-time data from multiple APIs  
-- Responsive, modern UI  
-- Dynamic filtering and searching  
-- Charts visualizing user game data  
-- Role-based data protection with Supabase RLS  
-- Toasts and alerts for smooth UX
+<p align="left">
+  <img src="https://skillicons.dev/icons?i=html,css,javascript,react,tailwind,supabase,vite" alt="Tech Stack" />
+</p>
 
 ---
 
 ## 📸 Screenshots
-![image](https://github.com/user-attachments/assets/cd947bf9-86a3-4d86-980e-68efc642e723)
----
-![image (1)](https://github.com/user-attachments/assets/20a63cb9-9ea2-4065-a546-bb2fa1b1dc9d)
----
-![image (2)](https://github.com/user-attachments/assets/973e69b4-b124-4a2e-b184-b459a339b935)
----
-![image (3)](https://github.com/user-attachments/assets/3b205c2a-b65f-4956-8135-1e45e2dc690f)
----
-![image (4)](https://github.com/user-attachments/assets/7838fbd9-33ed-460f-a4a6-53da2afcec32)
----
-![image (5)](https://github.com/user-attachments/assets/061f0c2d-89cb-49b4-aa29-b735b429115c)
----
-![image (6)](https://github.com/user-attachments/assets/7e2dcc1a-2dd5-47ab-b09f-013bfcc23240)
----
-![image (7)](https://github.com/user-attachments/assets/314cc1ac-1fc2-4658-8c9e-f91608d0c432)
-
-
 
 ---
 
-## 🌐 Live Demo
-[Live Preview](https://game-changer-gg.vercel.app/)
+## 🔗 Demo
 
+[Live Demo](https://game-changer-gg.vercel.app)
 
+---
 
+<div align="center">
 
+⭐ Star this repo if you like it!  
+Made with ❤️ by [Ahmed-Mamdoh](https://github.com/Ahmed-Mamdoh)
 
-
-
-
-
-
+</div>
