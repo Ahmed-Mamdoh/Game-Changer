@@ -35,6 +35,7 @@ export function useGetRecommendations() {
         - The match percentage is be between 0 and 100.
         - return the data as a JSON array of objects with keys: "game_name", "match_percentage", and "reason".
         - Suggest only base games. Do not include DLCs, expansions, or add-ons.
+        - DATE RESTRICTION: Do not recommend any games released before the year 2005. Only recommend modern or semi-modern titles.
 `;
   const models = [
     "openai/gpt-oss-120b", // Aug 2025
