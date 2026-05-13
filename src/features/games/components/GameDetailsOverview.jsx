@@ -104,6 +104,7 @@ function GameDetailsOverview({ data }) {
             queryClient.invalidateQueries({
               queryKey: ["user_games", user_id],
             });
+            localStorage.removeItem("recommendations");
           });
       }
     });
@@ -188,7 +189,6 @@ function GameDetailsOverview({ data }) {
       return null;
     });
   }
-
   return (
     <>
       <div className="relative h-[100dvh] w-full overflow-hidden">

@@ -1,7 +1,6 @@
 import { useGetRecommendations } from "@/features/games/hooks/useGetRecommendations";
 import Filters from "@/features/games/ui/Filters";
-import GameItem from "@/features/games/ui/GameItem";
-import GamesGallery from "@/features/games/ui/GamesGallery";
+import RecommendationCard from "@/features/games/ui/RecommendationCard";
 import { useGetUserGames } from "@/features/User/hooks/useGetUserGames";
 import { UserToken } from "@/hooks/useUserToken";
 import Spinner from "@/ui/Spinner";
@@ -17,10 +16,7 @@ function ForYouPage() {
   const user_games = isLoadingUserGames
     ? []
     : user_games_response?.user_games || [];
-  const { recommendations, isLoading, error } = useGetRecommendations(
-    user_id,
-    user_games,
-  );
+  const { recommendations, isLoading, error } = useGetRecommendations();
   if (error)
     return (
       <div className="text-text-error p-4 text-center">
@@ -87,20 +83,26 @@ function ForYouPage() {
           href="https://game-changer-gg.vercel.app/games/foryou"
         />
       </Helmet>
-      <Filters
-        showSortBy={false}
-        showGenres={false}
-        showThemes={false}
-        showGameModes={false}
-        showPerspective={false}
-      />
       <div className="relative mx-auto flex w-9/10 items-center justify-between pt-3">
         <div>
           <h2>Recommended for You</h2>
           <p className="text-text-dim text-sm">Based on your ratings</p>
         </div>
       </div>
-      <GamesGallery data={recommendations} isLoading={isLoading} />
+
+      <div className="mx-auto w-9/10 pt-8 pb-16">
+        {isLoading ? (
+          <Spinner />
+        ) : recommendations?.length === 0 ? (
+          <h2 className="text-center">🔍 No Games Found</h2>
+        ) : (
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            {recommendations?.map((game) => (
+              <RecommendationCard key={game.id} game={game} />
+            ))}
+          </div>
+        )}
+      </div>
     </>
   );
 }

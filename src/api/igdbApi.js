@@ -49,7 +49,7 @@ export async function getAllGames({
 
   return igdbFetch(
     "games",
-    `fields name,cover.url,first_release_date;
+    `fields name,cover.url,first_release_date,genres.name,artworks.url,artworks.artwork_type;
       limit ${limit || LIMIT};
       offset ${offset};
       ${sortByString}
