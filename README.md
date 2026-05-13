@@ -50,6 +50,12 @@ Whether you are a serious gamer with a huge collection or just someone who plays
 ---
 
 ## 📸 Screenshots
+<img width="627" height="837" alt="ScreenShot Tool -20260513104700" src="https://github.com/user-attachments/assets/f219bcc1-b980-486c-accc-7b41ebed66b0" />
+<img width="456" height="810" alt="Screenshot 2026-05-13 104405" src="https://github.com/user-attachments/assets/ea28c77c-23c5-40b4-a4d1-7bfb0311daf3" />
+<img width="1919" height="1079" alt="Screenshot 2026-05-13 110003" src="https://github.com/user-attachments/assets/7a317792-1fae-4616-9db9-8c5418cff234" />
+<img width="1919" height="1079" alt="Screenshot 2026-05-13 103959" src="https://github.com/user-attachments/assets/5ee80e51-33f2-4f34-9c41-941256682883" />
+<img width="1919" height="1079" alt="Screenshot 2026-05-13 103903" src="https://github.com/user-attachments/assets/d8bb9540-4a61-4c03-b52a-12f20691cc05" />
+<img width="1919" height="1079" alt="Screenshot 2026-05-13 103625" src="https://github.com/user-attachments/assets/0d77e845-4e4f-4b8b-85dd-f5b5c70d2c08" />
 
 ---
 
