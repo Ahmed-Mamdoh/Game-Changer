@@ -28,25 +28,25 @@ Whether you are a serious gamer with a huge collection or just someone who plays
 ## ✨ Features
 
 - **AI-Powered Personalization:** Receive tailored game recommendations based on your unique playstyle and library history.
-- 
+
 - **Intelligent Chat Assistant:** Query an integrated AI chatbot for instant game details, trivia, and smart platform navigation.
-- 
+
 - **Unified Game Tracking:** Organize your backlog by marking titles as Played, Playing, or Dropped with detailed logs for hours and dates.
-- 
+
 - **Visual Gaming Analytics:** Uncover patterns in your habits with interactive charts visualizing your most-played genres and themes.
-- 
+
 - **Real-Time Free Game Tracker:** Never miss a deal with live monitoring of free-to-claim games across Steam, Epic Games, and GOG.
-- 
+
 - **Global Discovery Engine:** Explore a massive database of titles with real-time metadata, high-quality trailers, and screenshots.
-- 
+
 - **Deep-Dive Metadata:** Access critical info at a glance, including "Time to Beat" stats, multi-platform support, and language availability.
-- 
+
 - **Community Reviews & Ratings:** Share your personal critiques and browse community feedback to help decide your next adventure.
-- 
+
 - **Upcoming Releases Dashboard:** Stay ahead of the curve with a dedicated feed for the most anticipated future launches.
-- 
+
 - **Advanced Library Filtering:** Find the perfect game using powerful multi-criteria filters for genres, themes, and release periods.
-- 
+
 - **Seamless Cloud Sync:** Keep your collection safe and accessible across all devices with secure, real-time database synchronization.
 
 ---
