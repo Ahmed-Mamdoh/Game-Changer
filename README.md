@@ -54,6 +54,7 @@ Whether you are a serious gamer with a huge collection or just someone who plays
 <img width="1919" height="1079" alt="Screenshot 2026-05-13 103903" src="https://github.com/user-attachments/assets/d8bb9540-4a61-4c03-b52a-12f20691cc05" />
 <img width="1919" height="1079" alt="Screenshot 2026-05-13 103959" src="https://github.com/user-attachments/assets/5ee80e51-33f2-4f34-9c41-941256682883" />
 <img width="1919" height="1079" alt="Screenshot 2026-05-13 110003" src="https://github.com/user-attachments/assets/7a317792-1fae-4616-9db9-8c5418cff234" />
+<img width="1920" height="1080" alt="Untitled design" src="https://github.com/user-attachments/assets/93922691-ecea-43d2-a2e6-5a5994b333ca" />
 
 ---
 
