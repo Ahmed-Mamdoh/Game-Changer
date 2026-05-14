@@ -18,15 +18,22 @@ export function useGetAllGames() {
       platform,
       player_perspectives,
     ],
-    queryFn: () =>
-      getAllGames({
+    queryFn: async () => {
+      const response = await getAllGames({
         filters,
         platform,
         sortBy: sortBy || "total_rating_count",
         page,
         search,
         player_perspectives,
-      }),
+      });
+      if (search) {
+        const escapedSearch = search.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&");
+        const regex = new RegExp(`\\b${escapedSearch}\\b`, "i");
+        return response.filter((game) => regex.test(game.name));
+      }
+      return response;
+    },
   });
 
   queryClient.prefetchQuery({
@@ -40,15 +47,22 @@ export function useGetAllGames() {
       platform,
       player_perspectives,
     ],
-    queryFn: () =>
-      getAllGames({
+    queryFn: async () => {
+      const response = await getAllGames({
         filters,
         platform,
         sortBy: sortBy || "total_rating_count",
         page: page + 1,
         search,
         player_perspectives,
-      }),
+      });
+      if (search) {
+        const escapedSearch = search.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&");
+        const regex = new RegExp(`\\b${escapedSearch}\\b`, "i");
+        return response.filter((game) => regex.test(game.name));
+      }
+      return response;
+    },
   });
 
   return { data, isLoading, error };

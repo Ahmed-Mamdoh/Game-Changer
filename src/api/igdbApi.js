@@ -25,13 +25,12 @@ export async function getAllGames({
   const filtersString =
     filters?.length !== 0 ? " & " + filters.join(" & ") : "";
   const offset = (page - 1) * LIMIT;
-  // if there is sortBy and no search then sort by sortBy
-  const sortByString =
-    sortBy && !search
-      ? `sort ${sortBy} ${sortBy === "name" || (isUpcoming && sortBy === "first_release_date") ? "asc" : "desc"};`
-      : "";
 
-  const searchString = search ? `search "${search}";` : "";
+  const sortByString = sortBy
+    ? `sort ${sortBy} ${sortBy === "name" || (isUpcoming && sortBy === "first_release_date") ? "asc" : "desc"};`
+    : "";
+
+  const searchString = search ? ` & name ~ *"${search}"* ` : "";
   const platformString =
     platform === "all" || !platform
       ? "& platforms = (6,48,167,49,169,130)"
@@ -58,8 +57,8 @@ export async function getAllGames({
       ${platformString}
       ${player_perspectivesString} 
       ${releaseDateString}
-      ${filtersString};
-      ${searchString}`,
+      ${filtersString}
+      ${searchString};`,
   );
 }
 
@@ -103,14 +102,14 @@ export async function getNumberOfResults({
   // if there is filters split them by &
   const filtersString = filters.length !== 0 ? " & " + filters.join(" & ") : "";
 
-  const searchString = search ? `search "${search}";` : "";
+  const searchString = search ? `& name ~ *"${search}"* ` : "";
   return igdbFetch(
     "games/count",
     `fields name,cover.url;
       where game_type = (0,1,8,9) & version_parent = null & platforms = (6) &
       first_release_date ${isUpcoming ? ">" : "<="} ${Math.floor(Date.now() / 1000)} & themes != (42)
-    ${filtersString};
-    ${searchString}
+    ${filtersString}
+    ${searchString};
       `,
   );
 }
