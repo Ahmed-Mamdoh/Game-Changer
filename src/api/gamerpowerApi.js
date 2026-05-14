@@ -1,11 +1,9 @@
 export async function getFreePcGames() {
-  const url =
-    "https://gamerpower.p.rapidapi.com/api/filter?platform=steam.gog.epic-games-store&type=game.beta&sort-by=value";
+  const url = "/api/gamerpowerProvider";
   const options = {
     method: "GET",
     headers: {
-      "x-rapidapi-key": import.meta.env.VITE_RAPID_API_KEY,
-      "x-rapidapi-host": "gamerpower.p.rapidapi.com",
+      "Content-Type": "application/json",
     },
   };
 

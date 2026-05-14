@@ -1,9 +1,8 @@
 export async function chatWithGroq({ messages, model }) {
-  const url = "https://api.groq.com/openai/v1/chat/completions";
+  const url = "/api/groqProvider";
   const options = {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
