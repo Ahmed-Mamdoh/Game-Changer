@@ -27,7 +27,7 @@ function UpcomingGames() {
         />
       </Helmet>
       <Filters isUpcoming />
-      <GamesGallery data={data} isLoading={isLoading} />;
+      <GamesGallery data={data} isLoading={isLoading} />
     </>
   );
 }

@@ -160,7 +160,6 @@ function GameItem({ game, className }) {
               <CalendarCheck className="text-text-brand h-4 w-4" />
             </div>
           ) : null}
-          {console.log(game?.first_release_date)}
         </div>
       )}
     </div>

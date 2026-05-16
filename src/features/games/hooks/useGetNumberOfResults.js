@@ -3,12 +3,14 @@ import { getNumberOfResults } from "../../../api/igdbApi";
 import useGetFiltersParams from "./useGetFiltersParams";
 export function useGetNumberOfResults(path) {
   const { filters, search } = useGetFiltersParams();
+  const searchKey = search || "";
   let isUpcoming = false;
-  if (path === "/upcomingGames") isUpcoming = true;
+  if (path.includes("/upcomingGames")) isUpcoming = true;
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["numberOfResults", "all", search, filters, isUpcoming],
-    queryFn: () => getNumberOfResults({ filters, search, isUpcoming }),
+    queryKey: ["numberOfResults", "all", searchKey, filters, isUpcoming],
+    queryFn: () =>
+      getNumberOfResults({ filters, search: searchKey, isUpcoming }),
   });
 
   return { data, isLoading, error };

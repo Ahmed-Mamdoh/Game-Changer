@@ -7,7 +7,7 @@ export function useGetUpcomingGames(limit) {
   const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery({
-    queryKey: ["games", "upcoming", page, search, filters, limit, sortBy],
+    queryKey: ["games", "upcoming", page, search || null, filters, limit || undefined, sortBy || null],
     queryFn: () =>
       getAllGames({
         filters,
@@ -19,7 +19,7 @@ export function useGetUpcomingGames(limit) {
   });
 
   queryClient.prefetchQuery({
-    queryKey: ["games", "upcoming", page + 1, search, filters, limit, sortBy],
+    queryKey: ["games", "upcoming", page + 1, search || null, filters, limit || undefined, sortBy || null],
     queryFn: () =>
       getAllGames({
         filters,

@@ -28,7 +28,6 @@ export async function addUserGame({
   game_id,
   review,
   rating,
-  is_favorite = false,
 }) {
   await insertGame({
     game_id,
@@ -41,7 +40,6 @@ export async function addUserGame({
         status,
         hours_played,
         game_id,
-        is_favorite,
       },
     ])
     .select();
@@ -50,17 +48,8 @@ export async function addUserGame({
   return { data, error };
 }
 
-export async function updateUserGame({
-  game_id,
-  user_id,
-  genres,
-  themes,
-  ...formData
-}) {
-  const updateData = {
-    genres,
-    themes,
-  };
+export async function updateUserGame({ game_id, user_id, ...formData }) {
+  const updateData = {};
 
   if (formData.status !== undefined) updateData.status = formData.status;
   if (formData.hours_played !== undefined)
