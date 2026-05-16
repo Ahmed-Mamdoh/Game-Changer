@@ -2,7 +2,6 @@ import { FaBookmark, FaRegBookmark } from "react-icons/fa";
 import { useUserGameActions } from "../hooks/useUserGameActions";
 
 function WishlistButton({ status, game_id }) {
-  console.log(game_id);
   const { handleWishlistChange } = useUserGameActions(game_id || 0);
 
   return (

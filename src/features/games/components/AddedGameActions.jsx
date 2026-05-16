@@ -24,7 +24,7 @@ function AddedGameActions({ game, userGame, userGameReview }) {
             defaultChecked={userGame?.is_favorite}
             onChange={handleFavoriteChange}
           />
-          <div className="swap-on text-error text-3xl">
+          <div className="swap-on text-text-error text-3xl">
             <FaHeart />
           </div>
           <div className="swap-off text-3xl">

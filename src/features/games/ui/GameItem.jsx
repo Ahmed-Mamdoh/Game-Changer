@@ -121,6 +121,7 @@ function GameItem({ game, className }) {
       )}
 
       {game?.first_release_date &&
+        game?.status !== "to play" &&
         game?.first_release_date > Math.floor(Date.now() / 1000) && (
           <div className="flex items-center justify-center gap-x-2">
             <p className="text-xs font-bold md:text-sm">
@@ -151,7 +152,15 @@ function GameItem({ game, className }) {
               <FaRegClock className="h-3.5 w-3.5" />
               <p className="text-xs font-bold">{game.hoursPlayed}h</p>
             </div>
+          ) : game?.first_release_date > Math.floor(Date.now() / 1000) ? (
+            <div className="flex items-center justify-center gap-x-2">
+              <p className="text-xs font-bold md:text-sm">
+                {formatReleaseDate(game.first_release_date)}
+              </p>
+              <CalendarCheck className="text-text-brand h-4 w-4" />
+            </div>
           ) : null}
+          {console.log(game?.first_release_date)}
         </div>
       )}
     </div>

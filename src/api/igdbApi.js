@@ -63,6 +63,16 @@ export async function getAllGames({
   );
 }
 
+export async function getUserGamesData(userGamesIds) {
+  return igdbFetch(
+    "games",
+    `fields name,cover.url,first_release_date,genres.name,themes.name;
+      limit 500;
+      where id = (${userGamesIds.join(",")});
+      `,
+  );
+}
+
 export async function getFreeGameData(search) {
   const searchString = search ? `search "${search}";` : "";
   return igdbFetch(

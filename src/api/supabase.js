@@ -26,19 +26,12 @@ export async function addUserGame({
   status,
   hours_played,
   game_id,
-  game_name,
-  game_cover,
-  genres,
-  themes,
   review,
   rating,
+  is_favorite = false,
 }) {
   await insertGame({
     game_id,
-    name: game_name,
-    cover: game_cover,
-    genres,
-    themes,
   });
   const { data, error } = await supabase
     .from("user_games")
@@ -48,6 +41,7 @@ export async function addUserGame({
         status,
         hours_played,
         game_id,
+        is_favorite,
       },
     ])
     .select();
@@ -63,24 +57,33 @@ export async function updateUserGame({
   themes,
   ...formData
 }) {
+  const updateData = {
+    genres,
+    themes,
+  };
+
+  if (formData.status !== undefined) updateData.status = formData.status;
+  if (formData.hours_played !== undefined)
+    updateData.hours_played = formData.hours_played;
+  if (formData.is_favorite !== undefined)
+    updateData.is_favorite = formData.is_favorite;
+
   const { data, error } = await supabase
     .from("user_games")
-    .update({
-      status: formData.status,
-      hours_played: formData.hours_played,
-      genres,
-      themes,
-    })
+    .update(updateData)
     .eq("game_id", game_id)
     .eq("user_id", user_id)
     .select();
   if (error) return { data: null, error };
-  await updateReview({
-    user_id,
-    game_id,
-    review: formData.review,
-    rating: formData.rating,
-  });
+
+  if (formData.review !== undefined || formData.rating !== undefined) {
+    await updateReview({
+      user_id,
+      game_id,
+      review: formData.review,
+      rating: formData.rating,
+    });
+  }
   return { data, error };
 }
 
@@ -112,7 +115,7 @@ export async function getUserGames(user_id) {
       `
   *,
   game:games(
-    *,
+    game_id,
     reviews:game_reviews(
       rating,
       review,

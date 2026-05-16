@@ -22,9 +22,7 @@ import ModalSelect from "../ui/ModalSelect";
 import { formatIGDBImage } from "@/utils/igdbImage";
 
 function AddGameModal({ game, isUpdate = false, userGame, userGameReview }) {
-  const { id, name, cover, genres, themes, first_release_date } = game;
-  const genreNames = genres?.map((genre) => genre.name) || [];
-  const themeNames = themes?.map((theme) => theme.name) || [];
+  const { id, name, cover, first_release_date } = game;
 
   const game_cover = formatIGDBImage(cover?.url, "t_720p_2x");
   const navigate = useNavigate();
@@ -57,10 +55,6 @@ function AddGameModal({ game, isUpdate = false, userGame, userGameReview }) {
           const { error } = await addUserGame({
             game_id: id,
             user_id,
-            genres: genreNames,
-            themes: themeNames,
-            game_name: name,
-            game_cover: game_cover,
             ...data,
           });
           if (error) {
