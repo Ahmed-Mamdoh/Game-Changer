@@ -202,31 +202,14 @@ export async function getUserGameReview({ user_id, game_id }) {
 }
 
 // games
-export async function insertGame({ game_id, name, cover, genres, themes }) {
+export async function insertGame({ game_id }) {
   const { data, error } = await supabase
     .from("games")
     .insert([
       {
         game_id,
-        name,
-        cover,
-        genres,
-        themes,
       },
     ])
     .select();
-  if (error) {
-    const { data2, error2 } = await supabase
-      .from("games")
-      .update({
-        name,
-        cover,
-        genres,
-        themes,
-      })
-      .eq("game_id", game_id);
-    if (error2) return { data: null, error2 };
-    return { data2, error2 };
-  }
   return { data, error };
 }

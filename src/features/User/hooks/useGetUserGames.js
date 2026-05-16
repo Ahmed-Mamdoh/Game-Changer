@@ -9,11 +9,11 @@ export function useGetUserGames(user_id) {
       const userGames = await getUserGames(user_id);
       if (!userGames?.user_games?.length) return userGames;
 
-      const ids = userGames.user_games.map((game) => game.game.game_id);
+      const ids = userGames.user_games?.map((game) => game.game.game_id) || [];
 
       const userGamesData = await getUserGamesData(ids);
 
-      const mergedUserGames = userGames.user_games.map((userGame) => {
+      const mergedUserGames = userGames.user_games?.map((userGame) => {
         const igdbGame = userGamesData.find(
           (game) => game.id === userGame.game.game_id,
         );
@@ -23,8 +23,8 @@ export function useGetUserGames(user_id) {
             ...igdbGame,
             ...userGame.game,
             cover: igdbGame.cover.url,
-            genres: igdbGame.genres.map((genre) => genre.name),
-            themes: igdbGame.themes.map((theme) => theme.name),
+            genres: igdbGame.genres?.map((genre) => genre.name) || [],
+            themes: igdbGame.themes?.map((theme) => theme.name) || [],
           },
         };
       });

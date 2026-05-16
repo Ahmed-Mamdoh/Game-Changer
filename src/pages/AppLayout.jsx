@@ -14,10 +14,12 @@ import {
   getNumberOfResults,
   getThemes,
 } from "@/api/igdbApi";
+import useWishlistAlerts from "@/features/games/hooks/useWishlistAlerts";
 
 function AppLayout() {
   const location = useLocation();
   const queryClient = useQueryClient();
+  useWishlistAlerts();
 
   useEffect(() => {
     // Prefetch the first page of games
