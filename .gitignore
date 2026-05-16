@@ -9,6 +9,7 @@ lerna-debug.log*
 guide.md
 .trae
 .agents
+scripts
 
 node_modules
 dist

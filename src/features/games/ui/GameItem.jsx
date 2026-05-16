@@ -3,7 +3,7 @@ import { formatDate, intervalToDuration, formatDistanceToNow } from "date-fns";
 import { CalendarCheck, Check, Clock } from "lucide-react";
 import { useEffect, useState } from "react";
 import { CiPlay1, CiStop1 } from "react-icons/ci";
-import { FaRegClock, FaSteam } from "react-icons/fa";
+import { FaBookmark, FaRegClock, FaSteam } from "react-icons/fa";
 import { SiEpicgames, SiGogdotcom } from "react-icons/si";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -76,13 +76,7 @@ function GameItem({ game, className }) {
         )}
         <div className="from-bg-base/50 absolute inset-0 bg-gradient-to-t via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
       </div>
-      {game.matchScore && (
-        <div className="absolute top-2 right-1 z-10">
-          <div className="bg-bg-surface/80 border-stroke-subtle text-pulse-accent rounded-full border px-2 py-0.5 text-xs font-bold backdrop-blur-md">
-            {Math.min(game.matchScore, 100)}% Match
-          </div>
-        </div>
-      )}
+
       <div className="h-12 w-36 cursor-default text-center transition-colors duration-300 md:w-48">
         <Link to={`/game/${game.id}`} className="cursor-pointer">
           <h3 className="group-hover:text-text-brand text-sm md:text-base">
@@ -90,19 +84,8 @@ function GameItem({ game, className }) {
             {game.name?.length > 40 ? "..." : ""}
           </h3>
         </Link>
-        {game.recommendationReasons?.length > 0 && (
-          <div className="mt-1 hidden flex-wrap justify-center gap-1 group-hover:flex">
-            {game.recommendationReasons.map((reason, i) => (
-              <span
-                key={i}
-                className="bg-pulse-primary/10 text-pulse-primary rounded-xs px-1.5 py-0.5 text-[10px] font-medium whitespace-nowrap"
-              >
-                {reason}
-              </span>
-            ))}
-          </div>
-        )}
       </div>
+
       {game?.giveAwayLink && (
         <div className="text-text-brand flex w-full items-center justify-between">
           <a
@@ -136,6 +119,7 @@ function GameItem({ game, className }) {
           </div>
         </div>
       )}
+
       {game?.first_release_date &&
         game?.first_release_date > Math.floor(Date.now() / 1000) && (
           <div className="flex items-center justify-center gap-x-2">
@@ -145,24 +129,29 @@ function GameItem({ game, className }) {
             <CalendarCheck className="text-text-brand h-4 w-4" />
           </div>
         )}
-      {game?.hoursPlayed && (
+
+      {game?.status && (
         <div className="border-stroke-medium flex w-full items-center justify-between border-t pt-2">
           <div className="flex items-center gap-1.5">
             {game.status === "playing" ? (
               <CiPlay1 className="text-pulse-primary h-3.5 w-3.5" />
             ) : game.status === "finished" ? (
               <Check className="text-pulse-success h-3.5 w-3.5" />
-            ) : (
+            ) : game.status === "dropped" ? (
               <CiStop1 className="text-text-error h-3.5 w-3.5" />
-            )}
+            ) : game.status === "to play" ? (
+              <FaBookmark className="text-pulse-warning h-3.5 w-3.5" />
+            ) : null}
             <p className=" text-xs font-bold tracking-widest uppercase">
               {game.status}
             </p>
           </div>
-          <div className="text-text-dim flex items-center gap-1">
-            <FaRegClock className="h-3.5 w-3.5" />
-            <p className="text-xs font-bold">{game.hoursPlayed}h</p>
-          </div>
+          {game.status !== "to play" ? (
+            <div className="text-text-dim flex items-center gap-1">
+              <FaRegClock className="h-3.5 w-3.5" />
+              <p className="text-xs font-bold">{game.hoursPlayed}h</p>
+            </div>
+          ) : null}
         </div>
       )}
     </div>

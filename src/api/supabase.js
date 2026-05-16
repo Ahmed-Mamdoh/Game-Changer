@@ -30,23 +30,15 @@ export async function addUserGame({
   game_cover,
   genres,
   themes,
-  keywords,
-  modes,
-  perspectives,
-  companies,
   review,
   rating,
 }) {
   await insertGame({
     game_id,
-    genres,
-    keywords,
-    themes,
     name: game_name,
     cover: game_cover,
-    modes,
-    perspectives,
-    companies,
+    genres,
+    themes,
   });
   const { data, error } = await supabase
     .from("user_games")
@@ -64,12 +56,20 @@ export async function addUserGame({
   return { data, error };
 }
 
-export async function updateUserGame({ game_id, user_id, ...formData }) {
+export async function updateUserGame({
+  game_id,
+  user_id,
+  genres,
+  themes,
+  ...formData
+}) {
   const { data, error } = await supabase
     .from("user_games")
     .update({
       status: formData.status,
       hours_played: formData.hours_played,
+      genres,
+      themes,
     })
     .eq("game_id", game_id)
     .eq("user_id", user_id)
@@ -210,44 +210,31 @@ export async function getUserGameReview({ user_id, game_id }) {
 }
 
 // games
-export async function insertGame({
-  game_id,
-  genres,
-  themes,
-  name,
-  cover,
-  keywords,
-  modes,
-  perspectives,
-  companies,
-}) {
+export async function insertGame({ game_id, name, cover, genres, themes }) {
   const { data, error } = await supabase
     .from("games")
     .insert([
       {
         game_id,
-        genres,
-        themes,
         name,
         cover,
-        keywords,
-        modes,
-        perspectives,
-        companies,
+        genres,
+        themes,
       },
     ])
     .select();
   if (error) {
-    const { update, error } = await supabase
+    const { data2, error2 } = await supabase
       .from("games")
       .update({
-        modes,
-        perspectives,
-        companies,
+        name,
+        cover,
+        genres,
+        themes,
       })
-      .eq("game_id", game_id)
-      .select();
-    return { update, error };
+      .eq("game_id", game_id);
+    if (error2) return { data: null, error2 };
+    return { data2, error2 };
   }
   return { data, error };
 }

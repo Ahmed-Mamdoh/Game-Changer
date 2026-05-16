@@ -14,11 +14,12 @@ async function igdbFetch(endpoint, query) {
 export async function getAllGames({
   filters = [],
   platform,
-  sortBy,
+  sortBy = "total_rating_count",
   page = 1,
   search,
   limit,
   isUpcoming,
+  isReleased,
   player_perspectives,
 }) {
   // if there is filters split them by &
@@ -40,11 +41,11 @@ export async function getAllGames({
       ? ""
       : ` & player_perspectives = ${player_perspectives}`;
 
-  const releaseDateString = search
-    ? ``
-    : isUpcoming
-      ? ` & first_release_date > ${Math.floor(Date.now() / 1000)}`
-      : ` & first_release_date <= ${Math.floor(Date.now() / 1000)}`;
+  const releaseDateString = isUpcoming
+    ? ` & first_release_date > ${Math.floor(Date.now() / 1000)}`
+    : isReleased
+      ? ` & first_release_date <= ${Math.floor(Date.now() / 1000)}`
+      : ``;
 
   return igdbFetch(
     "games",

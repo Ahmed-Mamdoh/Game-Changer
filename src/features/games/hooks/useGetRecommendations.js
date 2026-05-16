@@ -26,15 +26,18 @@ export function useGetRecommendations() {
   ) => `You are a specialized AI assistant for a gaming website called Game Changer.
       Your role is to help PC gamers discover games that match their preferences while being friendly, concise, and knowledgeable.
       
-      CONTEXT:
+      CONTEXT (Games the user has already played/owns):
       ${context}
+      
       Use this data to provide highly personalized base game recommendations. Analyze their hours played, ratings, and specific reviews to understand their taste. If they have many hours in a game or rated it highly, suggest similar base games. If their library is empty, suggest popular starters.
 
       RULES:
         - return 10 games names with the match percentage and a short reason for recommendation.
         - The match percentage is be between 0 and 100.
         - return the data as a JSON array of objects with keys: "game_name", "match_percentage", and "reason".
-        - Suggest only base games. Do not include DLCs, expansions, or add-ons.
+        - EXCLUSION RULE: STRICTLY FORBIDDEN to recommend any games listed in the "CONTEXT" section above. Your goal is to find NEW games for the user.
+        - Suggest only base games. Use ONLY the primary title. Do NOT include suffixes like "Complete Edition", "GOTY", "Deluxe Edition", "Gold Edition", "Remastered", etc.
+        - Do not include DLCs, expansions, or add-ons.
         - DATE RESTRICTION: Do not recommend any games released before the year 2005. Only recommend modern or semi-modern titles.
 `;
   const models = [
@@ -103,6 +106,7 @@ export function useGetRecommendations() {
           try {
             const igdbResults = await getAllGames({
               search: rec.game_name,
+              isReleased: true,
               limit: 1,
             });
             if (igdbResults && igdbResults.length > 0) {

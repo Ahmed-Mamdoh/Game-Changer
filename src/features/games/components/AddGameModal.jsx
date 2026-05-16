@@ -19,22 +19,14 @@ import { FaPen, FaPlus } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import ModalDate from "../ui/ModalDate";
 import ModalSelect from "../ui/ModalSelect";
+import { formatIGDBImage } from "@/utils/igdbImage";
 
-function AddGameModal({
-  game_id,
-  keywords,
-  releaseDate,
-  genresData,
-  themesData,
-  game_name,
-  game_cover,
-  isUpdate = false,
-  userGame,
-  userGameReview,
-  game_modes,
-  player_perspectives,
-  involved_companies,
-}) {
+function AddGameModal({ game, isUpdate = false, userGame, userGameReview }) {
+  const { id, name, cover, genres, themes, first_release_date } = game;
+  const genreNames = genres?.map((genre) => genre.name) || [];
+  const themeNames = themes?.map((theme) => theme.name) || [];
+
+  const game_cover = formatIGDBImage(cover?.url, "t_720p_2x");
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { register, handleSubmit, formState, control, watch } = useForm({
@@ -45,19 +37,13 @@ function AddGameModal({
   const { errors } = formState;
   const user_id = UserToken()?.user?.id;
 
-  const genres = genresData?.map((genre) => genre.name) || [];
-  const themes = themesData?.map((theme) => theme.name) || [];
-  const modes = game_modes?.map((mode) => mode.name) || [];
-  const perspectives =
-    player_perspectives?.map((perspective) => perspective.name) || [];
-  const companies =
-    involved_companies?.map((company) => company.company.name) || [];
   const status = watch("status") || userGame?.status;
   const isLoadingRef = useRef(false);
   const [open, setOpen] = useState(false);
 
   function handleAddGame(data) {
     if (isLoadingRef.current === true) return;
+
     isLoadingRef.current = true;
     data.date_finished =
       data.status === "playing"
@@ -69,16 +55,12 @@ function AddGameModal({
       .promise(
         async () => {
           const { error } = await addUserGame({
-            game_id,
+            game_id: id,
             user_id,
-            genres,
-            themes,
-            game_name,
+            genres: genreNames,
+            themes: themeNames,
+            game_name: name,
             game_cover: game_cover,
-            keywords,
-            modes,
-            perspectives,
-            companies,
             ...data,
           });
           if (error) {
@@ -93,7 +75,7 @@ function AddGameModal({
         },
       )
       .finally(() => {
-        const gameId = String(game_id);
+        const gameId = String(id);
         queryClient.refetchQueries({
           queryKey: ["user_game", user_id, gameId],
         });
@@ -125,7 +107,7 @@ function AddGameModal({
       .promise(
         async () => {
           const { error } = await updateUserGame({
-            game_id,
+            game_id: id,
             user_id,
             ...data,
             date_finished: status === "playing" ? null : data.date_finished,
@@ -142,7 +124,7 @@ function AddGameModal({
         },
       )
       .finally(() => {
-        const gameId = String(game_id);
+        const gameId = String(id);
         queryClient.refetchQueries({
           queryKey: ["user_game", user_id, gameId],
         });
@@ -189,24 +171,27 @@ function AddGameModal({
             <img
               src={game_cover}
               className="w-72 rounded-xl object-contain"
-              alt={game_name}
-              title={game_name}
+              alt={name}
+              title={name}
               fetchPriority="high"
               loading="lazy"
             />
 
             <div className="flex flex-col gap-1">
-              <h3>{game_name}</h3>
+              <h3>{name}</h3>
               <p>
                 Release Date:{" "}
-                {new Date(releaseDate * 1000).toLocaleDateString()}
+                {new Date(first_release_date * 1000).toLocaleDateString()}
               </p>
             </div>
           </div>
-
           {/* Game Form */}
           <form
-            onSubmit={handleSubmit(isUpdate ? handleUpdateGame : handleAddGame)}
+            onSubmit={handleSubmit(
+              isUpdate || userGame?.status === "to play" // If the game is in the wishlist, update instead
+                ? handleUpdateGame
+                : handleAddGame,
+            )}
             className="h-full w-full"
           >
             <div className="flex w-full flex-col gap-4 ">

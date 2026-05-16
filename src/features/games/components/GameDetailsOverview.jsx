@@ -1,32 +1,26 @@
-import { deleteUserGame, updateUserGame } from "@/api/supabase";
 import { useGetUserGame } from "@/features/User/hooks/useGetUserGame";
+import { useGetUserGameReview } from "@/features/User/hooks/useGetUserGameReview";
 import useScreenWidth from "@/hooks/useScreenWidth";
+import { UserToken } from "@/hooks/useUserToken";
 import RatingReadOnly from "@/ui/RatingReadOnly";
 import Spinner from "@/ui/Spinner";
-import { useQueryClient } from "@tanstack/react-query";
+import { formatIGDBImage } from "@/utils/igdbImage";
 import { formatDate } from "date-fns";
-import toast from "react-hot-toast";
 import {
   FaBook,
   FaCalendarAlt,
   FaFlagCheckered,
-  FaHeart,
   FaPlaystation,
-  FaRegHeart,
   FaSteam,
-  FaTrash,
   FaTrophy,
   FaXbox,
 } from "react-icons/fa";
 import { SiEpicgames, SiGogdotcom } from "react-icons/si";
 import { useNavigate } from "react-router-dom";
-import Swal from "sweetalert2";
 import { useGetTimeToBeat } from "../hooks/useGetTimeToBeat";
 import AddGameModal from "./AddGameModal";
-import { useGetUserGameReview } from "@/features/User/hooks/useGetUserGameReview";
-import { formatIGDBImage } from "@/utils/igdbImage";
-import { UserToken } from "@/hooks/useUserToken";
-import { MySwal } from "@/lib/swal";
+import AddedGameActions from "./AddedGameActions";
+import WishlistButton from "./WishlistButton";
 
 function GameDetailsOverview({ data }) {
   const {
@@ -42,14 +36,9 @@ function GameDetailsOverview({ data }) {
     themes,
     game_modes,
     external_games,
-    keywords,
-    player_perspectives,
-    involved_companies,
   } = data[0];
-  const keywordsNames = keywords?.map((k) => k.name) || [];
 
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const screenWidth = useScreenWidth();
 
   const user_id = UserToken()?.user?.id;
@@ -59,6 +48,12 @@ function GameDetailsOverview({ data }) {
     useGetUserGame(user_id);
   const { data: userGameReview, isLoading: isLoadingUserGameReview } =
     useGetUserGameReview({ user_id });
+
+  const isReleased = new Date(releaseDate * 1000) < new Date();
+  const isAddedToLibrary =
+    userGame?.data?.length > 0 &&
+    userGame?.data?.[0]?.status !== null &&
+    userGame?.data?.[0]?.status !== "to play";
 
   //  gets the full quality image instead of low quality
   const chosenArtwork =
@@ -73,60 +68,6 @@ function GameDetailsOverview({ data }) {
   const imageUrl = formatIGDBImage(chosenArtwork?.url, "t_1080p_2x") || null;
 
   if (isLoadingUserGame || isLoadingUserGameReview) return <Spinner />;
-
-  function handleDeleteGame() {
-    MySwal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // delete game logic
-        toast
-          .promise(
-            async () => {
-              const { error } = await deleteUserGame({ game_id: id, user_id });
-              if (error) throw error;
-            },
-            {
-              loading: "Deleting game...",
-              success: "Game deleted successfully",
-              error: (error) => error.message,
-            },
-          )
-          .finally(() => {
-            const gameId = String(id);
-            queryClient.invalidateQueries({
-              queryKey: ["user_game", user_id, gameId],
-            });
-            queryClient.invalidateQueries({
-              queryKey: ["user_games", user_id],
-            });
-            localStorage.removeItem("recommendations");
-          });
-      }
-    });
-  }
-
-  async function handleFavoriteChange(e) {
-    const isFavorite = e.target.checked;
-
-    const { error } = await updateUserGame({
-      game_id: id,
-      user_id,
-      is_favorite: isFavorite,
-    });
-    if (error) throw error;
-
-    queryClient.invalidateQueries({
-      queryKey: ["user_games", user_id],
-    });
-    queryClient.invalidateQueries({
-      queryKey: ["user_game", user_id, String(id)],
-    });
-  }
 
   function renderExternalGameLinks() {
     const platformConfig = [
@@ -210,63 +151,29 @@ function GameDetailsOverview({ data }) {
             {/* Name */}
             {screenWidth > 640 ? <h1>{name}</h1> : <h2>{name}</h2>}
             {/* Actions */}
-            {new Date(releaseDate * 1000) < new Date() ? (
-              userGame?.data?.length > 0 ? (
-                <div className="flex flex-col items-end gap-3">
-                  <div className="flex items-center gap-x-4">
-                    <label className="swap tooltip" data-tip="Delete Game">
-                      <button
-                        onClick={handleDeleteGame}
-                        className="cursor-pointer bg-transparent text-2xl"
-                      >
-                        <FaTrash />
-                      </button>
-                    </label>
-                    <label className="swap tooltip" data-tip="Add to Favorites">
-                      <input
-                        type="checkbox"
-                        defaultChecked={userGame.data[0].is_favorite}
-                        onChange={handleFavoriteChange}
-                      />
-                      <div className="swap-on text-error text-3xl">
-                        <FaHeart />
-                      </div>
-                      <div className="swap-off text-3xl">
-                        <FaRegHeart />
-                      </div>
-                    </label>
-                    <AddGameModal
-                      isUpdate={true}
-                      game_id={id}
-                      keywords={keywordsNames}
-                      releaseDate={releaseDate}
-                      userGame={userGame?.data?.[0]}
-                      userGameReview={userGameReview?.data?.[0]}
-                      game_modes={game_modes}
-                      player_perspectives={player_perspectives}
-                      involved_companies={involved_companies}
-                      game_cover={
-                        formatIGDBImage(cover?.url, "t_720p_2x") || null
-                      }
-                      game_name={name}
-                    />
-                  </div>
-                </div>
-              ) : (
-                <AddGameModal
-                  game_id={id}
-                  keywords={keywordsNames}
-                  releaseDate={releaseDate}
-                  genresData={genres}
-                  themesData={themes}
-                  game_modes={game_modes}
-                  player_perspectives={player_perspectives}
-                  involved_companies={involved_companies}
-                  game_cover={formatIGDBImage(cover?.url, "t_720p_2x") || null}
-                  game_name={name}
+
+            {isReleased ? (
+              isAddedToLibrary ? (
+                <AddedGameActions
+                  game={data[0]}
+                  userGame={userGame?.data?.[0]}
+                  userGameReview={userGameReview?.data?.[0]}
                 />
+              ) : (
+                <div className="flex items-center gap-3">
+                  <WishlistButton
+                    status={userGame?.data?.[0]?.status}
+                    game_id={id}
+                  />
+                  <AddGameModal game={data[0]} userGame={userGame?.data?.[0]} />
+                </div>
               )
-            ) : null}
+            ) : (
+              <WishlistButton
+                status={userGame?.data?.[0]?.status}
+                game_id={id}
+              />
+            )}
           </div>
 
           {/* Row 2 */}
