@@ -16,11 +16,11 @@ export function useGetRecommendations() {
         hours_played: game.hours_played,
         review: game.game.reviews?.[0]?.review || "No review",
         rating: game.game.reviews?.[0]?.rating || "No rating",
+        is_favorite: game.is_favorite,
       })) || [];
-
   const userGamesContext =
     userGamesData.length > 0
-      ? `The user's library contains: ${userGamesData.map((g) => `${g.game_name} (hours played: ${g.hours_played}h, Rated: ${g.rating}, Review: ${g.review})`).join(", ")}.`
+      ? `The user's library contains: ${userGamesData.map((g) => `${g.game_name} (Favorite: ${g.is_favorite}, hours played: ${g.hours_played}h, Rated: ${g.rating}, Review: ${g.review})`).join(", ")}.`
       : "The user's library is currently empty.";
 
   const getSystemPrompt = (
@@ -31,7 +31,7 @@ export function useGetRecommendations() {
       CONTEXT (Games the user has already played/owns):
       ${context}
       
-      Use this data to provide highly personalized base game recommendations. Analyze their hours played, ratings, and specific reviews to understand their taste. If they have many hours in a game or rated it highly, suggest similar base games. If their library is empty, suggest popular starters.
+      Use this data to provide highly personalized base game recommendations. Analyze their hours played, ratings, specific reviews, and whether they marked a game as a "Favorite" to understand their taste. If they have many hours in a game, rated it highly, or marked it as a favorite, suggest similar base games. Favor games that align with their favorites. If their library is empty, suggest popular starters.
 
       RULES:
         - return 10 games names with the match percentage and a short reason for recommendation.
