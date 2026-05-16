@@ -5,7 +5,10 @@ import { PiSwordLight } from "react-icons/pi";
 import { GiScrollQuill } from "react-icons/gi";
 import UserCharts from "./UserCharts";
 
-function UserStats({ user_games, isLoading }) {
+function UserStats({ userGames, isLoading }) {
+  const user_games = userGames?.filter(
+    (userGame) => userGame.status !== "to play",
+  );
   const totalHours = user_games?.length
     ? user_games.reduce(
         (acc, userGame) => acc + (userGame.hours_played || 0),

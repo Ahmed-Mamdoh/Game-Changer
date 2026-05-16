@@ -25,7 +25,9 @@ function Account() {
   const { data: themes, isLoading: isLoadingThemes } = useGetThemes();
 
   const { data, isLoading } = useGetUserGames(user_id);
-  const user_games = data?.user_games || [];
+  const userGames =
+    data?.user_games.sort((a, b) => String(b?.status) - String(a?.status)) ||
+    [];
 
   if (!user_id) {
     navigate("/auth");
@@ -40,7 +42,7 @@ function Account() {
     themes?.length > 0 &&
     themes?.filter((theme) => theme?.id === +themeParam)[0]?.name;
 
-  const GalleryData = user_games
+  const GalleryData = userGames
     .filter((userGame) => {
       if (!genreParam) return true;
       return userGame?.game?.genres?.includes(genreName);
@@ -113,7 +115,7 @@ function Account() {
         <div className="relative z-10 mx-auto w-full">
           <div className="mx-auto w-full px-4 md:w-9/10">
             <UserHeader />
-            <UserStats user_games={user_games} isLoading={isLoading} />
+            <UserStats userGames={userGames} isLoading={isLoading} />
 
             <div
               className="bg-bg-card border-stroke-medium hover:border-pulse-secondary
