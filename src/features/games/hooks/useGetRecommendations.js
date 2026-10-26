@@ -125,7 +125,8 @@ export function useGetRecommendations() {
         messages: [{ role: "system", content: getSystemPrompt(userGamesContext) }],
       });
 
-      if (response === "error") throw new Error("Failed to fetch from Groq");
+      if (typeof response === "string")
+        throw new Error("Failed to fetch from Groq");
 
       let aiRecommendations;
       try {

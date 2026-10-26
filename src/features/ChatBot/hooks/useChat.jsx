@@ -114,7 +114,18 @@ function useChat() {
       messages: newMessages,
     })
       .then((res) => {
-        if (res === "error") {
+        if (res === "unauthenticated" || res === "rate_limited") {
+          setMessages((prev) => [
+            ...prev,
+            {
+              role: "assistant",
+              content:
+                res === "unauthenticated"
+                  ? "Please [log in](/auth) to chat with me, and I'll tailor picks to your library."
+                  : "You're sending messages a bit fast. Give me a minute and try again.",
+            },
+          ]);
+        } else if (res === "error") {
           setMessages((prev) => [
             ...prev,
             {
