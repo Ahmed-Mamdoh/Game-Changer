@@ -1,4 +1,5 @@
 import { LIMIT } from "@/constants/constant";
+import { rankSearchResults } from "@/utils/searchRanking";
 
 async function igdbFetch(endpoint, query) {
   const response = await fetch("/api/igdbProvider", {
@@ -11,27 +12,22 @@ async function igdbFetch(endpoint, query) {
   return data;
 }
 
-export async function getAllGames({
+// IGDB strings are double-quoted; escape backslashes and quotes so user input
+// can't break out of the string and corrupt the query.
+export function escapeIgdbString(value = "") {
+  return String(value).replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+}
+
+// Shared where-clause so the list and the result count always agree.
+function buildGamesWhere({
   filters = [],
   platform,
-  sortBy = "total_rating_count",
-  page = 1,
-  search,
-  limit,
+  player_perspectives,
   isUpcoming,
   isReleased,
-  player_perspectives,
 }) {
-  // if there is filters split them by &
   const filtersString =
     filters?.length !== 0 ? " & " + filters.join(" & ") : "";
-  const offset = (page - 1) * LIMIT;
-
-  const sortByString = sortBy
-    ? `sort ${sortBy} ${sortBy === "name" || (isUpcoming && sortBy === "first_release_date") ? "asc" : "desc"};`
-    : "";
-
-  const searchString = search ? ` & name ~ *"${search}"* ` : "";
   const platformString =
     platform === "all" || !platform
       ? "& platforms = (6,48,167,49,169,130)"
@@ -47,20 +43,66 @@ export async function getAllGames({
       ? ` & first_release_date <= ${Math.floor(Date.now() / 1000)}`
       : ``;
 
-  return igdbFetch(
-    "games",
-    `fields name,cover.url,first_release_date,genres.name,artworks.url,artworks.artwork_type;
-      limit ${limit || LIMIT};
-      offset ${offset};
-      ${sortByString}
-      where game_type = (0,8,9) & version_parent = null &
+  return `where game_type = (0,8,9) & version_parent = null &
       themes != (42)  & (game_status = null | game_status != (5,6,7,8))
       ${platformString}
       ${player_perspectivesString} 
       ${releaseDateString}
-      ${filtersString}
-      ${searchString};`,
+      ${filtersString};`;
+}
+
+const LIST_FIELDS =
+  "name,cover.url,first_release_date,genres.name,artworks.url,artworks.artwork_type,total_rating_count";
+
+export async function getAllGames({
+  filters = [],
+  platform,
+  sortBy = "total_rating_count",
+  page = 1,
+  limit,
+  isUpcoming,
+  isReleased,
+  player_perspectives,
+}) {
+  const offset = (page - 1) * LIMIT;
+
+  const sortByString = sortBy
+    ? `sort ${sortBy} ${sortBy === "name" || (isUpcoming && sortBy === "first_release_date") ? "asc" : "desc"};`
+    : "";
+
+  return igdbFetch(
+    "games",
+    `fields ${LIST_FIELDS};
+      limit ${limit || LIMIT};
+      offset ${offset};
+      ${sortByString}
+      ${buildGamesWhere({ filters, platform, player_perspectives, isUpcoming, isReleased })}`,
   );
+}
+
+// IGDB caps a single request at 500 results.
+export const SEARCH_POOL_SIZE = 500;
+
+// Uses IGDB's relevance search, then re-ranks the whole pool (exact and prefix
+// matches first, then popularity). Paging happens on the ranked pool, so every
+// page is full and the count matches what is shown.
+export async function searchGames({
+  search,
+  filters = [],
+  platform,
+  player_perspectives,
+  isUpcoming,
+  isReleased,
+  poolSize = SEARCH_POOL_SIZE,
+}) {
+  const response = await igdbFetch(
+    "games",
+    `search "${escapeIgdbString(search)}";
+      fields ${LIST_FIELDS};
+      limit ${poolSize};
+      ${buildGamesWhere({ filters, platform, player_perspectives, isUpcoming, isReleased })}`,
+  );
+  return rankSearchResults(response, search);
 }
 
 export async function getUserGamesData(userGamesIds) {
@@ -88,7 +130,7 @@ export async function searchReleasedGamesByName(name, limit = 10) {
 }
 
 export async function getFreeGameData(search) {
-  const searchString = search ? `search "${search}";` : "";
+  const searchString = search ? `search "${escapeIgdbString(search)}";` : "";
   return igdbFetch(
     "games",
     `fields name,cover.url;
@@ -120,22 +162,14 @@ export async function getOneGame(id) {
 }
 
 export async function getNumberOfResults({
-  filters,
-  search,
+  filters = [],
+  platform,
+  player_perspectives,
   isUpcoming = false,
 }) {
-  // if there is filters split them by &
-  const filtersString = filters.length !== 0 ? " & " + filters.join(" & ") : "";
-
-  const searchString = search ? `& name ~ *"${search}"* ` : "";
   return igdbFetch(
     "games/count",
-    `fields name,cover.url;
-      where game_type = (0,1,8,9) & version_parent = null & platforms = (6) &
-      first_release_date ${isUpcoming ? ">" : "<="} ${Math.floor(Date.now() / 1000)} & themes != (42)
-    ${filtersString}
-    ${searchString};
-      `,
+    buildGamesWhere({ filters, platform, player_perspectives, isUpcoming }),
   );
 }
 
