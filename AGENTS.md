@@ -12,6 +12,9 @@
   - `ACCESS_TOKEN`: IGDB API Access Token
   - `VITE_SUPABASE_URL`: Supabase project URL
   - `VITE_SUPABASE_PUBLISHABLE_KEY`: Supabase anon/public key
+  - `GROQ_API_KEY`: Groq key (used by `api/groqProvider.js`)
+  - `RAPID_API_KEY`: RapidAPI key for GamerPower
+  - `ALLOWED_ORIGINS` (optional): extra comma-separated origins allowed to call `api/`
 - **Never commit real API keys** - use placeholders in version control
 
 ## 🛠️ Integrated Skills & Standards
@@ -26,6 +29,7 @@
 - **Skill:** `api-and-interface-design`
 - **IGDB Proxy Mandatory:** ALL IGDB calls MUST use `/api/igdbProvider` (POST). Direct browser calls to IGDB will fail due to CORS.
 - **Proxy:** `api/igdbProvider.js` (Vercel Serverless) handles server-side auth.
+- **Proxy guards:** `api/_lib/guard.js` adds origin checks and per-IP rate limits to every proxy. IGDB only accepts the endpoints listed in `api/igdbProvider.js`, and Groq only accepts listed models and requires a Supabase session (`Authorization: Bearer <access_token>`). Add new endpoints or models to those allowlists.
 - **Frontend API:** `src/api/igdbApi.js` centralizes all IGDB query logic.
 - **Data Fetching:** Use TanStack Query hooks in `src/hooks/` for caching and state management.
 

@@ -93,7 +93,8 @@ export function useGetRecommendations() {
         messages,
       });
 
-      if (response === "error") throw new Error("Failed to fetch from Groq");
+      if (typeof response === "string")
+        throw new Error("Failed to fetch from Groq");
 
       try {
         // AI might wrap JSON in markdown code blocks like ```json ... ```
@@ -148,7 +149,7 @@ export function useGetRecommendations() {
         throw new Error("Invalid response format from AI");
       }
     },
-    enabled: !!userGamesContext && !userGames.isLoading,
+    enabled: !!user_id && !!userGamesContext && !userGames.isLoading,
   });
 
   return {
