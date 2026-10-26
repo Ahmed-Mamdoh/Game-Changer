@@ -4,7 +4,7 @@ import RecommendationCard from "@/features/games/ui/RecommendationCard";
 import { useGetUserGames } from "@/features/User/hooks/useGetUserGames";
 import { UserToken } from "@/hooks/useUserToken";
 import Spinner from "@/ui/Spinner";
-import { Sparkles } from "lucide-react";
+import { RefreshCw, Sparkles } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -16,11 +16,18 @@ function ForYouPage() {
   const user_games = isLoadingUserGames
     ? []
     : user_games_response?.user_games || [];
-  const { recommendations, isLoading, error } = useGetRecommendations();
-  if (error)
+  const { recommendations, isLoading, isRefreshing, error, refresh } =
+    useGetRecommendations();
+  if (error && !isRefreshing)
     return (
-      <div className="text-text-error p-4 text-center">
+      <div className="text-text-error flex flex-col items-center gap-4 p-4 text-center">
         Failed to load recommendations.
+        <button
+          onClick={refresh}
+          className="bg-pulse-primary hover:bg-pulse-primary/80 rounded-full px-6 py-2 font-bold text-white"
+        >
+          Try again
+        </button>
       </div>
     );
   if (!user_id) {
@@ -88,10 +95,21 @@ function ForYouPage() {
           <h2>Recommended for You</h2>
           <p className="text-text-dim text-sm">Based on your ratings</p>
         </div>
+        <button
+          onClick={refresh}
+          disabled={isLoading || isRefreshing}
+          className="text-text-dim hover:text-pulse-primary flex items-center gap-2 text-sm font-bold transition-colors disabled:opacity-50"
+          aria-label="Get new recommendations"
+        >
+          <RefreshCw
+            className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
+          />
+          Refresh
+        </button>
       </div>
 
       <div className="mx-auto w-9/10 pt-8 pb-16">
-        {isLoading ? (
+        {isLoading || isRefreshing ? (
           <Spinner />
         ) : recommendations?.length === 0 ? (
           <h2 className="text-center">🔍 No Games Found</h2>

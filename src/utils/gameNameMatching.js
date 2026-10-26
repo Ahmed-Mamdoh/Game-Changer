@@ -164,4 +164,52 @@ function findBestMatchingGame(igdbGames, targetName) {
   return bestMatch;
 }
 
-export { findBestMatchingGame, normalizeGameName };
+function releaseYear(game) {
+  return game?.first_release_date
+    ? new Date(game.first_release_date * 1000).getUTCFullYear()
+    : null;
+}
+
+/**
+ * Strictly match a title (and optional release year) to one IGDB game.
+ * Unlike findBestMatchingGame there is no fuzzy fallback: a wrong game is
+ * worse than no game, so anything that is not a name match is dropped.
+ * @param {Array} igdbGames - Candidate IGDB games (from a search)
+ * @param {string} targetName - Title to match
+ * @param {number} [targetYear] - Expected release year, checked within 1 year
+ * @returns {Object|null} The matching game or null
+ */
+function findExactGameMatch(igdbGames, targetName, targetYear) {
+  if (!igdbGames?.length || !targetName) return null;
+
+  const year = Number(targetYear) || null;
+  const yearFits = (game) => {
+    const gameYear = releaseYear(game);
+    return !year || !gameYear || Math.abs(gameYear - year) <= 1;
+  };
+  const byYearDistance = (a, b) =>
+    Math.abs((releaseYear(a) ?? year) - year) -
+    Math.abs((releaseYear(b) ?? year) - year);
+
+  const pick = (matches) => {
+    const fitting = matches.filter(yearFits);
+    if (!fitting.length) return null;
+    return year ? [...fitting].sort(byYearDistance)[0] : fitting[0];
+  };
+
+  const targetNormalized = normalizeGameName(targetName).trim();
+  const exact = pick(
+    igdbGames.filter(
+      (game) => normalizeGameName(game.name).trim() === targetNormalized,
+    ),
+  );
+  if (exact) return exact;
+
+  const targetBase = extractBaseGameName(targetName);
+  if (!targetBase) return null;
+  return pick(
+    igdbGames.filter((game) => extractBaseGameName(game.name) === targetBase),
+  );
+}
+
+export { findBestMatchingGame, findExactGameMatch, normalizeGameName };
