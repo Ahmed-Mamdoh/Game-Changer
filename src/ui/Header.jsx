@@ -14,8 +14,9 @@ function Header() {
   const supabaseToken = UserToken();
 
   function handleSearch() {
-    if (!search) return;
-    navigate(`/games/allGames?search=${search}`);
+    const query = search.trim();
+    if (!query) return;
+    navigate(`/games/allGames?search=${encodeURIComponent(query)}`);
   }
 
   return (

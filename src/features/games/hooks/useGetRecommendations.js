@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { chatWithGroq } from "@/api/groqApi";
 import { useQuery } from "@tanstack/react-query";
 import { UserToken } from "@/hooks/useUserToken";
-import { getAllGames } from "../../../api/igdbApi";
+import { searchGames } from "../../../api/igdbApi";
 
 export function useGetRecommendations() {
   const user_id = UserToken()?.user?.id;
@@ -106,10 +106,10 @@ export function useGetRecommendations() {
         // Fetch IGDB data for each recommended game
         const gamePromises = aiRecommendations.map(async (rec) => {
           try {
-            const igdbResults = await getAllGames({
+            const igdbResults = await searchGames({
               search: rec.game_name,
               isReleased: true,
-              limit: 1,
+              poolSize: 20,
             });
             if (igdbResults && igdbResults.length > 0) {
               const game = igdbResults[0];
