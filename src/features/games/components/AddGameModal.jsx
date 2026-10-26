@@ -82,7 +82,6 @@ function AddGameModal({ game, isUpdate = false, userGame, userGameReview }) {
         queryClient.refetchQueries({
           queryKey: ["user_game_review", user_id, gameId],
         });
-        localStorage.removeItem("recommendations");
         isLoadingRef.current = false;
         setOpen(false);
       });
@@ -131,7 +130,6 @@ function AddGameModal({ game, isUpdate = false, userGame, userGameReview }) {
         queryClient.refetchQueries({
           queryKey: ["user_game_review", user_id, gameId],
         });
-        localStorage.removeItem("recommendations");
         isLoadingRef.current = false;
         setOpen(false);
       });
