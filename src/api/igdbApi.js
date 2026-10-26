@@ -115,6 +115,20 @@ export async function getUserGamesData(userGamesIds) {
   );
 }
 
+// Ranked IGDB search for one title, used to resolve AI recommendations to real
+// games. Returns several candidates so the caller can pick an exact match.
+export async function searchReleasedGamesByName(name, limit = 10) {
+  const escaped = String(name).replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+  return igdbFetch(
+    "games",
+    `search "${escaped}";
+      fields name,cover.url,first_release_date,genres.name,artworks.url,artworks.artwork_type;
+      where game_type = (0,8,9) & version_parent = null &
+      first_release_date <= ${Math.floor(Date.now() / 1000)};
+      limit ${limit};`,
+  );
+}
+
 export async function getFreeGameData(search) {
   const searchString = search ? `search "${escapeIgdbString(search)}";` : "";
   return igdbFetch(

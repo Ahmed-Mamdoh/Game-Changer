@@ -49,7 +49,6 @@ export function useUserGameActions(gameId) {
             queryClient.invalidateQueries({
               queryKey: ["user_games", user_id],
             });
-            localStorage.removeItem("recommendations");
           });
       }
     });
