@@ -29,4 +29,8 @@ export default defineConfig([
       "no-implicit-globals": "error", // Prevent implicit global variables
     },
   },
+  {
+    files: ["api/**/*.js"],
+    languageOptions: { globals: globals.node },
+  },
 ]);
