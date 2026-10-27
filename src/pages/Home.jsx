@@ -1,5 +1,6 @@
 import { useGetFreeGamesToShow } from "@/features/games/hooks/useGetFreeGamesToShow";
 import { useGetGameSection } from "@/features/games/hooks/useGetGameSection";
+import { useGetPopularNow } from "@/features/games/hooks/useGetPopularNow";
 import { useGetUpcomingGames } from "@/features/games/hooks/useGetUpcomingGames";
 import HeroSection from "@/ui/HeroSection";
 import HomeSection from "@/ui/HomeSection";
@@ -10,6 +11,8 @@ function Home() {
     "total_rating_count",
     16,
   );
+  const { data: popularNow, isLoading: isLoadingPopularNow } =
+    useGetPopularNow(8);
 
   const {
     dataToShow: freeGames,
@@ -37,7 +40,7 @@ function Home() {
         <link rel="canonical" href="https://game-changer-gg.vercel.app/" />
       </Helmet>
 
-      <HeroSection popularGames={games} isLoading={isLoadingGames} />
+      <HeroSection popularGames={popularNow} isLoading={isLoadingPopularNow} />
       <div className="mx-auto flex max-w-[1440px] flex-col gap-12 pt-4 pb-24">
         <HomeSection
           sectionName="Free to keep now"
@@ -54,7 +57,7 @@ function Home() {
         <HomeSection
           id="popular"
           sectionName="Most played of all time"
-          data={games?.slice?.(8)}
+          data={games}
           isLoading={isLoadingGames}
           route="games/allGames"
         />

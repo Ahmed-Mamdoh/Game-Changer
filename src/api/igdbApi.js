@@ -80,6 +80,38 @@ export async function getAllGames({
   );
 }
 
+// IGDB popularity type 1 = page visits on IGDB, refreshed daily: what people
+// are looking at right now, unlike total_rating_count which favors old hits.
+const POPULAR_NOW_TYPE = 1;
+
+// Current popularity ranking, resolved to full games in that order. The
+// primitive pool is oversized because the games filter drops DLCs, ports,
+// unreleased titles and other platforms.
+export async function getPopularNowGames(limit) {
+  const primitives = await igdbFetch(
+    "popularity_primitives",
+    `fields game_id,value;
+      where popularity_type = ${POPULAR_NOW_TYPE};
+      sort value desc;
+      limit ${limit * 4};`,
+  );
+  const ids = Array.isArray(primitives)
+    ? primitives.map((p) => p.game_id).filter(Boolean)
+    : [];
+  if (!ids.length) throw new Error("No popularity data");
+
+  const games = await igdbFetch(
+    "games",
+    `fields ${LIST_FIELDS};
+      limit ${ids.length};
+      ${buildGamesWhere({ filters: [`id = (${ids.join(",")})`], isReleased: true })}`,
+  );
+  if (!Array.isArray(games)) throw new Error("Failed to load popular games");
+
+  const rank = new Map(ids.map((id, i) => [id, i]));
+  return games.sort((a, b) => rank.get(a.id) - rank.get(b.id)).slice(0, limit);
+}
+
 // IGDB caps a single request at 500 results.
 export const SEARCH_POOL_SIZE = 500;
 
