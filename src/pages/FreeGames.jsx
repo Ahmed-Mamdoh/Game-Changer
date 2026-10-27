@@ -1,6 +1,5 @@
 import GamesGallery from "@/features/games/ui/GamesGallery";
 import { useGetFreeGamesToShow } from "@/features/games/hooks/useGetFreeGamesToShow";
-import FadingBackground from "@/features/games/ui/FadingBackground";
 import { Helmet } from "react-helmet-async";
 
 function FreeGames() {

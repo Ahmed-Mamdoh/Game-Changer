@@ -5,7 +5,7 @@ function YoutubeEmbed({ videoId }) {
       title="YouTube video player"
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
       allowFullScreen
-      className="h-full w-full rounded-xl"
+      className="h-full w-full"
     />
   );
 }

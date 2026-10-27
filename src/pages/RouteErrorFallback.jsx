@@ -4,18 +4,16 @@ function RouteErrorFallback() {
   const routeError = useRouteError();
   return (
     <div className="flex h-screen w-full items-center justify-center">
-      <div className="flex flex-col items-center gap-y-5">
-        <h2>Oops! Something went wrong 😅</h2>
-        <p className="text-lg">
+      <div className="flex flex-col items-center gap-y-4 px-4">
+        <h2>This page didn't load</h2>
+        <p className="max-w-[50ch] text-center">
           {routeError?.message ||
-            routeError.error.message ||
-            "Unexpected error occurred"}
+            routeError?.error?.message ||
+            "Something unexpected went wrong."}{" "}
+          Go back home and try again.
         </p>
-        <Link
-          className="bg-pulse-primary text-primary-content rounded-full px-4 py-2 font-bold"
-          to="/"
-        >
-          Back to Home
+        <Link className="btn-primary" to="/">
+          Back to home
         </Link>
       </div>
     </div>

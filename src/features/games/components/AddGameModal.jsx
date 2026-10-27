@@ -1,6 +1,5 @@
 import { addUserGame, updateUserGame } from "@/api/supabase";
 import Rating from "@/components/Rating";
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogClose,
@@ -144,25 +143,26 @@ function AddGameModal({ game, isUpdate = false, userGame, userGameReview }) {
       }}
     >
       <DialogTrigger asChild>
-        <Button
-          className={`bg-bg-surface border-stroke-subtle
-            hover:bg-bg-surface/75 cursor-pointer rounded-full border py-6
-          text-xl tracking-wide backdrop-blur-md hover:backdrop-blur-xs md:px-10!`}
+        <button
+          type="button"
+          className={isUpdate ? "btn-on-art" : "btn-primary"}
         >
-          <span>{isUpdate ? <FaPen /> : <FaPlus />}</span>
-          <span className="hidden md:inline">
-            {isUpdate ? "Update Game" : "Add Game"}
-          </span>
-        </Button>
+          {isUpdate ? (
+            <FaPen className="h-3.5 w-3.5" />
+          ) : (
+            <FaPlus className="h-3.5 w-3.5" />
+          )}
+          {isUpdate ? "Edit log" : "Log game"}
+        </button>
       </DialogTrigger>
 
-      <DialogContent className="bg-bg-card border-stroke-medium rounded-xl border backdrop-blur-xl sm:max-w-xl md:max-w-3xl lg:max-w-4xl">
+      <DialogContent className="bg-bg-surface border-stroke-medium rounded-xl border shadow-[var(--shadow-float)] sm:max-w-xl md:max-w-3xl lg:max-w-4xl">
         <div className="flex w-full items-start gap-x-10">
           {/* Game Data */}
           <div className="hidden h-full flex-col items-start justify-between sm:flex">
             <img
               src={game_cover}
-              className="w-72 rounded-xl object-contain"
+              className="w-56 rounded-lg object-contain"
               alt={name}
               title={name}
               fetchPriority="high"
@@ -275,14 +275,14 @@ function AddGameModal({ game, isUpdate = false, userGame, userGameReview }) {
                       message: "Review must be less than 2000 characters",
                     },
                   })}
-                  className="bg-bg-card border-stroke-subtle min-h-24 w-full rounded-xl border p-3 focus-within:outline-0"
+                  className="bg-bg-base border-stroke-subtle focus:border-stroke-brand min-h-24 w-full rounded-md border p-3 outline-none"
                 ></textarea>
               </div>
             </div>
             {/* Form footer */}
             <DialogFooter className=" pt-4">
               <DialogClose asChild>
-                <button className=" bg-bg-card border-stroke-subtle cursor-pointer rounded-full border px-5 py-2">
+                <button type="button" className="btn-quiet">
                   Cancel
                 </button>
               </DialogClose>
@@ -290,9 +290,9 @@ function AddGameModal({ game, isUpdate = false, userGame, userGameReview }) {
               <button
                 type="submit"
                 disabled={isLoadingRef.current}
-                className="bg-pulse-primary cursor-pointer rounded-full px-5 py-2"
+                className="btn-primary"
               >
-                {isUpdate ? "Update Game" : "Add Game"}
+                {isUpdate ? "Save changes" : "Add to library"}
               </button>
             </DialogFooter>
           </form>

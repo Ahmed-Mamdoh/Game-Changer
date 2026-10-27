@@ -7,26 +7,28 @@ export function AuthForm() {
   const [activeTab, setActiveTab] = useState("login");
 
   return (
-    <div className="bg-bg-card border-stroke-subtle mx-auto flex w-full max-w-lg flex-col gap-6 rounded-2xl border-2 px-8 py-5 backdrop-blur-xs">
+    <div className="bg-bg-surface/95 border-stroke-subtle flex w-full max-w-md flex-col rounded-xl border p-6 shadow-[var(--shadow-float)] backdrop-blur-md md:p-8">
       <Tabs defaultValue="login" value={activeTab} onValueChange={setActiveTab}>
-        <h2 className="text-center">
-          {activeTab === "login" ? "Welcome Back" : "Create Account"}
-        </h2>
-        <p className="text-center">
-          {activeTab === "login" ? "Log in to continue" : "Create a account"}
+        <h1 className="mb-1 text-[length:var(--font-size-title)] font-semibold tracking-tight">
+          {activeTab === "login" ? "Sign in" : "Create your library"}
+        </h1>
+        <p className="mb-5 text-sm">
+          {activeTab === "login"
+            ? "Pick up where you left off: your games, hours and reviews."
+            : "Free. Log what you play, track hours, get picks based on your games."}
         </p>
-        <TabsList className="w-full">
+        <TabsList className="bg-bg-base border-stroke-subtle mb-2 h-10 w-full rounded-lg border p-[3px]">
           <TabsTrigger
-            className="data-[state=active]:border-b-pulse-primary cursor-pointer rounded-none border-b-3 transition-all"
+            className="text-text-dim data-[state=active]:bg-action data-[state=active]:text-on-action cursor-pointer rounded-md border-0 font-semibold"
             value="login"
           >
-            Log In
+            Sign in
           </TabsTrigger>
           <TabsTrigger
             value="signup"
-            className="data-[state=active]:border-b-pulse-primary cursor-pointer rounded-none border-b-3 transition-all"
+            className="text-text-dim data-[state=active]:bg-action data-[state=active]:text-on-action cursor-pointer rounded-md border-0 font-semibold"
           >
-            Sign Up
+            Create account
           </TabsTrigger>
         </TabsList>
         <TabsContent value="login">

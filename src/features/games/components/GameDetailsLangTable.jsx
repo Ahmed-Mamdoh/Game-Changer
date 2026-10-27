@@ -1,13 +1,4 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import useScreenWidth from "@/hooks/useScreenWidth";
-import { FaCheck } from "react-icons/fa";
+import { Check } from "lucide-react";
 
 const LANGUAGES = [
   {
@@ -59,148 +50,68 @@ const LANGUAGES_TYPES = [
 
 function GameDetailsLangTable({ data }) {
   const { language_supports } = data[0];
+  if (!language_supports?.length) return null;
 
-  const screenWidth = useScreenWidth();
-  const isSmallScreen = screenWidth < 1024;
-
-  if (language_supports?.length > 0 && !isSmallScreen) {
-    return (
-      <>
-        <span id="Supported languages"></span>
-        <div className="mx-auto flex w-9/10 items-start justify-start pt-9 pb-4">
-          <h2 className="text-center">Language Support</h2>
-        </div>
-        <Table className="bg-bg-card outline-stroke-subtle mx-auto my-5 w-9/10 rounded-xl px-4 py-8 outline-2 backdrop-blur-sm">
-          <TableHeader>
-            <TableRow className="border-text-muted">
-              <TableHead></TableHead>
-
-              {LANGUAGES.map((language, i) => (
-                <TableHead
-                  key={language.id}
-                  className={`border-text-muted border-x py-4 text-center ${i === LANGUAGES.length - 1 ? "border-r-0" : ""}`}
-                >
-                  {language.native_name}
-                </TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            <TableRow className="border-text-muted">
-              <TableCell className="font-medium">Audio</TableCell>
-              {LANGUAGES.map((language, i) => {
-                return checkGameLanguages(
-                  language_supports,
-                  language,
-                  "Audio",
-                  i,
-                );
-              })}
-            </TableRow>
-            <TableRow className="border-text-muted">
-              <TableCell className="font-medium">Subtitles</TableCell>
-              {LANGUAGES.map((language, i) => {
-                return checkGameLanguages(
-                  language_supports,
-                  language,
-                  "Subtitles",
-                  i,
-                );
-              })}
-            </TableRow>
-            <TableRow className="border-text-muted">
-              <TableCell className="font-medium">Interface</TableCell>
-              {LANGUAGES.map((language, i) => {
-                return checkGameLanguages(
-                  language_supports,
-                  language,
-                  "Interface",
-                  i,
-                );
-              })}
-            </TableRow>
-          </TableBody>
-        </Table>
-      </>
+  const supports = (language, type) =>
+    language_supports.some(
+      (s) =>
+        s?.language?.id === language.id &&
+        s?.language_support_type?.name === type,
     );
-  }
-
-  if (language_supports?.length > 0 && isSmallScreen) {
-    return (
-      <>
-        <span id="Supported languages"></span>
-
-        <div className="flex items-start justify-center pt-9 pb-4">
-          <h2 className="text-center">Language Support</h2>
-        </div>
-        <Table className="bg-bg-card outline-stroke-subtle mx-auto my-3 w-9/10 rounded-2xl px-4 py-8 outline-2 backdrop-blur-sm">
-          <TableHeader>
-            <TableRow className="border-text-muted">
-              <TableHead></TableHead>
-              {LANGUAGES_TYPES.map((type, i) => (
-                <TableHead
-                  className={`border-text-muted border-x py-4 text-center ${i === LANGUAGES_TYPES.length - 1 ? "border-r-0" : ""}`}
-                >
-                  {type.name}
-                </TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {LANGUAGES.map((language) => {
-              return (
-                <TableRow key={language.id} className="border-text-muted">
-                  <TableCell>{language.native_name}</TableCell>
-                  {LANGUAGES_TYPES.map((type, i) =>
-                    checkGameLanguages(
-                      language_supports,
-                      language,
-                      type.name,
-                      i,
-                      "vertical",
-                    ),
-                  )}
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </>
-    );
-  }
-
-  return <></>;
-}
-
-function checkGameLanguages(
-  language_supports,
-  language,
-  type,
-  i,
-  variant = "horizontal",
-) {
-  const currentLanguage = language_supports.filter((supportedLanguage) => {
-    return supportedLanguage?.language?.id === language?.id;
-  });
-
-  const isAvailable = currentLanguage?.find(
-    (lang) => lang?.language_support_type?.name === type,
-  );
 
   return (
-    <TableCell
-      className={`border-text-muted border-x ${isAvailable ? "py-4" : "py-6"} text-center font-medium ${
-        variant === "horizontal"
-          ? i === LANGUAGES.length - 1
-            ? "border-r-0"
-            : ""
-          : i === LANGUAGES_TYPES.length - 1
-            ? "border-r-0"
-            : ""
-      }`}
+    <section
+      id="Supported languages"
+      aria-label="Language support"
+      className="mx-auto w-full max-w-[1440px] px-4 pt-14 md:px-8"
     >
-      {isAvailable ? <FaCheck className="text-text-dim mx-auto" /> : null}
-    </TableCell>
+      <h2 className="mb-4">Language support</h2>
+      <div className="border-stroke-subtle max-w-2xl overflow-x-auto rounded-lg border">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-stroke-subtle bg-bg-surface border-b">
+              <th className="text-text-dim h-9 px-4 text-left font-semibold">
+                Language
+              </th>
+              {LANGUAGES_TYPES.map((type) => (
+                <th
+                  key={type.id}
+                  className="text-text-dim h-9 w-28 px-4 text-center font-semibold"
+                >
+                  {type.name}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody className="divide-stroke-subtle divide-y">
+            {LANGUAGES.map((language) => (
+              <tr key={language.id} className="hover:bg-bg-surface">
+                <td className="text-text-main h-9 px-4" dir="auto">
+                  {language.native_name}
+                </td>
+                {LANGUAGES_TYPES.map((type) => (
+                  <td key={type.id} className="h-9 px-4 text-center">
+                    {supports(language, type.name) ? (
+                      <Check
+                        className="text-pulse-success mx-auto h-4 w-4"
+                        aria-label="Supported"
+                      />
+                    ) : (
+                      <span
+                        className="text-text-muted"
+                        aria-label="Not supported"
+                      >
+                        —
+                      </span>
+                    )}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
   );
 }
 

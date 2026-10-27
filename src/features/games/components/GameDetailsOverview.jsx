@@ -1,339 +1,246 @@
 import { useGetUserGame } from "@/features/User/hooks/useGetUserGame";
 import { useGetUserGameReview } from "@/features/User/hooks/useGetUserGameReview";
-import useScreenWidth from "@/hooks/useScreenWidth";
 import { UserToken } from "@/hooks/useUserToken";
-import RatingReadOnly from "@/ui/RatingReadOnly";
 import Spinner from "@/ui/Spinner";
-import { formatIGDBImage } from "@/utils/igdbImage";
+import { coverUrlOf, pickBackdrop } from "@/utils/igdbImage";
 import { formatDate } from "date-fns";
-import {
-  FaBook,
-  FaCalendarAlt,
-  FaFlagCheckered,
-  FaPlaystation,
-  FaSteam,
-  FaTrophy,
-  FaXbox,
-} from "react-icons/fa";
+import { FaPlaystation, FaSteam, FaXbox } from "react-icons/fa";
 import { SiEpicgames, SiGogdotcom } from "react-icons/si";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useGetTimeToBeat } from "../hooks/useGetTimeToBeat";
+import { STATUS_LABELS, useQuickStatus } from "../hooks/useQuickStatus";
 import AddGameModal from "./AddGameModal";
 import AddedGameActions from "./AddedGameActions";
-import WishlistButton from "./WishlistButton";
+
+const STORES = [
+  { name: "Steam", urlPattern: "steam", icon: FaSteam },
+  { name: "GOG", urlPattern: "gog", icon: SiGogdotcom },
+  { name: "Epic Games", urlPattern: "epic", icon: SiEpicgames },
+  { name: "PlayStation", urlPattern: "playstation", icon: FaPlaystation },
+  { name: "Xbox", urlPattern: "xbox", icon: FaXbox },
+];
+
+const hoursOf = (seconds) => (seconds ? Math.round(seconds / 3600) : null);
+
+function Fact({ label, value }) {
+  return (
+    <div className="border-stroke-subtle flex flex-col px-4 py-2.5 sm:border-r sm:last:border-r-0">
+      <span className="text-text-main tabular text-lg font-semibold">
+        {value ?? "—"}
+      </span>
+      <span className="text-text-dim text-xs">{label}</span>
+    </div>
+  );
+}
+
+function TagLinks({ items, param }) {
+  return items?.map((item) => (
+    <Link
+      key={`${param}-${item.id}`}
+      to={`/games/allGames?${param}=${item.id}`}
+      className="text-text-dim hover:text-text-main rounded-sm border border-white/12 bg-black/35 px-2.5 py-1 text-xs whitespace-nowrap backdrop-blur-md transition-colors duration-100 hover:bg-black/55"
+    >
+      {item.name}
+    </Link>
+  ));
+}
 
 function GameDetailsOverview({ data }) {
+  const game = data[0];
   const {
     id,
     name,
     first_release_date: releaseDate,
     summary,
-    cover,
-    artworks,
     total_rating: rating,
     total_rating_count: ratingCount,
     genres,
     themes,
     game_modes,
     external_games,
-  } = data[0];
-
-  const navigate = useNavigate();
-  const screenWidth = useScreenWidth();
+  } = game;
 
   const user_id = UserToken()?.user?.id;
-
   const { data: timeToBeat } = useGetTimeToBeat();
   const { data: userGame, isLoading: isLoadingUserGame } =
     useGetUserGame(user_id);
   const { data: userGameReview, isLoading: isLoadingUserGameReview } =
     useGetUserGameReview({ user_id });
-
-  const isReleased = new Date(releaseDate * 1000) < new Date();
-  const isAddedToLibrary =
-    userGame?.data?.length > 0 &&
-    userGame?.data?.[0]?.status !== null &&
-    userGame?.data?.[0]?.status !== "to play";
-
-  //  gets the full quality image instead of low quality
-  const chosenArtwork =
-    screenWidth < 640
-      ? cover
-      : artworks?.find((a) => a.artwork_type === 2) ||
-        artworks?.find((a) => a.artwork_type === 3) ||
-        artworks?.find((a) => a.artwork_type === 1) ||
-        artworks?.find((a) => a.artwork_type === 4) ||
-        artworks?.[0] ||
-        cover;
-  const imageUrl = formatIGDBImage(chosenArtwork?.url, "t_1080p_2x") || null;
+  const { statusOf, setStatus } = useQuickStatus();
 
   if (isLoadingUserGame || isLoadingUserGameReview) return <Spinner />;
 
-  function renderExternalGameLinks() {
-    const platformConfig = [
-      {
-        name: "Steam",
-        urlPattern: "steam",
-        icon: <FaSteam className="h-5 w-5" />,
-        bgColor: "bg-[#2a475e25]",
-      },
-      {
-        name: "GOG",
-        urlPattern: "gog",
-        icon: <SiGogdotcom className="h-5 w-5" />,
-        bgColor: "bg-[#310E7625]",
-      },
-      {
-        name: "Epic Games",
-        urlPattern: "epic",
-        icon: <SiEpicgames className="h-5 w-5" />,
-        bgColor: "bg-black/25",
-      },
-      {
-        name: "PlayStation",
-        urlPattern: "playstation",
-        icon: <FaPlaystation className="h-5 w-5" />,
-        bgColor: "bg-[#0170cc25]",
-      },
-      {
-        name: "Xbox",
-        urlPattern: "xbox",
-        icon: <FaXbox className="h-5 w-5" />,
-        bgColor: "bg-[#107C1025]",
-      },
-    ];
+  const isReleased = releaseDate && new Date(releaseDate * 1000) < new Date();
+  const savedStatus = userGame?.data?.[0]?.status || null;
+  const currentStatus = statusOf(id) ?? savedStatus;
+  const isLogged = Boolean(savedStatus) && savedStatus !== "to play";
+  const statusOptions = isReleased
+    ? ["to play", "playing", "finished", "dropped"]
+    : ["to play"];
 
-    const shownPlatforms = new Set();
+  const ttb = timeToBeat?.[0];
+  const year = releaseDate ? new Date(releaseDate * 1000).getFullYear() : null;
 
-    return external_games?.map((link) => {
-      const platform = platformConfig.find(
-        (p) => link?.url?.includes(p.urlPattern) && !shownPlatforms.has(p.name),
+  const shownStores = new Set();
+  const storeLinks = (external_games || [])
+    .map((link) => {
+      const store = STORES.find(
+        (s) => link?.url?.includes(s.urlPattern) && !shownStores.has(s.name),
       );
+      if (!store) return null;
+      shownStores.add(store.name);
+      return { ...store, url: link.url };
+    })
+    .filter(Boolean);
 
-      if (platform) {
-        shownPlatforms.add(platform.name);
-        return (
-          <a
-            href={link.url}
-            className={`flex items-center gap-x-2 rounded-full p-3 text-lg text-nowrap
-              backdrop-blur-xs transition-all hover:scale-105 md:px-4 md:py-2 ${platform.bgColor}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            key={`${platform.name}-${link.url}`}
-          >
-            <span>{platform.icon}</span>
-            <span className="hidden lg:inline">{platform.name}</span>
-          </a>
-        );
-      }
-
-      return null;
-    });
-  }
   return (
     <>
-      <div className="relative h-[100dvh] w-full overflow-hidden">
-        {/* Cover */}
+      <section className="relative isolate flex min-h-[620px] w-full items-end overflow-hidden md:min-h-[86dvh]">
         <img
-          src={imageUrl}
-          alt="Hero Image"
-          title="Hero Image"
+          src={pickBackdrop(game, "t_1080p_2x")}
+          alt=""
           loading="eager"
           fetchPriority="high"
-          className="absolute top-0 left-0 h-full w-full object-cover object-top"
+          className="art-fade absolute inset-0 -z-10 h-full w-full object-cover object-top brightness-90"
         />
-        <div className="to-bg-base pointer-events-none absolute inset-0 bg-gradient-to-b from-black/15" />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black/50 via-transparent to-transparent" />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-black/70 via-black/20 to-transparent" />
 
-        {/* Content */}
-        <div className="absolute bottom-[25%] left-1/2 flex w-9/10 -translate-x-1/2 translate-y-1/2 flex-col gap-2">
-          {/* Row 1 */}
-          <div className="flex items-center justify-between">
-            {/* Name */}
-            {screenWidth > 640 ? <h1>{name}</h1> : <h2>{name}</h2>}
-            {/* Actions */}
+        <div className="mx-auto grid w-full max-w-[1440px] grid-cols-1 items-end gap-6 px-4 pt-28 pb-10 md:grid-cols-[minmax(0,13rem)_1fr] md:gap-8 md:px-8">
+          <img
+            src={coverUrlOf(game, "t_cover_big_2x")}
+            alt={`${name} cover`}
+            className="hidden aspect-[3/4] w-full rounded-lg object-cover outline-1 -outline-offset-1 outline-white/15 md:block"
+          />
 
-            {isReleased ? (
-              isAddedToLibrary ? (
-                <AddedGameActions
-                  game={data[0]}
-                  userGame={userGame?.data?.[0]}
-                  userGameReview={userGameReview?.data?.[0]}
-                />
-              ) : (
-                <div className="flex items-center gap-3">
-                  <WishlistButton
-                    status={userGame?.data?.[0]?.status}
-                    game_id={id}
+          <div className="flex min-w-0 flex-col gap-5">
+            <div>
+              <p className="text-text-dim tabular mb-2 text-sm">
+                {[
+                  year,
+                  genres
+                    ?.slice(0, 2)
+                    .map((g) => g.name)
+                    .join(" · "),
+                ]
+                  .filter(Boolean)
+                  .join(" · ")}
+              </p>
+              <h1 className="text-balance">{name}</h1>
+            </div>
+
+            <div className="border-stroke-subtle grid w-full grid-cols-2 rounded-lg border bg-black/45 backdrop-blur-md sm:flex sm:w-fit sm:max-w-full">
+              {isReleased ? (
+                <>
+                  <Fact
+                    label={
+                      ratingCount
+                        ? `rating · ${ratingCount.toLocaleString()} votes`
+                        : "rating"
+                    }
+                    value={rating ? Math.round(rating) : null}
                   />
-                  <AddGameModal game={data[0]} userGame={userGame?.data?.[0]} />
-                </div>
-              )
-            ) : (
-              <WishlistButton
-                status={userGame?.data?.[0]?.status}
-                game_id={id}
-              />
-            )}
-          </div>
-
-          {/* Row 2 */}
-          <div className="flex w-full flex-col items-center justify-between md:flex-row">
-            <div className="flex w-full flex-col items-center gap-2 md:flex-row">
-              <div className="flex w-full items-center justify-between gap-x-2 md:w-fit md:justify-start">
-                {/* Release Date */}
-                <div className="flex flex-row items-center md:flex-col md:items-start md:text-xl">
-                  <p className="md:hidden">
-                    <FaCalendarAlt className="mr-1" />
-                  </p>
-                  <h4 className="hidden text-nowrap md:block">
-                    Release Date:{" "}
-                  </h4>
-                  <p>
-                    {releaseDate
-                      ? formatDate(new Date(releaseDate * 1000), "dd/MM/yyyy")
-                      : "N/A"}
-                  </p>
-                </div>
-                <div className="border-text-dim hidden w-[1px] self-stretch border-1 md:block"></div>
-
-                {/* Rating */}
-                <div className="flex flex-row md:flex-col">
-                  <h4 className=" hidden md:block">Rating:</h4>
-                  <div className="flex items-center gap-1">
-                    <RatingReadOnly
-                      bgColor="bg-pulse-primary"
-                      rating={rating}
-                    />
-                    <p className="pt-1">{rating?.toFixed(0)}%</p>
-                    <p className="self-center pt-1">({ratingCount})</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="border-text-dim w-full self-stretch border-1 md:w-[1px]"></div>
-
-              {/* Time To Beat */}
-              <div className="flex w-full flex-wrap items-center justify-between gap-1">
-                <div className="md:flex-col">
-                  <h4 className="hidden md:block">Time To Beat: </h4>
-
-                  <div className="flex items-center gap-x-2 gap-y-1 md:gap-x-2 ">
-                    <p className="flex items-center gap-x-1">
-                      <span className="xl:hidden">
-                        <FaBook className="mr-1" />
-                      </span>
-                      <p className="hidden xl:inline">Main Story: </p>
-                      {timeToBeat?.[0]?.hastily
-                        ? (timeToBeat[0]?.hastily / 60 / 60).toFixed(0)
-                        : "0"}
-                      h
-                    </p>
-                    <p>|</p>
-                    <p className="flex items-center gap-x-1">
-                      <span className="xl:hidden">
-                        <FaFlagCheckered className="mr-1" />
-                      </span>
-                      <p className="hidden xl:inline">Main + Extras: </p>
-                      {timeToBeat?.[0]?.normally
-                        ? (timeToBeat[0]?.normally / 60 / 60).toFixed(0)
-                        : "0"}
-                      h
-                    </p>
-                    <p>|</p>
-                    <p className="flex items-center gap-x-1">
-                      <span className="xl:hidden">
-                        <FaTrophy className="mr-1" />
-                      </span>
-                      <p className="hidden xl:inline">Completionist: </p>
-                      {timeToBeat?.[0]?.completely
-                        ? (timeToBeat[0]?.completely / 60 / 60).toFixed(0)
-                        : "0"}
-                      h
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-x-2 md:hidden ">
-                  {renderExternalGameLinks()}
-                </div>
-              </div>
+                  <Fact
+                    label="main story"
+                    value={hoursOf(ttb?.hastily) && `${hoursOf(ttb.hastily)} h`}
+                  />
+                  <Fact
+                    label="main + extras"
+                    value={
+                      hoursOf(ttb?.normally) && `${hoursOf(ttb.normally)} h`
+                    }
+                  />
+                  <Fact
+                    label="completionist"
+                    value={
+                      hoursOf(ttb?.completely) && `${hoursOf(ttb.completely)} h`
+                    }
+                  />
+                </>
+              ) : (
+                <Fact
+                  label="release date"
+                  value={
+                    releaseDate
+                      ? formatDate(new Date(releaseDate * 1000), "d MMM yyyy")
+                      : "To be announced"
+                  }
+                />
+              )}
             </div>
 
-            <div className="hidden items-center gap-x-2 md:flex">
-              {renderExternalGameLinks()}
+            <div className="flex flex-wrap items-center gap-3">
+              <div
+                role="radiogroup"
+                aria-label="Library status"
+                className="segmented"
+              >
+                {statusOptions.map((status) => (
+                  <button
+                    key={status}
+                    type="button"
+                    role="radio"
+                    aria-checked={currentStatus === status}
+                    onClick={() => setStatus(game, status)}
+                  >
+                    {STATUS_LABELS[status]}
+                  </button>
+                ))}
+              </div>
+
+              {isReleased &&
+                (isLogged ? (
+                  <AddedGameActions
+                    game={game}
+                    userGame={userGame?.data?.[0]}
+                    userGameReview={userGameReview?.data?.[0]}
+                  />
+                ) : (
+                  user_id && (
+                    <AddGameModal game={game} userGame={userGame?.data?.[0]} />
+                  )
+                ))}
+
+              {storeLinks.length > 0 && (
+                <div className="flex items-center gap-2">
+                  {storeLinks.map(({ name: store, url, icon }) => {
+                    const StoreIcon = icon;
+                    return (
+                      <a
+                        key={store}
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title={`${name} on ${store}`}
+                        aria-label={`${name} on ${store}`}
+                        className="text-text-main flex h-10 w-10 items-center justify-center rounded-md border border-white/15 bg-black/45 backdrop-blur-md transition-colors duration-100 hover:bg-black/65"
+                      >
+                        <StoreIcon className="h-4 w-4" />
+                      </a>
+                    );
+                  })}
+                </div>
+              )}
             </div>
-          </div>
 
-          {/* Row 3 - Horizontal scroll on mobile */}
-          <div className="flex flex-col gap-x-5 gap-y-3 pt-2 md:flex-row md:flex-wrap md:items-center">
-            {/* Genres */}
-            {genres?.length > 0 && (
-              <div className="flex items-center gap-x-1.5 gap-y-2">
-                <p className=" text-text-main  whitespace-nowrap">Genres:</p>
-                <div className="no-scrollbar flex w-full gap-x-2 overflow-x-auto px-1">
-                  {genres.map((genre) => (
-                    <button
-                      className="bg-bg-card text-text-dim cursor-pointer rounded-full px-4 py-1 text-sm whitespace-nowrap backdrop-blur-md transition-all hover:scale-105 hover:bg-gray-400/20"
-                      onClick={() => {
-                        navigate(`/games/allGames?genre=${genre.id}`);
-                      }}
-                      key={genre.id}
-                    >
-                      {genre.name}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Themes */}
-            {themes?.length > 0 && (
-              <div className="flex items-center gap-x-1.5 gap-y-2">
-                <p className=" text-text-main  whitespace-nowrap">Themes:</p>
-                <div className="no-scrollbar flex w-full gap-x-2 overflow-x-auto px-1">
-                  {themes?.map((theme) => (
-                    <button
-                      className="bg-bg-card text-text-dim cursor-pointer rounded-full px-4 py-1 text-sm whitespace-nowrap backdrop-blur-md transition-all hover:scale-105 hover:bg-gray-400/20"
-                      onClick={() => {
-                        navigate(`/games/allGames?theme=${theme.id}`);
-                      }}
-                      key={theme.id}
-                    >
-                      {theme.name}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Modes */}
-            {game_modes?.length > 0 && (
-              <div className="flex items-center gap-x-1.5 gap-y-2">
-                <p className=" text-text-main whitespace-nowrap">Modes:</p>
-                <div className="no-scrollbar flex w-full gap-x-2 overflow-x-auto px-1">
-                  {game_modes?.map((mode) => (
-                    <button
-                      className="bg-bg-card text-text-dim cursor-pointer rounded-full px-4 py-1 text-sm whitespace-nowrap backdrop-blur-md transition-all hover:scale-105 hover:bg-gray-400/20"
-                      onClick={() => {
-                        navigate(`/games/allGames?gameMode=${mode.id}`);
-                      }}
-                      key={mode.id}
-                    >
-                      {mode.name}
-                    </button>
-                  ))}
-                </div>
+            {(genres?.length || themes?.length || game_modes?.length) > 0 && (
+              <div className="no-scrollbar flex gap-2 overflow-x-auto">
+                <TagLinks items={genres} param="genre" />
+                <TagLinks items={themes} param="theme" />
+                <TagLinks items={game_modes} param="gameMode" />
               </div>
             )}
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Description */}
-      <div className="mx-auto w-9/10">
-        <p className="text-text-secondary leading-8 tracking-wide sm:text-lg md:text-xl">
-          {summary}
-        </p>
-      </div>
+      {summary && (
+        <section className="mx-auto w-full max-w-[1440px] px-4 pt-6 md:px-8">
+          <p className="text-text-main max-w-[65ch] text-base leading-relaxed md:text-lg">
+            {summary}
+          </p>
+        </section>
+      )}
     </>
   );
 }

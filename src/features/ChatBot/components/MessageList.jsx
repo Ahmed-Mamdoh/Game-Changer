@@ -10,8 +10,8 @@ function MessageList({ messages, messagesRef, isLoading }) {
       {messages.map((item, index) => {
         if (item.role === "user")
           return (
-            <div key={index} className="chat chat-start">
-              <div className="chat-bubble bg-bg-base font-arabic rounded-xl">
+            <div key={index} className="chat chat-end">
+              <div className="chat-bubble bg-bg-chip font-arabic rounded-lg text-sm before:hidden">
                 <p dir="auto" className="text-text-main">
                   {item.content}
                 </p>
@@ -20,10 +20,10 @@ function MessageList({ messages, messagesRef, isLoading }) {
           );
         if (item.role === "assistant") {
           return (
-            <div key={index} className="chat chat-end">
+            <div key={index} className="chat chat-start">
               <div
                 dir="auto"
-                className="chat-bubble bg-pulse-primary/70 text-text-main font-arabic rounded-xl"
+                className="chat-bubble bg-bg-base border-stroke-subtle text-text-main font-arabic rounded-lg border text-sm before:hidden"
               >
                 <Markdown
                   components={{
@@ -40,7 +40,7 @@ function MessageList({ messages, messagesRef, isLoading }) {
                           <Link
                             to={to}
                             {...props}
-                            className="hover:text-text-primary  text-text-primary transform underline transition-colors duration-200"
+                            className="text-text-brand underline underline-offset-2"
                           >
                             {children}
                           </Link>
@@ -51,7 +51,7 @@ function MessageList({ messages, messagesRef, isLoading }) {
                           href={href}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-blue-400 underline hover:text-blue-300"
+                          className="text-text-brand underline underline-offset-2"
                           {...props}
                         >
                           {children}
@@ -74,8 +74,12 @@ function MessageList({ messages, messagesRef, isLoading }) {
         }
       })}
       {isLoading && (
-        <div className="chat chat-end">
-          <div className="chat-bubble bg-pulse-primary/70 text-text-main  rounded-3xl">
+        <div
+          className="chat chat-start"
+          role="status"
+          aria-label="Assistant is typing"
+        >
+          <div className="chat-bubble bg-bg-base border-stroke-subtle text-text-dim rounded-lg border before:hidden">
             <span className="loading loading-dots loading-xs"></span>
           </div>
         </div>

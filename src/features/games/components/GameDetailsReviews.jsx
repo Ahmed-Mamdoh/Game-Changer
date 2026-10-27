@@ -1,10 +1,11 @@
 import GG from "@/assets/GG.png";
 import RatingReadOnly from "@/ui/RatingReadOnly";
 import { formatDate } from "date-fns";
+import { MessageSquareText } from "lucide-react";
 
 function GameDetailsReviews({ reviewsData }) {
   const reviews =
-    reviewsData?.data.filter(
+    reviewsData?.data?.filter(
       (review) => review.review !== null && review.review !== "",
     ) || [];
   const averageRating =
@@ -14,125 +15,81 @@ function GameDetailsReviews({ reviewsData }) {
           reviews.length
         ).toFixed(1)
       : 0;
+
   return (
-    <>
-      <span id="Game Reviews"></span>
-      <div className="xs:flex-row xs:items-center mx-auto flex w-9/10 flex-col justify-between gap-3 pt-9 pb-4">
-        <div className="flex items-center gap-3">
-          <h2 className="text-center">Game Reviews</h2>
+    <section
+      id="reviews"
+      aria-label="Reviews"
+      className="mx-auto w-full max-w-[1440px] px-4 pt-14 md:px-8"
+    >
+      <div className="mb-4 flex flex-wrap items-baseline justify-between gap-3">
+        <h2>
+          Reviews{" "}
           {reviews.length > 0 && (
-            <span className="glass-badge mt-1">{reviews.length}</span>
+            <span className="text-text-muted tabular font-normal">
+              {reviews.length}
+            </span>
           )}
-        </div>
+        </h2>
         {reviews.length > 0 && (
-          <div className="border-stroke-subtle flex w-fit items-center gap-3 rounded-full border bg-white/5 px-4 py-2">
-            <div className="flex flex-col items-end leading-none">
-              <span className="text-text-main text-lg font-bold">
-                {averageRating}
-              </span>
-              <span className="text-text-muted text-[10px] tracking-wider uppercase">
-                Avg Rating
-              </span>
-            </div>
-            <div className="bg-stroke-subtle h-8 w-px"></div>
+          <div className="flex items-center gap-2">
             <RatingReadOnly
               rating={parseFloat(averageRating)}
               bgColor="bg-pulse-primary"
               maxRating={5}
             />
+            <span className="text-text-main tabular text-sm font-semibold">
+              {averageRating}
+            </span>
+            <span className="text-text-dim text-sm">average</span>
           </div>
         )}
       </div>
 
       {reviews.length > 0 ? (
-        <div className="mx-auto flex h-full w-9/10 flex-col gap-6">
+        <ul className="border-stroke-subtle divide-stroke-subtle max-w-4xl divide-y border-t">
           {reviews.map((review) => (
-            <div
-              key={review.id}
-              className="bg-bg-card border-stroke-subtle flex flex-col gap-6 rounded-xl border p-6 sm:p-8"
-            >
-              <div className="xs:flex-row xs:items-center flex flex-col justify-between gap-4">
-                <div className="flex items-center gap-4">
-                  <img
-                    src={review.user.avatar_url || GG}
-                    alt={review.user.username}
-                    title={review.user.username}
-                    loading="lazy"
-                    className=" h-12 w-12 rounded-full object-cover transition-transform duration-300"
+            <li key={review.id} className="flex gap-4 py-6">
+              <img
+                src={review.user?.avatar_url || GG}
+                alt=""
+                loading="lazy"
+                className="h-10 w-10 shrink-0 rounded-full object-cover"
+              />
+              <div className="flex min-w-0 flex-1 flex-col gap-2">
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                  <span className="text-text-main font-semibold">
+                    {review.user?.username || "Player"}
+                  </span>
+                  <RatingReadOnly
+                    rating={review.rating}
+                    bgColor="bg-pulse-primary"
+                    maxRating={5}
                   />
-
-                  <div className="flex flex-col">
-                    <h4 className="text-text-main text-lg font-semibold tracking-tight">
-                      {review.user.username}
-                    </h4>
-                    <div className="mt-1 flex flex-wrap items-center gap-2">
-                      <span className="glass-badge flex items-center gap-1 bg-white/5 py-0.5 text-[10px] tracking-wider uppercase">
-                        {review.stats.games_count} Games
-                      </span>
-                      <span className="glass-badge flex items-center gap-1 bg-white/5 py-0.5 text-[10px] tracking-wider uppercase">
-                        {review.stats.reviews_count} Reviews
-                      </span>
-                    </div>
-                  </div>
+                  <span className="text-text-muted tabular text-xs">
+                    {review.stats?.games_count ?? 0} games ·{" "}
+                    {review.stats?.reviews_count ?? 0} reviews ·{" "}
+                    {formatDate(new Date(review.created_at), "d MMM yyyy")}
+                  </span>
                 </div>
-
-                <div className="xs:place-self-auto flex w-fit items-center gap-4 place-self-end rounded-lg bg-white/5 p-2 px-4">
-                  <div className="flex flex-col items-end">
-                    <RatingReadOnly
-                      rating={review.rating}
-                      bgColor="bg-pulse-primary"
-                      maxRating={5}
-                    />
-                    <span className="text-text-brand mt-0.5 text-xs font-bold">
-                      {review.rating}/5 RATING
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-4">
-                <div className="bg-stroke-subtle h-px w-full opacity-50"></div>
                 <p
                   dir="auto"
-                  className="font-arabic text-text-main text-lg leading-relaxed"
+                  className="font-arabic text-text-main max-w-[65ch] leading-relaxed"
                 >
                   {review.review}
                 </p>
-                <div className="flex items-center justify-between">
-                  <p className="text-text-muted text-xs font-medium">
-                    Posted on {formatDate(new Date(review.created_at), "PPP")}
-                  </p>
-                </div>
               </div>
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       ) : (
-        <div className="bg-bg-card border-stroke-subtle mx-auto flex w-9/10 flex-col items-center justify-center gap-4 rounded-xl border py-16 text-center">
-          <div className="bg-pulse-primary/10 rounded-full p-4">
-            <svg
-              className="text-pulse-primary h-12 w-12"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-              />
-            </svg>
-          </div>
-          <div>
-            <h3 className="text-xl font-bold">No reviews yet</h3>
-            <p className="text-text-dim mt-2">
-              Be the first to share your experience with this game!
-            </p>
-          </div>
+        <div className="border-stroke-subtle flex max-w-4xl flex-col items-center gap-2 rounded-xl border border-dashed px-6 py-12 text-center">
+          <MessageSquareText className="text-text-muted h-6 w-6" />
+          <h3 className="text-base">No reviews yet</h3>
+          <p className="text-sm">Log this game and write the first review.</p>
         </div>
       )}
-    </>
+    </section>
   );
 }
 

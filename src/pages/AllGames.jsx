@@ -1,7 +1,5 @@
 import { useGetAllGames } from "@/features/games/hooks/useGetAllGames";
-import FadingBackground from "@/features/games/ui/FadingBackground";
 import Filters from "@/features/games/ui/Filters";
-import FullPagination from "../features/games/ui/FullPagination";
 import GamesGallery from "../features/games/ui/GamesGallery";
 import { Helmet } from "react-helmet-async";
 
@@ -26,7 +24,7 @@ function AllGames() {
           href="https://game-changer-gg.vercel.app/games/allGames"
         />
       </Helmet>
-      <Filters />
+      <Filters className="pb-2" />
       <GamesGallery data={data} isLoading={isLoading} />
     </>
   );

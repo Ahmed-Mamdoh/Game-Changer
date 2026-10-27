@@ -28,8 +28,8 @@ function GameDetailsRelatedGames({ data }) {
       {franchises?.length > 0 && (
         <>
           <span id="Franchises"></span>
-          <div className="font-heading mx-auto flex w-9/10 items-start justify-start pt-12 pb-3">
-            <h2 className="text-center text-5xl">Franchises</h2>
+          <div className="mx-auto w-full max-w-[1440px] px-4 pt-12 md:px-8">
+            <h2>Franchises</h2>
           </div>
         </>
       )}
@@ -49,8 +49,10 @@ function GameDetailsRelatedGames({ data }) {
 
           return (
             <GameDetailsCarousel
+              key={franchise.id || franchise.name}
               sectionName={franchise.name}
               data={filteredGames}
+              as="h3"
             />
           );
         })}

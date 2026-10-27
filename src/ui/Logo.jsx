@@ -3,14 +3,16 @@ import { IoGameController } from "react-icons/io5";
 
 function Logo() {
   return (
-    <div className="flex items-center gap-x-2">
-      <Link to="/">
-        <IoGameController className="h-8 w-8" />
-      </Link>
-      <h1 className="font-heading hidden text-center text-base font-bold sm:block md:text-2xl">
-        <Link to="/">Game Changer</Link>
-      </h1>
-    </div>
+    <Link
+      to="/"
+      className="flex shrink-0 items-center gap-2"
+      aria-label="Game Changer home"
+    >
+      <IoGameController className="text-pulse-primary h-6 w-6" />
+      <span className="font-heading hidden text-base font-semibold tracking-tight sm:block">
+        Game Changer
+      </span>
+    </Link>
   );
 }
 

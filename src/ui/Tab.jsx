@@ -4,21 +4,15 @@ function Tab({ to, sectionName }) {
   return (
     <NavLink
       to={to}
-      role="tab"
       className={({ isActive }) =>
-        isActive
-          ? "group text-xl font-bold transition-colors"
-          : "text-neutral-content group text-xl font-medium transition-colors"
+        `rounded-md px-3 py-1.5 text-sm whitespace-nowrap transition-colors duration-100 ${
+          isActive
+            ? "text-text-main bg-white/[0.08] font-semibold"
+            : "text-text-dim hover:text-text-main hover:bg-white/[0.05]"
+        }`
       }
     >
-      {({ isActive }) => (
-        <div className="text-nowrap">
-          {sectionName}
-          <hr
-            className={`bg-pulse-primary h-[1px] scale-x-0 border-0 transition-transform duration-200 group-hover:scale-x-100 ${isActive ? "scale-x-100" : ""}`}
-          />
-        </div>
-      )}
+      {sectionName}
     </NavLink>
   );
 }

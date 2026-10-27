@@ -46,7 +46,7 @@ function SignupForm() {
   return (
     <form onSubmit={handleSubmit((data) => handleSignup(data))}>
       <AuthFormCard
-        btnText="Sign Up"
+        btnText="Create account"
         title="Sign Up"
         description=" Create a new account to get started. Join us and enjoy all the
                 features."

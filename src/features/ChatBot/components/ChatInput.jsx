@@ -6,24 +6,27 @@ function ChatInput({ handleSendMessage, input, setInput }) {
     <div className="flex h-full items-center gap-2">
       <Textarea
         onKeyDown={(e) => {
-          if (e.key === "Enter") {
+          if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
             e.preventDefault();
             handleSendMessage();
           }
         }}
         value={input}
         onChange={(e) => setInput(e.target.value)}
-        placeholder="Ask me anything..."
-        className="focus-within:border-pulse-primary bg-bg-card border-stroke-subtle font-arabic
-        max-h-[10dvh] min-h-6 w-full resize-none overflow-auto rounded-full border px-4
-        py-2 ring-transparent"
+        placeholder="Ask about a game or what to play next"
+        aria-label="Message the assistant"
+        className="focus-visible:border-stroke-brand bg-bg-base border-stroke-subtle font-arabic
+        max-h-[10dvh] min-h-10 w-full resize-none overflow-auto rounded-md border px-3
+        py-2 text-sm ring-transparent focus-visible:ring-0"
         autoFocus
       />
       <button
         onClick={handleSendMessage}
-        className="bg-pulse-primary text-text-main  cursor-pointer rounded-full px-2 py-2"
+        aria-label="Send"
+        disabled={!input.trim()}
+        className="bg-action text-on-action flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-md disabled:cursor-not-allowed disabled:opacity-40"
       >
-        <FaPaperPlane className="h-5 w-5" />
+        <FaPaperPlane className="h-4 w-4" />
       </button>
     </div>
   );
