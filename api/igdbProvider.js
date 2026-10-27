@@ -9,7 +9,6 @@ const ALLOWED_ENDPOINTS = new Set([
   "game_modes",
   "themes",
   "game_time_to_beats",
-  "popularity_primitives",
 ]);
 const MAX_QUERY_LENGTH = 8000;
 

@@ -80,36 +80,89 @@ export async function getAllGames({
   );
 }
 
-// IGDB popularity type 1 = page visits on IGDB, refreshed daily: what people
-// are looking at right now, unlike total_rating_count which favors old hits.
-const POPULAR_NOW_TYPE = 1;
+// Only games out within this window count as "popular now", so evergreen
+// streams (LoL, GTA V, CS2) don't crowd out what people are into today.
+const POPULAR_NOW_MAX_AGE_YEARS = 2;
 
-// Current popularity ranking, resolved to full games in that order. The
-// primitive pool is oversized because the games filter drops DLCs, ports,
-// unreleased titles and other platforms.
+// Twitch's top 100 includes tiny streamer-bait indies; keep games with some
+// IGDB anticipation (hypes) or an established player base (ratings).
+const POPULAR_NOW_NOTABLE = "(hypes >= 5 | total_rating_count >= 20)";
+
+// Games with the most live Twitch viewers right now, released recently,
+// resolved to full IGDB games in Twitch rank order.
 export async function getPopularNowGames(limit) {
-  const primitives = await igdbFetch(
-    "popularity_primitives",
-    `fields game_id,value;
-      where popularity_type = ${POPULAR_NOW_TYPE};
-      sort value desc;
-      limit ${limit * 4};`,
-  );
-  const ids = Array.isArray(primitives)
-    ? primitives.map((p) => p.game_id).filter(Boolean)
-    : [];
-  if (!ids.length) throw new Error("No popularity data");
+  const response = await fetch("/api/twitchTopGames");
+  const top = await response.json();
+  const ids = Array.isArray(top) ? top.map((g) => g.igdb_id) : [];
+  if (!ids.length) throw new Error("No Twitch data");
 
+  const since = Math.floor(
+    (Date.now() - POPULAR_NOW_MAX_AGE_YEARS * 365 * 24 * 60 * 60 * 1000) / 1000,
+  );
   const games = await igdbFetch(
     "games",
     `fields ${LIST_FIELDS};
       limit ${ids.length};
-      ${buildGamesWhere({ filters: [`id = (${ids.join(",")})`], isReleased: true })}`,
+      ${buildGamesWhere({
+        filters: [
+          `id = (${ids.join(",")})`,
+          `first_release_date >= ${since}`,
+          POPULAR_NOW_NOTABLE,
+        ],
+        isReleased: true,
+      })}`,
   );
   if (!Array.isArray(games)) throw new Error("Failed to load popular games");
 
   const rank = new Map(ids.map((id, i) => [id, i]));
-  return games.sort((a, b) => rank.get(a.id) - rank.get(b.id)).slice(0, limit);
+  games.sort((a, b) => rank.get(a.id) - rank.get(b.id));
+  return pickAcrossGenres(games, limit).sort(
+    (a, b) => rank.get(a.id) - rank.get(b.id),
+  );
+}
+
+// IGDB tags most games with several genres (nearly everything is also
+// "Adventure"), so each game gets one main genre: the first of these it has,
+// most specific first.
+const MAIN_GENRE_ORDER = [
+  "Shooter",
+  "Fighting",
+  "Racing",
+  "Sport",
+  "Platform",
+  "Puzzle",
+  "Real Time Strategy (RTS)",
+  "Strategy",
+  "Tactical",
+  "Hack and slash/Beat 'em up",
+  "Role-playing (RPG)",
+  "Simulator",
+  "Adventure",
+  "Indie",
+];
+
+function mainGenre(game) {
+  const names = (game.genres || []).map((g) => g.name);
+  return MAIN_GENRE_ORDER.find((n) => names.includes(n)) || names[0] || "";
+}
+
+// Takes the most popular game of each main genre first, so the shelf isn't
+// all shooters, then fills any open slots in popularity order.
+function pickAcrossGenres(games, limit) {
+  const seen = new Set();
+  const picks = [];
+  for (const game of games) {
+    if (picks.length >= limit) break;
+    const genre = mainGenre(game);
+    if (seen.has(genre)) continue;
+    seen.add(genre);
+    picks.push(game);
+  }
+  for (const game of games) {
+    if (picks.length >= limit) break;
+    if (!picks.includes(game)) picks.push(game);
+  }
+  return picks;
 }
 
 // IGDB caps a single request at 500 results.
