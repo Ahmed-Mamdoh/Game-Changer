@@ -95,7 +95,7 @@ function GameDetailsOverview({ data }) {
 
   return (
     <>
-      <section className="relative isolate flex min-h-[620px] w-full items-end overflow-hidden md:min-h-[86dvh]">
+      <section className="relative isolate flex min-h-dvh w-full items-end overflow-hidden">
         <img
           src={pickBackdrop(game, "t_1080p_2x")}
           alt=""
