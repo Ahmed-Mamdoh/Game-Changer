@@ -94,7 +94,10 @@ function HeroSection({ popularGames = [], isLoading }) {
                 ? `${STATUS_LABELS[focused.status]} · ${focused.hours} h played`
                 : [year, genres].filter(Boolean).join(" · ")}
             </p>
-            <h1 className="mb-6 text-balance">{focused.name}</h1>
+            {/* Two lines reserved so long names don't push the page around on hover */}
+            <h1 className="mb-6 line-clamp-2 min-h-[2lh] text-balance">
+              {focused.name}
+            </h1>
 
             <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
               {userId ? (
@@ -114,10 +117,12 @@ function HeroSection({ popularGames = [], isLoading }) {
               )}
               <Link
                 to={userId ? "/account" : `/game/${focused.id}`}
-                className="text-text-main inline-flex items-center gap-1 text-sm font-semibold hover:underline hover:underline-offset-4"
+                className="text-text-main inline-flex max-w-full min-w-0 items-center gap-1 text-sm font-semibold hover:underline hover:underline-offset-4"
               >
-                {userId ? "Your library" : `About ${focused.name}`}
-                <ArrowRight className="h-4 w-4" />
+                <span className="truncate">
+                  {userId ? "Your library" : `About ${focused.name}`}
+                </span>
+                <ArrowRight className="h-4 w-4 shrink-0" />
               </Link>
             </div>
           </div>
