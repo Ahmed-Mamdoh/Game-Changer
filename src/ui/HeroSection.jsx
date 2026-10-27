@@ -56,7 +56,7 @@ function HeroSection({ popularGames = [], isLoading }) {
   return (
     <section
       aria-label={isContinue ? "Continue playing" : "Popular now"}
-      className="relative isolate flex min-h-[640px] w-full flex-col overflow-hidden md:h-[88dvh] md:max-h-[860px]"
+      className="relative isolate flex min-h-dvh w-full flex-col overflow-hidden"
     >
       {/* Backdrops: all mounted, only the focused one visible, so swaps are instant */}
       <div
@@ -80,9 +80,9 @@ function HeroSection({ popularGames = [], isLoading }) {
       </div>
 
       {/* Focused game */}
-      <div className="mx-auto flex w-full max-w-[1440px] flex-1 flex-col justify-center px-4 pt-28 pb-8 md:px-8">
+      <div className="mx-auto flex w-full max-w-[1440px] flex-1 flex-col justify-center px-4 pt-22 pb-4 md:px-8">
         {!userId && (
-          <p className="text-text-main mb-6 max-w-[34ch] text-lg font-semibold md:text-xl">
+          <p className="text-text-main mb-4 max-w-[34ch] text-lg font-semibold md:text-xl">
             Track every game you play. Find the one you play next.
           </p>
         )}
@@ -137,7 +137,7 @@ function HeroSection({ popularGames = [], isLoading }) {
       </div>
 
       {/* Shelf */}
-      <div className="mx-auto w-full max-w-[1440px] px-4 pb-10 md:px-8">
+      <div className="mx-auto w-full max-w-[1440px] px-4 pb-6 md:px-8">
         <h2 className="text-text-dim mb-3 text-sm font-semibold tracking-normal">
           {isContinue ? "Continue playing" : "Popular now"}
         </h2>
