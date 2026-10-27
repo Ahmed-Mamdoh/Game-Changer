@@ -145,7 +145,9 @@ function HeroSection({ popularGames = [], isLoading }) {
           role="listbox"
           aria-label={isContinue ? "Continue playing" : "Popular now"}
           onKeyDown={onShelfKey}
-          className="no-scrollbar -mx-4 flex gap-3 overflow-x-auto px-4 py-2 md:mx-0 md:px-0"
+          // Inset padding leaves room for the focused tile's scale + outline,
+          // which the scroll container would otherwise clip
+          className="no-scrollbar -mx-4 flex gap-3 overflow-x-auto px-4 py-3 md:-mx-3 md:px-3"
         >
           {shelf.map((game, i) => (
             <button
