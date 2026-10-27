@@ -35,35 +35,36 @@ function useWishlistAlerts() {
                   {/* Exit Button */}
                   <button
                     onClick={() => toast.dismiss(t.id)}
-                    className="absolute -top-1 -right-1 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-white/5 text-white/40 transition-all hover:bg-white/10 hover:text-white"
+                    aria-label="Dismiss"
+                    className="text-text-muted hover:text-text-main absolute -top-1 -right-1 flex h-7 w-7 cursor-pointer items-center justify-center rounded-sm hover:bg-white/10"
                   >
                     <span className="text-lg leading-none">×</span>
                   </button>
 
                   {/* Game Cover / Icon Placeholder */}
-                  <div className="bg-pulse-primary/20 flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border border-white/10 text-2xl shadow-inner">
-                    🎁
-                  </div>
+                  {game.cover?.url && (
+                    <img
+                      src={game.cover.url.replace("t_thumb", "t_cover_small")}
+                      alt=""
+                      className="h-16 w-12 shrink-0 rounded-sm object-cover"
+                    />
+                  )}
 
                   <div className="flex flex-col gap-0.5 px-2.5">
-                    <h4 className="text-sm font-bold tracking-tight text-white">
-                      {game.name} is FREE!
+                    <h4 className="text-text-main text-sm font-semibold">
+                      {game.name} is free on {game.freeOn}
                     </h4>
-                    <p className="text-xs font-medium text-white/60">
-                      Found a gift from your wishlist on{" "}
-                      <span className="text-pulse-accent font-bold">
-                        {game.freeOn.toUpperCase()}
-                      </span>
+                    <p className="text-text-dim text-xs">
+                      It's on your wishlist. Claim it to keep it.
                     </p>
                     <a
                       href={game.giveAwayLink}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-pulse-accent  mt-1.5 flex items-center gap-1 text-[11px] font-black tracking-widest uppercase transition-all hover:brightness-125"
+                      className="text-text-brand mt-1.5 text-sm font-semibold underline-offset-4 hover:underline"
                       onClick={() => toast.dismiss(t.id)}
                     >
-                      <span className="underline">Claim Now</span>
-                      <span className="text-[14px]">🚀</span>
+                      Claim on {game.freeOn} →
                     </a>
                   </div>
                 </div>
@@ -72,10 +73,9 @@ function useWishlistAlerts() {
                 duration: 10000,
                 position: "bottom-right",
                 style: {
-                  background: "rgba(15, 23, 42, 0.8)",
-                  backdropFilter: "blur(16px) saturate(180%)",
-                  border: "1px solid rgba(255, 255, 255, 0.1)",
-                  borderRadius: "1.25rem",
+                  background: "var(--color-bg-raised)",
+                  border: "1px solid rgba(255, 255, 255, 0.14)",
+                  borderRadius: "0.75rem",
                   padding: "1rem",
                   color: "white",
                   boxShadow:

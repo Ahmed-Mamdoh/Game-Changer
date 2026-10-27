@@ -1,7 +1,11 @@
 import { Helmet } from "react-helmet-async";
 import { AuthForm } from "./../features/Auth/AuthForm";
-import FadingBackground from "./../features/games/ui/FadingBackground";
+import { useGetGameSection } from "@/features/games/hooks/useGetGameSection";
+import { pickBackdrop } from "@/utils/igdbImage";
 function Auth() {
+  const { data: games } = useGetGameSection("total_rating_count", 16);
+  const backdropGame = Array.isArray(games) ? games[1] || games[0] : null;
+
   return (
     <>
       <Helmet>
@@ -17,10 +21,16 @@ function Auth() {
         />
         <link rel="canonical" href="https://game-changer-gg.vercel.app/auth" />
       </Helmet>
-      <div className="relative mx-auto h-[100dvh] px-5 pt-24">
-        <FadingBackground first={true} />
-        {/* Content section */}
-        <div className="z-10 w-full">
+      <div className="relative isolate flex min-h-[100dvh] items-center px-4 pt-24 pb-12 md:px-8">
+        {backdropGame && (
+          <img
+            src={pickBackdrop(backdropGame)}
+            alt=""
+            className="art-fade absolute inset-0 -z-10 h-full w-full object-cover brightness-90"
+          />
+        )}
+        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-black/80 via-black/45 to-black/10" />
+        <div className="mx-auto w-full max-w-[1440px]">
           <AuthForm />
         </div>
       </div>

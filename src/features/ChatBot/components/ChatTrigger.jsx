@@ -3,15 +3,18 @@ import { PopoverTrigger } from "@radix-ui/react-popover";
 function ChatTrigger() {
   return (
     <PopoverTrigger asChild>
-      <button className="bg-bg-surface border-stroke-subtle fixed right-7 bottom-7 z-20 cursor-pointer rounded-full border transition-transform hover:scale-110 md:right-10 md:bottom-10">
+      <button
+        aria-label="Ask the game assistant"
+        title="Ask the game assistant"
+        className="bg-bg-raised border-stroke-medium hover:bg-bg-chip fixed right-5 bottom-5 z-20 flex h-14 w-14 cursor-pointer items-center justify-center rounded-full border shadow-[var(--shadow-float)] transition-colors duration-100 md:right-8 md:bottom-8"
+      >
         <img
           src={chatBotIcon}
-          alt="Chat with us"
-          className="h-16 w-16"
-          width={64}
-          height={64}
+          alt=""
+          className="h-11 w-11"
+          width={44}
+          height={44}
           loading="eager"
-          title="Open chat"
         />
       </button>
     </PopoverTrigger>

@@ -8,7 +8,7 @@ import { Helmet } from "react-helmet-async";
 function Home() {
   const { data: games, isLoading: isLoadingGames } = useGetGameSection(
     "total_rating_count",
-    5,
+    16,
   );
 
   const {
@@ -18,7 +18,7 @@ function Home() {
   } = useGetFreeGamesToShow();
 
   const { data: upcomingGames, isLoading: isLoadingUpcomingGames } =
-    useGetUpcomingGames(5);
+    useGetUpcomingGames(12);
 
   return (
     <>
@@ -37,26 +37,26 @@ function Home() {
         <link rel="canonical" href="https://game-changer-gg.vercel.app/" />
       </Helmet>
 
-      <div className="pb-32">
-        <HeroSection />
+      <HeroSection popularGames={games} isLoading={isLoadingGames} />
+      <div className="mx-auto flex max-w-[1440px] flex-col gap-12 pt-4 pb-24">
         <HomeSection
-          id="popular"
-          sectionName="Popular Games"
-          data={games}
-          isLoading={isLoadingGames}
-          route="games/allGames"
-        />
-        <HomeSection
-          sectionName="Free Games"
-          data={freeGames.slice(0, 5)}
+          sectionName="Free to keep now"
+          data={freeGames}
           isLoading={isLoadingFreeGamesIgdbData || isLoadingFreeGamesNames}
           route="games/freeGames"
         />
         <HomeSection
-          sectionName="Upcoming Games"
+          sectionName="Coming soon"
           data={upcomingGames}
           isLoading={isLoadingUpcomingGames}
           route="games/upcomingGames"
+        />
+        <HomeSection
+          id="popular"
+          sectionName="Most played of all time"
+          data={games?.slice?.(8)}
+          isLoading={isLoadingGames}
+          route="games/allGames"
         />
       </div>
     </>

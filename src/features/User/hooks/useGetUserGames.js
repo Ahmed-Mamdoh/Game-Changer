@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 export function useGetUserGames(user_id) {
   const { data, isLoading, error } = useQuery({
     queryKey: ["user_games", user_id],
+    enabled: Boolean(user_id),
     queryFn: async () => {
       const userGames = await getUserGames(user_id);
       if (!userGames?.user_games?.length) return userGames;
@@ -28,7 +29,6 @@ export function useGetUserGames(user_id) {
           },
         };
       });
-      console.log(mergedUserGames);
       return { user_games: mergedUserGames };
     },
   });

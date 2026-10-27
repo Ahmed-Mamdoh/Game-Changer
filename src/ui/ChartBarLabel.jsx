@@ -34,12 +34,11 @@ export function ChartBarLabel({ chartData, title }) {
   }));
 
   return (
-    <Card
-      className="bg-bg-card border-stroke-medium hover:border-pulse-secondary
-      gap-0 rounded-xl border py-4 backdrop-blur-xl transition-all"
-    >
+    <Card className="bg-bg-surface border-stroke-subtle gap-0 rounded-lg border py-4 shadow-none">
       <CardHeader>
-        <CardTitle className="text-text-dim text-lg">{title}</CardTitle>
+        <CardTitle className="text-text-main text-sm font-semibold">
+          {title}
+        </CardTitle>
       </CardHeader>
       <CardContent className="pr-1 pl-0">
         <ChartContainer
@@ -74,15 +73,15 @@ export function ChartBarLabel({ chartData, title }) {
             />
             <Bar
               dataKey="number"
-              fill="var(--color-pulse-secondary)"
-              radius={5}
+              fill="var(--color-pulse-primary)"
+              radius={4}
               barSize={20}
             >
               <LabelList
                 position="right"
                 offset={5}
                 className="fill-text-dim"
-                fontSize={10}
+                fontSize={12}
                 formatter={(value) => `${value}%`}
               />
             </Bar>

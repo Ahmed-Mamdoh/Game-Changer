@@ -11,6 +11,15 @@ export default defineConfig({
     tailwindcss(),
     sitemapPlugin({ hostname: "https://game-changer-gg.vercel.app" }),
   ],
+  // Local dev has no serverless functions; send /api to the deployed proxies
+  server: {
+    proxy: {
+      "/api": {
+        target: "https://game-changer-gg.vercel.app",
+        changeOrigin: true,
+      },
+    },
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

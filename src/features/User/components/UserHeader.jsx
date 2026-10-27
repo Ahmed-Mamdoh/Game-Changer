@@ -17,7 +17,7 @@ function UserHeader() {
       title: "Are you sure you want to log out?",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Log Out",
+      confirmButtonText: "Log out",
     }).then((result) => {
       if (result.isConfirmed) {
         logoutUser().then(() => navigate("/"));
@@ -26,24 +26,14 @@ function UserHeader() {
   }
 
   return (
-    <div
-      className="bg-bg-card border-stroke-medium hover:border-pulse-secondary
-      flex flex-col items-start gap-4 rounded-xl border p-4 backdrop-blur-xl transition-all duration-300 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:p-6"
-    >
-      {/* <DataField label="Username" value={username} /> */}
-      <div className="flex items-center gap-1">
-        <h2>{username}</h2>
+    <div className="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <h1 className="text-[length:var(--font-size-title)] font-semibold tracking-tight">
+          {username ? `${username}'s library` : "Your library"}
+        </h1>
       </div>
-      <button
-        className="bg-pulse-primary hover:bg-pulse-primary focus:ring-pulse-glow w-full cursor-pointer rounded-full px-6 py-2 text-white transition-all duration-200 focus:ring-2 focus:outline-none sm:w-auto"
-        aria-label="Log out"
-        aria-labelledby="logout-btn"
-        name="logout"
-        onClick={() => {
-          handleLogout();
-        }}
-      >
-        Log Out
+      <button className="btn-quiet h-9" onClick={handleLogout}>
+        Log out
       </button>
     </div>
   );

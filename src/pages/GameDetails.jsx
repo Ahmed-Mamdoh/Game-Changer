@@ -51,7 +51,7 @@ function GameDetails() {
         <meta name="twitter:card" content="summary_large_image" />
       </Helmet>
       {/* <GameDetailsTabs data={data} /> */}
-      <div className="relative mt-0 pb-20">
+      <div className="relative mt-0 pb-8">
         {/* Data */}
         <GameDetailsOverview data={data} />
         {/*Media*/}

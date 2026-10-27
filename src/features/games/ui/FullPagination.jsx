@@ -25,18 +25,19 @@ function FullPagination() {
   if (data.count === 0) return null;
   const numberOfPages = Math.ceil(data?.count / LIMIT);
   return (
-    <div className="flex items-center justify-center pb-12 select-none">
-      <div className="border-stroke-subtle bg-bg-card mb-16 w-fit rounded-full border-1 px-6 py-4 md:px-12 ">
+    <div className="flex items-center justify-center px-4 pb-16 select-none">
+      <div>
         <Pagination>
           <PaginationContent>
             <PaginationItem>
               <PaginationPrevious
-                className="hover:bg-pulse-primary/50  cursor-pointer rounded-full font-bold transition-colors"
+                className="text-text-dim hover:text-text-main cursor-pointer rounded-md bg-transparent hover:bg-white/[0.06]"
                 onClick={() => {
                   const newParams = new URLSearchParams(searchParams);
                   if (currentPage > 1) {
                     newParams.set("page", currentPage - 1);
                     setSearchParams(newParams);
+                    window.scrollTo({ top: 0 });
                   }
                 }}
               />
@@ -55,11 +56,13 @@ function FullPagination() {
                     <PaginationLink
                       className={`${
                         i + currentPage - middleNumber === currentPage
-                          ? " hover:bg-pulse-primary/50  bg-pulse-primary/50 shadow-pulse-primary/60 rounded-full font-bold shadow-[0_0_6px_1px]"
-                          : "hover:bg-pulse-primary/50 cursor-pointer rounded-full font-bold"
+                          ? "bg-action text-on-action hover:bg-action tabular rounded-md font-semibold"
+                          : "text-text-dim hover:text-text-main tabular cursor-pointer rounded-md bg-transparent hover:bg-white/[0.06]"
                       }`}
+                      aria-current={i === middleNumber ? "page" : undefined}
                       onClick={() => {
                         if (i === middleNumber) return;
+                        window.scrollTo({ top: 0 });
                         const newParams = new URLSearchParams(searchParams);
                         newParams.set("page", i + currentPage - middleNumber);
                         setSearchParams(newParams);
@@ -78,12 +81,13 @@ function FullPagination() {
             ) : null}
             <PaginationItem>
               <PaginationNext
-                className="hover:bg-pulse-primary/50 cursor-pointer rounded-full font-bold transition-colors"
+                className="text-text-dim hover:text-text-main cursor-pointer rounded-md bg-transparent hover:bg-white/[0.06]"
                 onClick={() => {
                   if (currentPage === numberOfPages) return;
                   const newParams = new URLSearchParams(searchParams);
                   newParams.set("page", currentPage + 1);
                   setSearchParams(newParams);
+                  window.scrollTo({ top: 0 });
                 }}
               />
             </PaginationItem>

@@ -1,104 +1,93 @@
 @import "tailwindcss";
 @plugin "daisyui";
-/* 
+/*
  * --------------------------------------------------------------------------
- * GAME CHANGER - DESIGN SYSTEM v2.0 (Pure Tailwind)
+ * GAME CHANGER - DESIGN SYSTEM v3 "Console home"
  * --------------------------------------------------------------------------
- * Based on ui-ux-pro-max guidelines for Gaming & Dashboards.
- * 
- * CORE PRINCIPLES:
- * 1. Semantic Intent: Classes reflect "what" it is, not just "how" it looks.
- * 2. High Performance: Minimal layers, hardware-accelerated transitions.
- * 3. Accessibility: WCAG AAA contrast for primary text.
- * 4. Responsiveness: Fluid typography and grid systems.
+ * The game art is the color. The interface is a near-black ladder with
+ * hairlines, white primary buttons (dark text) and purple as the brand only:
+ * logo, focus ring, selection marks, small labels.
+ *
+ * Text: three neutrals (main / dim / muted), all >= 4.5:1 on every surface.
+ * Weights: 400 reading, 600 scanning. 800 only on display titles over art.
+ * Status colors are dark-tuned and ride on icons, not filled pills.
  */
 
 @theme {
-  /* --- 1. PRIMITIVE COLOR PALETTE --- */
-  /* Deep Obsidian (Surface/Backgrounds) */
-  --color-obsidian-950: #020617;
-  /* True Deep Background */
-  --color-obsidian-900: #0f172a;
-  /* Raised Surfaces */
-  --color-obsidian-800: #1e293b;
-  /* Secondary Surfaces */
-  --color-obsidian-700: #334155;
-  /* Muted Elements */
+  /* --- 1. SURFACE LADDER (page -> surface -> raised -> chip) --- */
+  --color-obsidian-950: #0c0b10;
+  --color-obsidian-900: #15131b;
+  --color-obsidian-800: #1e1b26;
+  --color-obsidian-700: #282433;
 
-  /* Pulse Accents (Interactive/Brand) */
-  --color-pulse-primary: #7c3aed;
-  /* Primary Action */
-  --color-pulse-secondary: #9e6cd3;
-  /* Secondary Action */
-  --color-pulse-accent: #a78bfa;
-  /* High-contrast Accent */
-  --color-pulse-success: #22c55e;
-  /* Positive/Success CTA */
-  --color-pulse-error: #ff4d4d;
-  /* Error/Destructive */
-  --color-pulse-warning: #ff9f43;
-  /* Warning/Alert */
+  /* --- 2. BRAND + ACTION --- */
+  /* Brand purple, tuned light for dark surfaces. Never a button fill. */
+  --color-pulse-primary: #b9a4ff;
+  --color-pulse-secondary: #9c86f0;
+  --color-pulse-accent: #c9b8ff;
+  /* Status (icon-borne) */
+  --color-pulse-success: #7dd3a0;
+  --color-pulse-error: #ff8a80;
+  --color-pulse-warning: #f0c674;
 
-  /* --- 2. SEMANTIC DESIGN TOKENS --- */
+  /* Primary action: near-white button, dark ink */
+  --color-action: #f1eef6;
+  --color-action-hover: #ffffff;
+  --color-on-action: #120f18;
 
-  /* Surfaces & Layers */
+  /* --- 3. SEMANTIC TOKENS --- */
   --color-bg-base: var(--color-obsidian-950);
   --color-bg-surface: var(--color-obsidian-900);
-  --color-bg-card: rgba(255, 255, 255, 0.03);
-  /* Phantom Glass (Ultra-Thin) */
-  --color-bg-overlay: rgba(2, 6, 23, 0.85);
+  --color-bg-card: var(--color-obsidian-900);
+  --color-bg-raised: var(--color-obsidian-800);
+  --color-bg-chip: var(--color-obsidian-700);
+  --color-bg-overlay: rgba(12, 11, 16, 0.85);
 
-  /* Borders & Dividers */
-  --color-stroke-subtle: rgba(255, 255, 255, 0.1);
-  /* Sharper definition for thin glass */
-  --color-stroke-medium: rgba(255, 255, 255, 0.15);
-  --color-stroke-brand: rgba(124, 58, 237, 0.5);
+  /* Hairlines: alpha white so they read evenly on every rung */
+  --color-stroke-subtle: rgba(255, 255, 255, 0.08);
+  --color-stroke-medium: rgba(255, 255, 255, 0.14);
+  --color-stroke-brand: rgba(185, 164, 255, 0.5);
 
-  /* Typography Colors */
-  --color-text-main: #f8fafc;
-  /* Primary Content (WCAG AAA) */
-  --color-text-dim: #94a3b8;
-  /* Secondary Content */
-  --color-text-muted: #64748b;
-  /* Metadata/Captions */
+  /* Ink: three neutrals */
+  --color-text-main: #e2dfe8;
+  --color-text-dim: #a29eab;
+  --color-text-muted: #8a8693;
   --color-text-brand: var(--color-pulse-accent);
   --color-text-error: var(--color-pulse-error);
   --color-text-warning: var(--color-pulse-warning);
 
-  /* --- 3. TYPOGRAPHY SYSTEM --- */
-  --font-heading: "Space Grotesk", "Fira Code", sans-serif;
-  --font-body: "Manrope", "Fira Sans", sans-serif;
+  /* --- 4. TYPOGRAPHY --- */
+  --font-heading: "Figtree", system-ui, sans-serif;
+  --font-body: "Figtree", system-ui, sans-serif;
   --font-arabic: "Cairo", sans-serif;
 
-  /* Fluid Scale (scales smoothly from mobile to 1280px+) */
-  --font-size-hero: clamp(2.5rem, 8vw, 4rem);
-  /* Page headers */
-  --font-size-title: clamp(1.5rem, 4vw, 2.25rem);
-  /* Section headers */
-  --font-size-subtitle: clamp(1.125rem, 2vw, 1.5rem);
-  /* Card titles */
-  --font-size-lg: 1.125rem;
-  /* Large body text */
+  /* Scale: 12 / 14 / 16 / 20 / 28 / display */
+  --font-size-hero: clamp(2.25rem, 5vw, 4rem);
+  --font-size-title: clamp(1.5rem, 3vw, 1.75rem);
+  --font-size-subtitle: 1.25rem;
+  --font-size-lg: 1.25rem;
   --font-size-base: 1rem;
-  /* Default body */
   --font-size-sm: 0.875rem;
-  /* Labels/Stats */
   --font-size-xs: 0.75rem;
-  /* Tiny metadata */
 
-  /* --- 4. LAYOUT & EFFECTS --- */
-  --radius-xl: 1.5rem;
-  /* Large sections/containers */
-  --radius-lg: 1rem;
-  /* Standard game cards */
+  /* --- 5. RADIUS LADDER (follows size) --- */
+  --radius-sm: 0.375rem;
+  /* chips, inner controls */
   --radius-md: 0.5rem;
-  /* Buttons/Inputs */
+  /* buttons, inputs, covers */
+  --radius-lg: 0.75rem;
+  /* panels, large covers */
+  --radius-xl: 1rem;
+  /* page sections, dialogs */
   --radius-full: 9999px;
-  /* Badges/Pills */
 
-  --shadow-glow: 0 0 20px rgba(124, 58, 237, 0.15);
+  /* Floating layers only (menus, dialogs, toasts) */
+  --shadow-float: 0 12px 32px rgba(0, 0, 0, 0.5);
 
-  /* --- 5. SEMANTIC Z-INDEX --- */
+  /* --- 6. MOTION --- */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* --- 7. Z-INDEX --- */
   --z-base: 1;
   --z-sticky: 100;
   --z-overlay: 200;
@@ -108,53 +97,78 @@
 
   --breakpoint-xs: 480px;
 
-  /* --- 6. GAME CARD DIMENSIONS --- */
-  --game-card-w-mobile: 169.6px;
-  --game-card-w-desktop: 241.6px;
+  /* --- 8. GAME CARD DIMENSIONS --- */
+  --game-card-w-mobile: 9.5rem;
+  --game-card-w-desktop: 11.5rem;
 }
 
 @layer base {
   html {
     @apply scroll-smooth antialiased;
+    color-scheme: dark;
+    background-color: var(--color-bg-base);
   }
 
   body {
-    @apply bg-bg-base text-text-main font-body min-h-screen selection:bg-pulse-primary/30;
+    @apply text-text-main font-body min-h-screen;
     font-size: var(--font-size-base);
+    line-height: 1.5;
   }
 
-  /* AUTOMATIC HEADING STYLES */
+  ::selection {
+    background: rgba(185, 164, 255, 0.35);
+    color: #fff;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-pulse-accent);
+    outline-offset: 2px;
+  }
+
+  input,
+  textarea {
+    caret-color: var(--color-pulse-accent);
+  }
+
   h1,
   .h1 {
-    @apply font-heading font-bold leading-tight tracking-tight text-text-main;
+    @apply font-heading text-text-main;
+    font-weight: 800;
     font-size: var(--font-size-hero);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
   }
 
   h2,
   .h2 {
-    @apply font-heading font-semibold leading-tight tracking-tight text-text-main;
+    @apply font-heading text-text-main font-semibold;
     font-size: var(--font-size-title);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
   }
 
   h3,
   .h3 {
-    @apply font-heading font-semibold leading-snug text-text-main;
+    @apply font-heading text-text-main font-semibold;
     font-size: var(--font-size-subtitle);
+    line-height: 1.3;
+    letter-spacing: -0.01em;
   }
 
   h4,
   .h4 {
-    @apply font-heading font-semibold leading-snug text-text-main;
-    font-size: var(--font-size-lg);
+    @apply font-heading text-text-main font-semibold;
+    font-size: var(--font-size-base);
+    line-height: 1.4;
   }
 
   p {
-    @apply text-text-dim leading-relaxed;
-    font-size: var(--font-size-base);
+    @apply text-text-dim;
+    line-height: 1.5;
   }
 }
 
-/* CUSTOM SCROLLBAR (Global) */
+/* Scrollbars */
 ::-webkit-scrollbar {
   display: block;
   width: 8px;
@@ -162,30 +176,24 @@
 }
 
 ::-webkit-scrollbar-track {
-  background-color: #020617;
-  /* obsidian-950 hex directly */
+  background-color: #0c0b10;
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #1e293b;
-  /* obsidian-800 hex directly */
+  background-color: #282433;
   border-radius: 100px;
-  border: 2px solid #020617;
-  /* track-color padding effect */
+  border: 2px solid #0c0b10;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: #94a3b8;
-  /* text-dim hex directly */
+  background-color: #8a8693;
 }
 
-/* Firefox Support */
 * {
-  scrollbar-width: none;
-  scrollbar-color: #1e293b #020617;
+  scrollbar-width: thin;
+  scrollbar-color: #282433 #0c0b10;
 }
 
-/* UTILITY: No Scrollbar but keeping scroll logic */
 .no-scrollbar {
   -ms-overflow-style: none !important;
   scrollbar-width: none !important;
@@ -198,49 +206,148 @@
 }
 
 @layer components {
-  /* 
-   * REUSABLE COMPONENT PATTERNS
-   * Use these to maintain 100% consistency across the app.
-   */
-
-  /* THE GAME CARD: Optimized for Phantom Glass (Ultra-Modern) */
-  .game-card {
-    @apply bg-bg-card border-stroke-subtle rounded-xl border-1 backdrop-blur-2xl transition-all duration-500 transform-gpu;
-    @apply hover:bg-white/[0.06] hover:border-white/20 hover:translate-y-[-4px] hover:shadow-2xl hover:shadow-pulse-primary/10;
-
-    /* Subtle inner reflection for thin glass */
-    background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
-  }
-
-  /* THE ACTION BUTTON: Primary CTA style */
-  .btn-action {
-    @apply bg-pulse-primary text-white rounded-md px-6 py-2 font-semibold transition-all duration-200;
-    @apply hover:bg-pulse-secondary hover:scale-[1.02] hover:shadow-lg active:scale-95;
-    @apply focus-visible:ring-2 focus-visible:ring-pulse-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg-base outline-none;
-    @apply disabled:opacity-50 disabled:cursor-not-allowed;
-  }
-
-  /* THE SUCCESS BUTTON: Use for confirmations/adds */
+  /* Primary action: the one loud thing on a screen */
+  .btn-primary,
+  .btn-action,
   .btn-success {
-    @apply bg-pulse-success text-white rounded-md px-6 py-2 font-semibold transition-all duration-200;
-    @apply hover:brightness-110 hover:scale-[1.02] active:scale-95;
-    @apply focus-visible:ring-2 focus-visible:ring-pulse-success focus-visible:ring-offset-2 focus-visible:ring-offset-bg-base outline-none;
+    @apply bg-action text-on-action inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-md px-5 text-sm font-semibold whitespace-nowrap;
+    transition: background-color 120ms ease-out;
+  }
+  .btn-primary:hover,
+  .btn-action:hover,
+  .btn-success:hover {
+    @apply bg-action-hover;
+  }
+  .btn-primary:disabled,
+  .btn-action:disabled {
+    @apply cursor-not-allowed opacity-50;
   }
 
-  /* GLASS INPUT: Standardized form styling to match the theme */
+  /* Secondary action: outline, same size, one weight quieter */
+  .btn-quiet {
+    @apply border-stroke-medium text-text-main inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-md border px-5 text-sm font-semibold whitespace-nowrap;
+    transition: background-color 120ms ease-out;
+  }
+  .btn-quiet:hover {
+    @apply bg-white/[0.06];
+  }
+  .btn-quiet:disabled {
+    @apply cursor-not-allowed opacity-50;
+  }
+
+  /* Over game art: translucent dark plate so it reads on any image */
+  .btn-on-art {
+    @apply text-text-main inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-md border border-white/15 bg-black/45 px-5 text-sm font-semibold whitespace-nowrap backdrop-blur-md;
+    transition: background-color 120ms ease-out;
+  }
+  .btn-on-art:hover {
+    @apply bg-black/65;
+  }
+
+  /* Text link with arrow: quiet destination */
+  .link-quiet {
+    @apply text-text-brand inline-flex items-center gap-1 text-sm font-semibold whitespace-nowrap;
+  }
+  .link-quiet:hover {
+    @apply underline underline-offset-4;
+  }
+
+  /* Flat panel: one channel of separation (surface step + hairline) */
+  .panel,
+  .game-card {
+    @apply bg-bg-surface border-stroke-subtle rounded-xl border;
+  }
+  .game-card {
+    transition: background-color 120ms ease-out;
+  }
+  .game-card:hover {
+    @apply bg-bg-raised;
+  }
+
   .glass-input {
-    @apply bg-white/[0.03] border-stroke-subtle rounded-md px-4 py-2 text-text-main backdrop-blur-md transition-all duration-300;
-    @apply hover:border-stroke-medium focus:bg-white/[0.06] focus:border-pulse-primary focus:ring-1 focus:ring-pulse-primary outline-none;
+    @apply bg-bg-surface border-stroke-subtle text-text-main rounded-md border px-4 py-2 outline-none;
+    transition: border-color 120ms ease-out;
+  }
+  .glass-input:hover {
+    @apply border-stroke-medium;
+  }
+  .glass-input:focus {
+    @apply border-stroke-brand;
   }
 
-  /* GLASS BADGE: Standardized tag styling */
+  /* Neutral tag */
   .glass-badge {
-    @apply bg-white/[0.05] border-stroke-subtle rounded-full px-3 py-1 text-xs font-medium text-text-brand backdrop-blur-sm;
+    @apply bg-bg-chip text-text-dim rounded-sm px-2 py-0.5 text-xs font-semibold;
   }
 
-  /* CLICKABLE FEEDBACK */
   .interactive {
-    @apply cursor-pointer transition-all duration-200 active:scale-[0.98];
-    @apply focus-visible:ring-2 focus-visible:ring-pulse-accent outline-none rounded-sm;
+    @apply cursor-pointer rounded-sm outline-none;
+  }
+
+  /* Segmented control (status, view switches) */
+  .segmented {
+    @apply border-stroke-subtle flex w-fit gap-0.5 rounded-lg border bg-black/45 p-[3px] backdrop-blur-md;
+  }
+  .segmented > button {
+    @apply text-text-dim flex h-9 cursor-pointer items-center gap-1.5 rounded-[calc(var(--radius-lg)-3px)] px-3.5 text-sm;
+    transition:
+      background-color 120ms ease-out,
+      color 120ms ease-out;
+  }
+  .segmented > button:hover {
+    @apply text-text-main bg-white/[0.06];
+  }
+  .segmented > button[aria-checked="true"] {
+    @apply bg-action text-on-action font-semibold;
+  }
+  .segmented > button:disabled {
+    @apply cursor-wait opacity-60;
+  }
+
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* --------------------------------------------------------------------------
+ * BRAND BACKDROP: deep purple at the top of the screen fading to black at the
+ * bottom. Pinned to the screen and the same on every page; the game art on
+ * home and game pages sits on top of it.
+ * -------------------------------------------------------------------------- */
+.ambient {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in oklab, hsl(262 55% 32%) 55%, var(--color-bg-base)) 0%,
+    color-mix(in oklab, hsl(262 55% 32%) 28%, var(--color-bg-base)) 50%,
+    var(--color-bg-base) 100%
+  );
+}
+
+/* Art under a stage: dissolves into the page instead of ending in a hard band */
+.art-fade {
+  mask-image: linear-gradient(to bottom, #000 45%, transparent 98%);
+}
+
+/* Panels let a little of the glow through so surfaces pick up the mood */
+.panel,
+.game-card {
+  background-color: color-mix(
+    in oklab,
+    var(--color-bg-surface) 78%,
+    transparent
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

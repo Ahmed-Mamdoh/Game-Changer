@@ -55,16 +55,35 @@ function AppLayout() {
   }, [queryClient]);
 
   return (
-    <div className="relative min-h-[100dvh]">
-      <Toaster />
-      <ScrollToTop />
-      <Header />
-      <ChatBot />
-      <Suspense fallback={<Spinner />} key={location.pathname}>
-        <Outlet />
-      </Suspense>
-      <Footer />
-    </div>
+    <>
+      {/* Brand backdrop: purple at the top of the screen fading to black */}
+      <div aria-hidden="true" className="ambient" />
+      <div className="relative min-h-[100dvh]">
+        <Toaster
+          position="bottom-center"
+          toastOptions={{
+            style: {
+              background: "var(--color-bg-raised)",
+              color: "var(--color-text-main)",
+              border: "1px solid rgba(255, 255, 255, 0.14)",
+              borderRadius: "0.5rem",
+              fontSize: "0.875rem",
+            },
+            success: {
+              iconTheme: { primary: "#7dd3a0", secondary: "#120f18" },
+            },
+            error: { iconTheme: { primary: "#ff8a80", secondary: "#120f18" } },
+          }}
+        />
+        <ScrollToTop />
+        <Header />
+        <ChatBot />
+        <Suspense fallback={<Spinner />} key={location.pathname}>
+          <Outlet />
+        </Suspense>
+        <Footer />
+      </div>
+    </>
   );
 }
 

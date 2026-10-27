@@ -1,10 +1,9 @@
 import { useGetRecommendations } from "@/features/games/hooks/useGetRecommendations";
-import Filters from "@/features/games/ui/Filters";
 import RecommendationCard from "@/features/games/ui/RecommendationCard";
 import { useGetUserGames } from "@/features/User/hooks/useGetUserGames";
 import { UserToken } from "@/hooks/useUserToken";
 import Spinner from "@/ui/Spinner";
-import { RefreshCw, Sparkles } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -20,12 +19,10 @@ function ForYouPage() {
     useGetRecommendations();
   if (error && !isRefreshing)
     return (
-      <div className="text-text-error flex flex-col items-center gap-4 p-4 text-center">
-        Failed to load recommendations.
-        <button
-          onClick={refresh}
-          className="bg-pulse-primary hover:bg-pulse-primary/80 rounded-full px-6 py-2 font-bold text-white"
-        >
+      <div className="flex flex-col items-center gap-3 px-4 py-16 text-center">
+        <h3>Your picks didn't load</h3>
+        <p>The recommendation service didn't answer. Try again in a moment.</p>
+        <button onClick={refresh} className="btn-primary mt-2">
           Try again
         </button>
       </div>
@@ -52,20 +49,14 @@ function ForYouPage() {
             href="https://game-changer-gg.vercel.app/games/foryou"
           />
         </Helmet>
-        <div className="relative flex min-h-[70vh] flex-col items-center justify-center px-4 text-center">
-          <div className="bg-bg-card mb-6 rounded-full p-6">
-            <Sparkles className="text-pulse-primary h-12 w-12" />
-          </div>
-          <h2 className="mb-2">Your Recommendation Engine is Ready!</h2>
-          <p className="text-text-dim mb-8 max-w-md">
-            To get personalized recommendations, start by adding and rating some
-            games to your collection.
+        <div className="flex flex-col items-center px-4 py-16 text-center">
+          <h3 className="mb-1">Log a few games first</h3>
+          <p className="mb-6 max-w-[50ch]">
+            Picks come from the games in your library. Add three or more you've
+            played, with ratings, and your picks show up here.
           </p>
-          <Link
-            to="/games/allGames"
-            className="bg-pulse-primary hover:bg-pulse-primary/80 rounded-full px-8 py-3 font-bold text-white transition-all duration-300 hover:scale-105"
-          >
-            Explore Games
+          <Link to="/games/allGames" className="btn-primary">
+            Browse games
           </Link>
         </div>
       </>
@@ -90,31 +81,28 @@ function ForYouPage() {
           href="https://game-changer-gg.vercel.app/games/foryou"
         />
       </Helmet>
-      <div className="relative mx-auto flex w-9/10 items-center justify-between pt-3">
-        <div>
-          <h2>Recommended for You</h2>
-          <p className="text-text-dim text-sm">Based on your ratings</p>
-        </div>
+      <div className="mx-auto flex w-full max-w-[1440px] items-center px-4 md:px-8">
         <button
           onClick={refresh}
           disabled={isLoading || isRefreshing}
-          className="text-text-dim hover:text-pulse-primary flex items-center gap-2 text-sm font-bold transition-colors disabled:opacity-50"
-          aria-label="Get new recommendations"
+          className="btn-quiet h-9"
         >
           <RefreshCw
             className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
           />
-          Refresh
+          New picks
         </button>
       </div>
 
-      <div className="mx-auto w-9/10 pt-8 pb-16">
+      <div className="mx-auto w-full max-w-[1440px] px-4 pt-6 pb-16 md:px-8">
         {isLoading || isRefreshing ? (
           <Spinner />
         ) : recommendations?.length === 0 ? (
-          <h2 className="text-center">🔍 No Games Found</h2>
+          <p className="py-16 text-center">
+            No picks this time. Press New picks to try again.
+          </p>
         ) : (
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
             {recommendations?.map((game) => (
               <RecommendationCard key={game.id} game={game} />
             ))}

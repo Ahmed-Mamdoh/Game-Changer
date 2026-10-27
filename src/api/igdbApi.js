@@ -108,7 +108,7 @@ export async function searchGames({
 export async function getUserGamesData(userGamesIds) {
   return igdbFetch(
     "games",
-    `fields name,cover.url,first_release_date,genres.name,themes.name;
+    `fields name,cover.url,first_release_date,genres.name,themes.name,artworks.url,artworks.artwork_type;
       limit 500;
       where id = (${userGamesIds.join(",")});
       `,

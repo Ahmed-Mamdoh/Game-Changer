@@ -1,20 +1,15 @@
-import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 
 function AuthFormField({ field, validations, register, formState }) {
   const { errors } = formState;
   return (
-    <div className="grid">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <Label htmlFor={field}>
-          {field.charAt(0).toUpperCase() + field.slice(1)}:
-        </Label>
-        {errors?.[field]?.message && (
-          <p className=" text-text-error rounded-full px-3 py-1 text-[1rem] font-medium tracking-wide">
-            {errors[field].message}
-          </p>
+    <div className="grid gap-1.5">
+      <Label htmlFor={field} className="text-text-main text-sm font-semibold">
+        {(field.charAt(0).toUpperCase() + field.slice(1)).replace(
+          /([a-z])([A-Z])/g,
+          "$1 $2",
         )}
-      </div>
+      </Label>
       <input
         id={field}
         type={
@@ -24,14 +19,19 @@ function AuthFormField({ field, validations, register, formState }) {
               ? "password"
               : "text"
         }
-        className="border-stroke-subtle bg-bg-card
-        focus-visible:border-pulse-primary hover:border-pulse-primary/50 rounded-full border-1 px-4
-        py-1.5 transition-all duration-200 focus-visible:outline-none"
+        aria-invalid={Boolean(errors?.[field])}
+        aria-describedby={errors?.[field] ? `${field}-error` : undefined}
+        className="border-stroke-medium bg-bg-base focus-visible:border-stroke-brand aria-invalid:border-pulse-error h-11 rounded-md border px-3 transition-colors duration-100 focus-visible:outline-none"
         {...register(field, {
           required: `${field} is required`,
           ...validations,
         })}
       />
+      {errors?.[field]?.message && (
+        <p id={`${field}-error`} className="text-text-error text-sm">
+          {errors[field].message}
+        </p>
+      )}
     </div>
   );
 }

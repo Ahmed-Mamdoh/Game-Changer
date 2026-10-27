@@ -1,55 +1,27 @@
-import { Calendar, Gamepad2, Gift, Sparkles, User } from "lucide-react";
+import { Calendar, Gamepad2, Gift, Library, Sparkles } from "lucide-react";
 import { useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { UserToken } from "@/hooks/useUserToken";
 
 function Drawer() {
   const drawerCheckboxRef = useRef(null);
   const location = useLocation();
   const path = location.pathname;
+  const userToken = UserToken();
 
-  // Function to close the drawer
   const closeDrawer = () => {
     if (drawerCheckboxRef.current) {
       drawerCheckboxRef.current.checked = false;
     }
   };
+
   const navItems = [
-    {
-      to: "/games/allGames",
-      text: "All Games",
-      icon: (
-        <Gamepad2 className="text-pulse-accent group-hover:text-pulse-primary h-5 w-5" />
-      ),
-    },
-    {
-      to: "/games/forYou",
-      text: "For You",
-      icon: (
-        <Sparkles className="text-pulse-accent group-hover:text-pulse-primary h-5 w-5" />
-      ),
-    },
-    {
-      to: "/games/freeGames",
-      text: "Free Games",
-      icon: (
-        <Gift className="text-pulse-accent group-hover:text-pulse-primary h-5 w-5" />
-      ),
-    },
-    {
-      to: "/games/upcomingGames",
-      text: "Upcoming",
-      icon: (
-        <Calendar className="text-pulse-accent group-hover:text-pulse-primary h-5 w-5" />
-      ),
-    },
-    {
-      to: "/account",
-      text: "My Account",
-      icon: (
-        <User className="text-pulse-accent group-hover:text-pulse-primary h-5 w-5" />
-      ),
-    },
-  ];
+    { to: "/games/allGames", text: "Browse", icon: Gamepad2 },
+    { to: "/games/forYou", text: "For you", icon: Sparkles, auth: true },
+    { to: "/games/freeGames", text: "Free games", icon: Gift },
+    { to: "/games/upcomingGames", text: "Upcoming", icon: Calendar },
+    { to: "/account", text: "Your library", icon: Library, auth: true },
+  ].filter((item) => !item.auth || userToken);
 
   return (
     <div className="drawer drawer-end z-50 w-0 lg:hidden">
@@ -62,43 +34,43 @@ function Drawer() {
       <div className="drawer-side">
         <label
           htmlFor="my-drawer-4"
-          aria-label="close sidebar"
+          aria-label="Close menu"
           className="drawer-overlay"
         ></label>
 
-        <div className="bg-bg-base border-stroke-subtle h-full w-64 border-l px-4 py-6">
-          <div className="flex h-full flex-col items-end">
-            {/* Header */}
-            <header className="mb-8">
-              <Link
-                to="/"
-                onClick={closeDrawer}
-                className="font-heading text-text-brand text-left text-2xl font-bold"
-              >
-                Game Changer
-              </Link>
-            </header>
+        <div className="bg-bg-surface border-stroke-subtle flex h-full w-72 flex-col border-l px-3 py-5">
+          <Link
+            to="/"
+            onClick={closeDrawer}
+            className="mb-6 px-3 text-base font-semibold"
+          >
+            Game Changer
+          </Link>
 
-            {/* Main Navigation */}
-            <nav className="flex w-full flex-1 flex-col items-end gap-y-2">
-              {navItems.map((item, index) => (
+          <nav aria-label="Main" className="flex flex-col gap-1">
+            {navItems.map(({ to, text, icon }) => {
+              const active = path === to;
+              const NavIcon = icon;
+              return (
                 <Link
-                  key={index}
-                  to={item.to}
+                  key={to}
+                  to={to}
                   onClick={closeDrawer}
-                  className={`flex w-full items-center justify-end gap-3 rounded-full px-3 py-2 transition-all duration-200 ${path === item.to ? "bg-pulse-primary " : ""}`}
+                  aria-current={active ? "page" : undefined}
+                  className={`flex h-11 items-center gap-3 rounded-md px-3 text-base transition-colors duration-100 ${
+                    active
+                      ? "text-text-main bg-white/[0.08] font-semibold"
+                      : "text-text-dim hover:text-text-main hover:bg-white/[0.05]"
+                  }`}
                 >
-                  <span className=" text-lg font-medium">{item.text}</span>
-                  {item.icon}
+                  <NavIcon
+                    className={`h-5 w-5 ${active ? "text-pulse-primary" : "text-text-muted"}`}
+                  />
+                  {text}
                 </Link>
-              ))}
-            </nav>
-
-            {/* Footer */}
-            <footer className="text-text-secondary mt-auto place-self-start pt-4 text-sm">
-              <p>Tap outside to close</p>
-            </footer>
-          </div>
+              );
+            })}
+          </nav>
         </div>
       </div>
     </div>

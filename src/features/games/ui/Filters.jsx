@@ -1,5 +1,4 @@
 import { memo } from "react";
-import { FaUndoAlt } from "react-icons/fa";
 import { useSearchParams } from "react-router-dom";
 import { useGetGameModes } from "../hooks/useGetGameModes";
 import { useGetGenres } from "../hooks/useGetGenres";
@@ -24,17 +23,17 @@ function Filters({
   const { data: gameModes, isLoading: isLoadingGameModes } = useGetGameModes();
   const sortBy = isAccount
     ? [
-        { id: "hours_played", name: "Hours Played" },
-        { id: "date_finished", name: "Date Finished" },
+        { id: "hours_played", name: "Hours played" },
+        { id: "date_finished", name: "Date finished" },
       ]
     : isUpcoming
       ? [
-          { id: "first_release_date", name: "Release Date" },
-          { id: "hypes", name: "Hype" },
+          { id: "hypes", name: "Most hyped" },
+          { id: "first_release_date", name: "Soonest" },
         ]
       : [
-          { id: "first_release_date", name: "Release Date" },
-          { id: "total_rating_count", name: "Popularity" },
+          { id: "total_rating_count", name: "Popular" },
+          { id: "first_release_date", name: "Newest" },
         ];
   const status = [
     { id: "finished", name: "Finished" },
@@ -64,100 +63,91 @@ function Filters({
   const [searchParams, setSearchParams] = useSearchParams();
   const search = searchParams.get("search");
 
-  if (isLoadingGenres || isLoadingThemes || isLoadingGameModes) return null;
+  const hasActive = [...searchParams.keys()].some(
+    (key) => !["page", "search"].includes(key),
+  );
+
+  if (isLoadingGenres || isLoadingThemes || isLoadingGameModes)
+    return <div className={`h-10 ${className}`} />;
+
   return (
     <div
-      className={`bg-bg-card border-stroke-medium mx-auto w-9/10 rounded-xl border bg-linear-to-br from-white/5 to-transparent px-2 py-4 shadow-2xl backdrop-blur-xl ${className}`}
+      className={`no-scrollbar mx-auto flex w-full max-w-[1440px] items-center gap-2 overflow-x-auto px-4 md:flex-wrap md:px-8 ${className}`}
     >
-      <div className="flex flex-col flex-wrap items-start justify-between gap-x-8 gap-y-4 px-2 sm:flex-row">
-        <div className="flex flex-wrap items-center gap-x-10 gap-y-5">
-          {showGenres && (
-            <FilterButtons category={genres} name="Genres" paramName="genre" />
-          )}
+      {!search && showSortBy && (
+        <FilterButtons
+          category={sortBy}
+          name="Sort by"
+          paramName="sortBy"
+          or={true}
+          sort={false}
+          variant="segmented"
+          defaultValue={
+            isAccount ? [] : isUpcoming ? ["hypes"] : ["total_rating_count"]
+          }
+        />
+      )}
 
-          {showThemes && (
-            <FilterButtons category={themes} name="Themes" paramName="theme" />
-          )}
+      {showGenres && (
+        <FilterButtons category={genres} name="Genre" paramName="genre" />
+      )}
+      {showThemes && (
+        <FilterButtons category={themes} name="Theme" paramName="theme" />
+      )}
+      {showGameModes && (
+        <FilterButtons category={gameModes} name="Mode" paramName="gameMode" />
+      )}
+      {showStatus && (
+        <FilterButtons category={status} name="Status" paramName="status" />
+      )}
+      {showPlatform && (
+        <FilterButtons
+          category={platforms.filter((p) => p.id !== "all")}
+          name="Platform"
+          paramName="platform"
+          sort={false}
+          or={true}
+        />
+      )}
+      {showPerspective && (
+        <FilterButtons
+          category={perspectives.filter((p) => p.id !== "all")}
+          name="Perspective"
+          paramName="player_perspectives"
+          sort={false}
+          or={true}
+        />
+      )}
 
-          {showGameModes && (
-            <FilterButtons
-              category={gameModes}
-              name="Mode"
-              paramName="gameMode"
-            />
-          )}
-
-          {showStatus && (
-            <FilterButtons category={status} name="Status" paramName="status" />
-          )}
-
-          {showPerspective && (
-            <FilterButtons
-              category={perspectives}
-              defaultValue={["all"]}
-              or={true}
-              sort={false}
-              name="Perspective"
-              paramName="player_perspectives"
-            />
-          )}
-
-          {showPlatform && (
-            <FilterButtons
-              category={platforms}
-              name="Platform"
-              paramName="platform"
-              defaultValue={["all"]}
-              sort={false}
-              or={true}
-            />
-          )}
-
-          {!search && showSortBy && (
-            <FilterButtons
-              category={sortBy}
-              name="Sort By"
-              paramName="sortBy"
-              or={true}
-              defaultValue={isUpcoming ? ["hypes"] : ["total_rating_count"]}
-            />
-          )}
-          <button
-            onClick={() => {
-              const newParams = new URLSearchParams();
-              setSearchParams(newParams);
+      {showFavorite && (
+        <label className="border-stroke-subtle text-text-dim has-checked:text-text-main has-checked:border-stroke-brand flex h-10 cursor-pointer items-center gap-2 rounded-md border px-3 text-sm">
+          <input
+            type="checkbox"
+            className="accent-pulse-primary h-4 w-4"
+            checked={searchParams.get("isFavorite") === "true"}
+            onChange={(e) => {
+              if (e.target.checked) searchParams.set("isFavorite", "true");
+              else searchParams.delete("isFavorite");
+              setSearchParams(searchParams);
             }}
-            className="bg-pulse-primary  group cursor-pointer rounded-full font-bold transition-all duration-200"
-          >
-            <div className="flex items-center gap-x-2 px-4 py-2">
-              <FaUndoAlt className="transition-transform duration-200 group-hover:-rotate-90" />
-              <span>Reset</span>
-            </div>
-          </button>
+          />
+          Favorites only
+        </label>
+      )}
 
-          {showFavorite && (
-            <div className="flex w-5/12 items-center justify-start gap-x-2">
-              <label htmlFor="isFavorite" className="text-lg">
-                Favorites:
-              </label>
-              <input
-                id="isFavorite"
-                type="checkbox"
-                className="toggle toggle-error"
-                checked={searchParams.get("isFavorite") === "true"}
-                onChange={(e) => {
-                  if (e.target.checked) {
-                    searchParams.set("isFavorite", "true");
-                  } else {
-                    searchParams.delete("isFavorite");
-                  }
-                  setSearchParams(searchParams);
-                }}
-              />
-            </div>
-          )}
-        </div>
-      </div>
+      {hasActive && (
+        <button
+          type="button"
+          onClick={() => {
+            const newParams = new URLSearchParams();
+            if (search) newParams.set("search", search);
+            setSearchParams(newParams);
+          }}
+          className="text-text-brand h-10 cursor-pointer px-2 text-sm font-semibold hover:underline hover:underline-offset-4"
+        >
+          Clear filters
+        </button>
+      )}
     </div>
   );
 }

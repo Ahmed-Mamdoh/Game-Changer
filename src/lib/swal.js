@@ -1,15 +1,18 @@
 import Swal from "sweetalert2";
 
 export const MySwal = Swal.mixin({
-  confirmButtonColor: "var(--color-pulse-primary)",
-  background: "var(--color-bg-card)",
+  background: "var(--color-bg-surface)",
   color: "var(--color-text-dim)",
   buttonsStyling: false,
+  reverseButtons: true,
   customClass: {
-    popup: "backdrop-blur-xl! rounded-xl! border! border-stroke-medium!",
+    popup: "rounded-xl! border! border-stroke-medium!",
+    title: "text-text-main! text-xl! font-semibold!",
     confirmButton:
-      "rounded-full bg-pulse-error text-white font-semibold  py-2 px-4 mr-4 border border-stroke-subtle cursor-pointer",
+      "rounded-md bg-pulse-error text-on-action font-semibold h-10 px-5 ml-3 cursor-pointer",
+    denyButton:
+      "rounded-md border border-stroke-medium text-text-main font-semibold h-10 px-5 ml-3 cursor-pointer",
     cancelButton:
-      "rounded-full bg-bg-surface text-white font-semibold  border border-stroke-subtle py-2 px-4 cursor-pointer",
+      "rounded-md border border-stroke-medium text-text-main font-semibold h-10 px-5 cursor-pointer",
   },
 });

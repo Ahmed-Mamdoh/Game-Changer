@@ -1,168 +1,175 @@
-import { formatIGDBImage } from "@/utils/igdbImage";
+import { coverUrlOf } from "@/utils/igdbImage";
 import { formatDate, intervalToDuration, formatDistanceToNow } from "date-fns";
-import { CalendarCheck, Check, Clock } from "lucide-react";
+import { Bookmark, Check, Clock, Play, Square } from "lucide-react";
 import { useEffect, useState } from "react";
-import { CiPlay1, CiStop1 } from "react-icons/ci";
-import { FaBookmark, FaRegClock, FaSteam } from "react-icons/fa";
+import { FaSteam } from "react-icons/fa";
 import { SiEpicgames, SiGogdotcom } from "react-icons/si";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import {
+  STATUS_LABELS,
+  useQuickStatus,
+} from "@/features/games/hooks/useQuickStatus";
 
-function GameItem({ game, className }) {
-  let imageUrl = formatIGDBImage(game?.cover?.url, "t_cover_big");
-  const navigate = useNavigate();
+const STATUS_ICONS = {
+  "to play": { icon: Bookmark, color: "text-pulse-warning" },
+  playing: { icon: Play, color: "text-pulse-primary" },
+  finished: { icon: Check, color: "text-pulse-success" },
+  dropped: { icon: Square, color: "text-pulse-error" },
+};
 
-  const formatReleaseDate = (timestamp) => {
-    const releaseDate = new Date(timestamp * 1000);
-    const now = new Date();
-    const diffInDays = Math.abs(releaseDate - now) / (1000 * 60 * 60 * 24);
+const STORE_ICONS = {
+  Steam: FaSteam,
+  "Epic Games": SiEpicgames,
+  GOG: SiGogdotcom,
+};
 
-    // If within 3 months (90 days), show relative format
-    if (diffInDays <= 90) {
-      return formatDistanceToNow(releaseDate, { addSuffix: true });
-    }
-    // Otherwise show absolute format
-    else {
-      return formatDate(releaseDate, "dd/MM/yyyy");
-    }
-  };
+function formatReleaseDate(timestamp) {
+  const releaseDate = new Date(timestamp * 1000);
+  const diffInDays = Math.abs(releaseDate - new Date()) / (1000 * 60 * 60 * 24);
+  return diffInDays <= 90
+    ? formatDistanceToNow(releaseDate, { addSuffix: true })
+    : formatDate(releaseDate, "d MMM yyyy");
+}
+
+function formatCountdown(d) {
+  if (d.days) return `${d.days}d ${d.hours || 0}h`;
+  if (d.hours) return `${d.hours}h ${d.minutes || 0}m`;
+  if (d.minutes) return `${d.minutes}m`;
+  return "under a minute";
+}
+
+function hasValidEnd(endDate) {
+  const time = new Date(endDate).getTime();
+  return Number.isFinite(time) && time > Date.now();
+}
+
+function GameItem({ game, className = "" }) {
+  const imageUrl = coverUrlOf(game);
+  const { statusOf, setStatus } = useQuickStatus();
+  const libraryStatus = game.status || statusOf(game.id);
+  const isUnreleased =
+    game?.first_release_date &&
+    game.first_release_date > Math.floor(Date.now() / 1000);
 
   const [countDown, setCountDown] = useState(() =>
-    intervalToDuration({
-      start: new Date(),
-      end: new Date(game.endDate),
-    }),
+    hasValidEnd(game?.endDate)
+      ? intervalToDuration({ start: new Date(), end: new Date(game.endDate) })
+      : null,
   );
 
   useEffect(() => {
-    if (game?.endDate) {
-      const targetDate = new Date(game.endDate);
-
-      const id = setInterval(() => {
-        setCountDown(
-          intervalToDuration({
-            start: new Date(),
-            end: targetDate,
-          }),
-        );
-      }, 1000);
-      return () => clearInterval(id);
-    }
+    if (!hasValidEnd(game?.endDate)) return;
+    const targetDate = new Date(game.endDate);
+    const id = setInterval(() => {
+      setCountDown(intervalToDuration({ start: new Date(), end: targetDate }));
+    }, 30_000);
+    return () => clearInterval(id);
   }, [game.endDate]);
 
+  const quickOptions = isUnreleased
+    ? ["to play"]
+    : ["to play", "playing", "finished"];
+
+  const StoreIcon = STORE_ICONS[game?.freeOn];
+  const StatusIcon = STATUS_ICONS[libraryStatus]?.icon;
+
   return (
-    <div
-      className={`bg-bg-card border-stroke-subtle hover:border-stroke-brand group
-        hover:shadow-glow relative flex w-fit cursor-pointer flex-col items-center
-        justify-center gap-y-3 rounded-lg border-1 p-3 backdrop-blur-xs transition-all duration-500
-        hover:-translate-y-2 ${className}`}
-    >
-      <div
-        className="relative w-36 overflow-hidden rounded-lg md:w-48"
-        onClick={() => navigate(`/game/${game.id}`)}
-      >
+    <article className={`group relative flex flex-col gap-2 ${className}`}>
+      <div className="bg-bg-surface relative isolate aspect-[3/4] w-full overflow-hidden rounded-md">
         {imageUrl ? (
           <img
             src={imageUrl}
-            alt={game.name}
-            title={game.name}
+            alt=""
             loading="lazy"
-            className="aspect-[3/4] h-full w-full object-cover transition-transform duration-700"
             fetchPriority="low"
+            className="h-full w-full object-cover transition-[filter] duration-150 group-hover:brightness-110"
           />
         ) : (
-          <div className="bg-bg-surface font-body flex aspect-[3/4] h-full w-full items-center justify-center rounded-xl text-xs">
-            No Image
+          <div className="text-text-muted flex h-full w-full items-center justify-center p-3 text-center text-sm">
+            {game.name}
           </div>
         )}
-        <div className="from-bg-base/50 absolute inset-0 bg-gradient-to-t via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+        <div className="border-stroke-subtle pointer-events-none absolute inset-0 rounded-md border" />
+
+        {/* Quick status: above the stretched link so it presses on its own */}
+        <div className="absolute top-1.5 right-1.5 z-20 hidden gap-1 opacity-0 transition-opacity duration-100 group-focus-within:opacity-100 group-hover:opacity-100 [@media(hover:hover)]:flex">
+          {quickOptions.map((status) => {
+            const Icon = STATUS_ICONS[status].icon;
+            const active = libraryStatus === status;
+            return (
+              <button
+                key={status}
+                type="button"
+                title={
+                  active
+                    ? STATUS_LABELS[status]
+                    : `Mark as ${STATUS_LABELS[status]}`
+                }
+                aria-label={`Mark ${game.name} as ${STATUS_LABELS[status]}`}
+                aria-pressed={active}
+                onClick={() => setStatus(game, status)}
+                className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-sm backdrop-blur-md transition-colors duration-100 ${
+                  active
+                    ? "bg-action text-on-action"
+                    : "text-text-main border border-white/15 bg-black/60 hover:bg-black/80"
+                }`}
+              >
+                <Icon className="h-4 w-4" />
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      <div className="h-12 w-36 cursor-default text-center transition-colors duration-300 md:w-48">
-        <Link to={`/game/${game.id}`} className="cursor-pointer">
-          <h3 className="group-hover:text-text-brand text-sm md:text-base">
-            {game.name?.substring(0, 40)}
-            {game.name?.length > 40 ? "..." : ""}
-          </h3>
-        </Link>
-      </div>
-
-      {game?.giveAwayLink && (
-        <div className="text-text-brand flex w-full items-center justify-between">
-          <a
-            onClick={(e) => e.stopPropagation()}
-            href={game.giveAwayLink}
-            target="_blank"
-            rel="noreferrer"
-            className="flex cursor-pointer items-center justify-center gap-2 text-xs font-semibold tracking-wider uppercase md:text-sm"
+      <div className="flex min-w-0 flex-col gap-0.5">
+        <h3 className="text-text-main line-clamp-2 text-sm leading-snug font-semibold tracking-normal">
+          <Link
+            to={`/game/${game.id}`}
+            className="group-hover:underline group-hover:underline-offset-2 after:absolute after:inset-0 after:z-10 after:content-['']"
           >
-            {game.freeOn === "Steam" ? <FaSteam className="h-4 w-4" /> : null}
-            {game.freeOn === "Epic Games" ? (
-              <SiEpicgames className="h-4 w-4" />
-            ) : null}
-            {game.freeOn === "GOG" ? <SiGogdotcom className="h-4 w-4" /> : null}
-            {game.freeOn}
-          </a>
+            {game.name}
+          </Link>
+        </h3>
 
-          <div className="flex items-center justify-center gap-1 text-xs font-bold md:text-sm">
-            <Clock className="h-3.5 w-3.5" />
-            <p>
-              {countDown.days
-                ? `${countDown.days}D`
-                : countDown?.hours
-                  ? `${countDown.hours}h`
-                  : countDown?.minutes
-                    ? `${countDown.minutes}m`
-                    : countDown?.seconds
-                      ? `${countDown.seconds}s`
-                      : null}
-            </p>
-          </div>
-        </div>
-      )}
-
-      {game?.first_release_date &&
-        game?.status !== "to play" &&
-        game?.first_release_date > Math.floor(Date.now() / 1000) && (
-          <div className="flex items-center justify-center gap-x-2">
-            <p className="text-xs font-bold md:text-sm">
-              {formatReleaseDate(game.first_release_date)}
-            </p>
-            <CalendarCheck className="text-text-brand h-4 w-4" />
+        {game?.giveAwayLink && (
+          <div className="text-text-dim flex items-center justify-between gap-2 text-xs">
+            <a
+              href={game.giveAwayLink}
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-text-main relative z-20 flex items-center gap-1.5 font-semibold"
+            >
+              {StoreIcon && <StoreIcon className="h-3.5 w-3.5" />}
+              {game.freeOn}
+            </a>
+            {countDown && (
+              <span className="text-pulse-warning tabular flex items-center gap-1">
+                <Clock className="h-3.5 w-3.5" />
+                {formatCountdown(countDown)}
+              </span>
+            )}
           </div>
         )}
 
-      {game?.status && (
-        <div className="border-stroke-medium flex w-full items-center justify-between border-t pt-2">
-          <div className="flex items-center gap-1.5">
-            {game.status === "playing" ? (
-              <CiPlay1 className="text-pulse-primary h-3.5 w-3.5" />
-            ) : game.status === "finished" ? (
-              <Check className="text-pulse-success h-3.5 w-3.5" />
-            ) : game.status === "dropped" ? (
-              <CiStop1 className="text-text-error h-3.5 w-3.5" />
-            ) : game.status === "to play" ? (
-              <FaBookmark className="text-pulse-warning h-3.5 w-3.5" />
-            ) : null}
-            <p className=" text-xs font-bold tracking-widest uppercase">
-              {game.status}
-            </p>
-          </div>
-          {game.status !== "to play" ? (
-            <div className="text-text-dim flex items-center gap-1">
-              <FaRegClock className="h-3.5 w-3.5" />
-              <p className="text-xs font-bold">{game.hoursPlayed}h</p>
-            </div>
-          ) : game?.first_release_date > Math.floor(Date.now() / 1000) ? (
-            <div className="flex items-center justify-center gap-x-2">
-              <p className="text-xs font-bold md:text-sm">
-                {formatReleaseDate(game.first_release_date)}
-              </p>
-              <CalendarCheck className="text-text-brand h-4 w-4" />
-            </div>
-          ) : null}
-        </div>
-      )}
-    </div>
+        {!game?.giveAwayLink && isUnreleased && (
+          <p className="tabular text-xs">
+            {formatReleaseDate(game.first_release_date)}
+          </p>
+        )}
+
+        {game?.status && StatusIcon && (
+          <p className="text-text-dim tabular flex items-center gap-1.5 text-xs">
+            <StatusIcon
+              className={`h-3.5 w-3.5 ${STATUS_ICONS[game.status].color}`}
+            />
+            {STATUS_LABELS[game.status]}
+            {game.status !== "to play" && game.hoursPlayed != null && (
+              <span className="text-text-muted">· {game.hoursPlayed} h</span>
+            )}
+          </p>
+        )}
+      </div>
+    </article>
   );
 }
 
