@@ -8,8 +8,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-// Asks before a destructive action. Cancel is focused first so Enter is safe.
-// Pass `art` (an image URL) to show what is being removed, with the icon on it.
+// Asks before an action that's hard to take back. Cancel is focused first so
+// Enter is safe. Pass `art` (an image URL) to show what is being removed, with
+// the icon on it, and `destructive={false}` for actions that lose nothing.
 function ConfirmDialog({
   open,
   onOpenChange,
@@ -20,6 +21,7 @@ function ConfirmDialog({
   onConfirm,
   art,
   icon = Trash2,
+  destructive = true,
 }) {
   const Icon = icon;
   const cancelRef = useRef(null);
@@ -36,7 +38,10 @@ function ConfirmDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={(next) => !isPending && onOpenChange(next)}>
+    <Dialog
+      open={open}
+      onOpenChange={(next) => !isPending && onOpenChange(next)}
+    >
       <DialogContent
         role="alertdialog"
         showCloseButton={false}
@@ -75,7 +80,9 @@ function ConfirmDialog({
               </span>
             </div>
           ) : (
-            <span className="confirm-badge bg-pulse-error/12 text-pulse-error flex h-12 w-12 items-center justify-center rounded-full">
+            <span
+              className={`confirm-badge flex h-12 w-12 items-center justify-center rounded-full ${destructive ? "bg-pulse-error/12 text-pulse-error" : "text-text-main bg-white/[0.08]"}`}
+            >
               <Icon className="h-5 w-5" />
             </span>
           )}
@@ -103,7 +110,7 @@ function ConfirmDialog({
             type="button"
             onClick={handleConfirm}
             disabled={isPending}
-            className="btn-danger"
+            className={destructive ? "btn-danger" : "btn-primary"}
           >
             {isPending ? (
               <LoaderCircle className="h-4 w-4 animate-spin" />

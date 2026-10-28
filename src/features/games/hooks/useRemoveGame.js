@@ -8,14 +8,15 @@ export function useRemoveGame(game) {
   const queryClient = useQueryClient();
   const user_id = UserToken()?.user?.id;
 
-  async function removeGame() {
+  // `from` only names the list in the toast: "library" or "wishlist"
+  async function removeGame(from = "library") {
     const { error } = await deleteUserGame({ game_id: game.id, user_id });
     if (error) {
       toast.error(`Couldn't remove ${game.name}. Try again.`);
       return;
     }
 
-    toast.success(`Removed ${game.name} from your library`);
+    toast.success(`Removed ${game.name} from your ${from}`);
     const gameId = String(game.id);
     queryClient.invalidateQueries({ queryKey: ["user_games", user_id] });
     queryClient.invalidateQueries({ queryKey: ["user_game", user_id, gameId] });

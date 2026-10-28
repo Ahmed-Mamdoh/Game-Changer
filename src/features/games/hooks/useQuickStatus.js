@@ -68,7 +68,11 @@ export function useQuickStatus() {
       return;
     }
 
-    toast.success(`${game.name} moved to ${STATUS_LABELS[status]}`);
+    toast.success(
+      status === "to play"
+        ? `Added ${game.name} to your wishlist`
+        : `${game.name} moved to ${STATUS_LABELS[status]}`,
+    );
     await queryClient.invalidateQueries({ queryKey: ["user_games", user_id] });
     queryClient.invalidateQueries({
       queryKey: ["user_game", user_id, String(game.id)],

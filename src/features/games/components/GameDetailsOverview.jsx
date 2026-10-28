@@ -7,7 +7,7 @@ import BackdropImage from "@/ui/BackdropImage";
 import { coverUrlOf } from "@/utils/igdbImage";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { formatDate } from "date-fns";
-import { Trash2 } from "lucide-react";
+import { Bookmark, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { FaPlaystation, FaSteam, FaXbox } from "react-icons/fa";
 import { SiEpicgames, SiGogdotcom } from "react-icons/si";
@@ -28,6 +28,8 @@ const STORES = [
   { name: "PlayStation", urlPattern: "playstation", icon: FaPlaystation },
   { name: "Xbox", urlPattern: "xbox", icon: FaXbox },
 ];
+
+const PLAY_STATUSES = ["playing", "finished", "dropped"];
 
 const hoursOf = (seconds) => (seconds ? Math.round(seconds / 3600) : null);
 
@@ -93,9 +95,9 @@ function GameDetailsOverview({ data }) {
   const savedStatus = savedGame?.status || null;
   const currentStatus = statusOf(id) ?? savedStatus;
   const isLogged = Boolean(savedStatus) && savedStatus !== "to play";
-  const statusOptions = isReleased
-    ? ["to play", "playing", "finished", "dropped"]
-    : ["to play"];
+  // Wishlist is "want to play"; once a game is played it can't go back there
+  const isWishlisted = currentStatus === "to play";
+  const canWishlist = !currentStatus || isWishlisted;
 
   // What removal would throw away beyond the status itself
   const loggedParts = [
@@ -213,63 +215,84 @@ function GameDetailsOverview({ data }) {
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
-              <div
-                role="radiogroup"
-                aria-label="Library status"
-                className="segmented w-full sm:w-fit"
-              >
-                {statusOptions.map((status) => {
-                  const { icon: Icon, color } = STATUS_ICONS[status];
-                  return (
-                    <button
-                      key={status}
-                      type="button"
-                      role="radio"
-                      aria-checked={currentStatus === status}
-                      title={
-                        currentStatus === status
-                          ? "Click again to remove from library"
-                          : undefined
-                      }
-                      // Pressing the current status again clears it
-                      onClick={() =>
-                        currentStatus === status
-                          ? requestRemove()
-                          : setStatus(game, status)
-                      }
-                      className="flex-1 justify-center px-2 sm:flex-none sm:px-3.5"
-                    >
-                      <Icon className={`hidden h-3.5 w-3.5 sm:block ${color}`} />
-                      {STATUS_LABELS[status]}
-                    </button>
-                  );
-                })}
-              </div>
-
-              {isReleased && isLogged && (
-                <LogGameDialog
-                  key={savedStatus}
-                  game={game}
-                  userGame={savedGame}
-                  userGameReview={savedReview}
-                  onRemove={requestRemove}
-                />
+              {isReleased && (
+                <div
+                  role="radiogroup"
+                  aria-label="Play status"
+                  className="segmented w-full sm:w-fit"
+                >
+                  {PLAY_STATUSES.map((status) => {
+                    const { icon: Icon, color } = STATUS_ICONS[status];
+                    return (
+                      <button
+                        key={status}
+                        type="button"
+                        role="radio"
+                        aria-checked={currentStatus === status}
+                        title={
+                          currentStatus === status
+                            ? "Click again to remove from library"
+                            : undefined
+                        }
+                        // Pressing the current status again clears it
+                        onClick={() =>
+                          currentStatus === status
+                            ? requestRemove()
+                            : setStatus(game, status)
+                        }
+                        className="flex-1 justify-center px-2 sm:flex-none sm:px-3.5"
+                      >
+                        <Icon
+                          className={`hidden h-3.5 w-3.5 sm:block ${color}`}
+                        />
+                        {STATUS_LABELS[status]}
+                      </button>
+                    );
+                  })}
+                </div>
               )}
 
-              {savedStatus && (
+              {canWishlist && (
                 <button
                   type="button"
-                  onClick={requestRemove}
-                  title="Remove from library"
-                  aria-label={`Remove ${name} from library`}
-                  className="text-text-main hover:text-text-error flex h-10 w-10 cursor-pointer items-center justify-center rounded-md border border-white/15 bg-black/45 backdrop-blur-md transition-colors duration-100 hover:bg-black/65"
+                  aria-pressed={isWishlisted}
+                  onClick={() =>
+                    isWishlisted
+                      ? removeGame("wishlist")
+                      : setStatus(game, "to play")
+                  }
+                  className="btn-on-art px-4"
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Bookmark
+                    className={`text-pulse-warning h-4 w-4 ${isWishlisted ? "fill-current" : ""}`}
+                  />
+                  {isWishlisted ? "Wishlisted" : "Wishlist"}
                 </button>
               )}
 
-              {storeLinks.length > 0 && (
+              {isReleased && isLogged && (
                 <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={requestRemove}
+                    title="Remove from library"
+                    aria-label={`Remove ${name} from library`}
+                    className="text-text-main hover:text-text-error flex h-10 w-10 cursor-pointer items-center justify-center rounded-md border border-white/15 bg-black/45 backdrop-blur-md transition-colors duration-100 hover:bg-black/65"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                  <LogGameDialog
+                    key={savedStatus}
+                    game={game}
+                    userGame={savedGame}
+                    userGameReview={savedReview}
+                    onRemove={requestRemove}
+                  />
+                </div>
+              )}
+
+              {storeLinks.length > 0 && (
+                <div className="flex items-center gap-2 border-white/15 sm:ml-1 sm:border-l sm:pl-4">
                   {storeLinks.map(({ name: store, url, icon }) => {
                     const StoreIcon = icon;
                     return (
