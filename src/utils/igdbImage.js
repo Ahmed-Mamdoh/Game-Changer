@@ -29,9 +29,25 @@ function pickBackdrop(game, size = "t_1080p") {
   return formatIGDBImage(art?.url || coverUrl, size);
 }
 
+// IGDB backdrop sizes by width, so high-DPI screens get the 2x file and
+// phones skip the full-size one. Pair with sizes="max(100vw, 178vh)": with
+// object-cover a 16:9 image must be at least 16/9 of the screen height wide.
+const BACKDROP_SIZES = [
+  ["t_720p", 1280],
+  ["t_1080p", 1920],
+  ["t_1080p_2x", 3840],
+];
+
+function backdropSrcSet(game) {
+  if (!pickBackdrop(game)) return undefined;
+  return BACKDROP_SIZES.map(
+    ([size, width]) => `${pickBackdrop(game, size)} ${width}w`,
+  ).join(", ");
+}
+
 function coverUrlOf(game, size = "t_cover_big") {
   const url = typeof game?.cover === "string" ? game.cover : game?.cover?.url;
   return formatIGDBImage(url, size);
 }
 
-export { formatIGDBImage, pickBackdrop, coverUrlOf };
+export { formatIGDBImage, pickBackdrop, backdropSrcSet, coverUrlOf };

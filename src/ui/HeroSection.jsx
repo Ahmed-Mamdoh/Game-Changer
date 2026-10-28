@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { UserToken } from "@/hooks/useUserToken";
 import { useGetUserGames } from "@/features/User/hooks/useGetUserGames";
 import { STATUS_LABELS } from "@/features/games/hooks/useQuickStatus";
-import { coverUrlOf, pickBackdrop } from "@/utils/igdbImage";
+import { backdropSrcSet, coverUrlOf, pickBackdrop } from "@/utils/igdbImage";
 
 const SHELF_SIZE = 8;
 
@@ -78,6 +78,8 @@ function HeroSection({ popularGames = [], isLoading }) {
           <img
             key={game.id}
             src={pickBackdrop(game)}
+            srcSet={backdropSrcSet(game)}
+            sizes="max(100vw, 178vh)"
             alt=""
             loading={i === 0 ? "eager" : "lazy"}
             fetchPriority={i === 0 ? "high" : "low"}

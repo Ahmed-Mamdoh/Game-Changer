@@ -1,7 +1,7 @@
 import { Helmet } from "react-helmet-async";
 import { AuthForm } from "./../features/Auth/AuthForm";
 import { useGetGameSection } from "@/features/games/hooks/useGetGameSection";
-import { pickBackdrop } from "@/utils/igdbImage";
+import { backdropSrcSet, pickBackdrop } from "@/utils/igdbImage";
 function Auth() {
   const { data: games } = useGetGameSection("total_rating_count", 16);
   const backdropGame = Array.isArray(games) ? games[1] || games[0] : null;
@@ -25,6 +25,8 @@ function Auth() {
         {backdropGame && (
           <img
             src={pickBackdrop(backdropGame)}
+            srcSet={backdropSrcSet(backdropGame)}
+            sizes="max(100vw, 178vh)"
             alt=""
             className="art-fade absolute inset-0 -z-10 h-full w-full object-cover brightness-90"
           />

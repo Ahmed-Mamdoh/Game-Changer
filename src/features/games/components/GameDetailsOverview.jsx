@@ -3,7 +3,7 @@ import { useGetUserGameReview } from "@/features/User/hooks/useGetUserGameReview
 import { UserToken } from "@/hooks/useUserToken";
 import Spinner from "@/ui/Spinner";
 import { stageOf } from "@/utils/gameStage";
-import { coverUrlOf, pickBackdrop } from "@/utils/igdbImage";
+import { backdropSrcSet, coverUrlOf, pickBackdrop } from "@/utils/igdbImage";
 import { formatDate } from "date-fns";
 import { FaPlaystation, FaSteam, FaXbox } from "react-icons/fa";
 import { SiEpicgames, SiGogdotcom } from "react-icons/si";
@@ -100,7 +100,9 @@ function GameDetailsOverview({ data }) {
     <>
       <section className="relative isolate flex min-h-dvh w-full items-end overflow-hidden">
         <img
-          src={pickBackdrop(game, "t_1080p_2x")}
+          src={pickBackdrop(game)}
+          srcSet={backdropSrcSet(game)}
+          sizes="max(100vw, 178vh)"
           alt=""
           loading="eager"
           fetchPriority="high"
