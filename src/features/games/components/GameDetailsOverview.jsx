@@ -317,6 +317,7 @@ function GameDetailsOverview({ data }) {
         confirmLabel="Remove game"
         pendingLabel="Removing…"
         onConfirm={removeGame}
+        art={coverUrlOf(game, "t_cover_big")}
       />
     </>
   );

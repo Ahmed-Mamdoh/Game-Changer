@@ -409,6 +409,42 @@
   }
 }
 
+/* Confirm dialog: rises a few pixels into place and drops back out faster.
+   The badge on the art lands a beat after the panel so the eye goes to it. */
+.confirm-panel[data-state="open"] {
+  animation: confirm-in 240ms var(--ease-out-expo);
+}
+.confirm-panel[data-state="closed"] {
+  animation: confirm-out 150ms var(--ease-out-expo);
+}
+.confirm-overlay[data-state="open"] {
+  animation: sheet-fade 200ms ease-out;
+}
+.confirm-overlay[data-state="closed"] {
+  animation: sheet-fade 150ms ease-out reverse;
+}
+.confirm-badge {
+  animation: confirm-badge-in 320ms 90ms var(--ease-out-expo) backwards;
+}
+@keyframes confirm-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.97);
+  }
+}
+@keyframes confirm-out {
+  to {
+    opacity: 0;
+    transform: translateY(4px) scale(0.98);
+  }
+}
+@keyframes confirm-badge-in {
+  from {
+    opacity: 0;
+    transform: scale(0.6) rotate(-12deg);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
