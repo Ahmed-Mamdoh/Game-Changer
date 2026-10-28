@@ -87,12 +87,12 @@ function StarRating({ value, onChange }) {
   );
 }
 
-function LogGameDialog({ game, userGame, userGameReview }) {
+function LogGameDialog({ game, userGame, userGameReview, onRemove }) {
   const { id, name, first_release_date: releaseDate } = game;
   const user_id = UserToken()?.user?.id;
   const queryClient = useQueryClient();
   const { data: timeToBeat } = useGetTimeToBeat();
-  const { handleDeleteGame, handleFavoriteChange } = useUserGameActions(id);
+  const { handleFavoriteChange } = useUserGameActions(id);
   const [open, setOpen] = useState(false);
   const [isFavorite, setIsFavorite] = useState(Boolean(userGame?.is_favorite));
 
@@ -162,9 +162,9 @@ function LogGameDialog({ game, userGame, userGameReview }) {
   }
 
   function removeFromLibrary() {
-    // Close first so the confirm prompt isn't trapped behind the dialog
+    // Close first so the confirm prompt doesn't stack on top of this dialog
     setOpen(false);
-    handleDeleteGame();
+    onRemove();
   }
 
   return (

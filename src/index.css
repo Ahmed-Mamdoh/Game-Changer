@@ -235,6 +235,18 @@
     @apply cursor-not-allowed opacity-50;
   }
 
+  /* Destructive confirm: only inside a confirm dialog, never on a page */
+  .btn-danger {
+    @apply bg-pulse-error text-on-action inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-md px-5 text-sm font-semibold whitespace-nowrap;
+    transition: filter 120ms ease-out;
+  }
+  .btn-danger:hover {
+    filter: brightness(1.08);
+  }
+  .btn-danger:disabled {
+    @apply cursor-wait opacity-60;
+  }
+
   /* Over game art: translucent dark plate so it reads on any image */
   .btn-on-art {
     @apply text-text-main inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-md border border-white/15 bg-black/45 px-5 text-sm font-semibold whitespace-nowrap backdrop-blur-md;

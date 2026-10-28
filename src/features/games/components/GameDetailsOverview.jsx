@@ -5,7 +5,10 @@ import Spinner from "@/ui/Spinner";
 import { stageOf } from "@/utils/gameStage";
 import BackdropImage from "@/ui/BackdropImage";
 import { coverUrlOf } from "@/utils/igdbImage";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { formatDate } from "date-fns";
+import { Trash2 } from "lucide-react";
+import { useState } from "react";
 import { FaPlaystation, FaSteam, FaXbox } from "react-icons/fa";
 import { SiEpicgames, SiGogdotcom } from "react-icons/si";
 import { Link } from "react-router-dom";
@@ -15,6 +18,7 @@ import {
   STATUS_LABELS,
   useQuickStatus,
 } from "../hooks/useQuickStatus";
+import { useRemoveGame } from "../hooks/useRemoveGame";
 import LogGameDialog from "./LogGameDialog";
 
 const STORES = [
@@ -26,6 +30,12 @@ const STORES = [
 ];
 
 const hoursOf = (seconds) => (seconds ? Math.round(seconds / 3600) : null);
+
+// ["a", "b", "c"] -> "a, b and c"
+const listOf = (items) =>
+  items.length > 1
+    ? `${items.slice(0, -1).join(", ")} and ${items.at(-1)}`
+    : items[0];
 
 function Fact({ label, value }) {
   return (
@@ -72,16 +82,33 @@ function GameDetailsOverview({ data }) {
   const { data: userGameReview, isLoading: isLoadingUserGameReview } =
     useGetUserGameReview({ user_id });
   const { statusOf, setStatus } = useQuickStatus();
+  const { removeGame } = useRemoveGame(game);
+  const [isRemoveOpen, setIsRemoveOpen] = useState(false);
 
   if (isLoadingUserGame || isLoadingUserGameReview) return <Spinner />;
 
   const isReleased = releaseDate && new Date(releaseDate * 1000) < new Date();
-  const savedStatus = userGame?.data?.[0]?.status || null;
+  const savedGame = userGame?.data?.[0];
+  const savedReview = userGameReview?.data?.[0];
+  const savedStatus = savedGame?.status || null;
   const currentStatus = statusOf(id) ?? savedStatus;
   const isLogged = Boolean(savedStatus) && savedStatus !== "to play";
   const statusOptions = isReleased
     ? ["to play", "playing", "finished", "dropped"]
     : ["to play"];
+
+  // What removal would throw away beyond the status itself
+  const loggedParts = [
+    savedReview?.rating && `${savedReview.rating}-star rating`,
+    savedReview?.review && "review",
+    savedGame?.hours_played && `${savedGame.hours_played} h played`,
+  ].filter(Boolean);
+
+  // A bare status is one click to restore, so only a log is worth a confirm
+  function requestRemove() {
+    if (loggedParts.length) setIsRemoveOpen(true);
+    else removeGame();
+  }
 
   const stage = stageOf(game);
   const StageIcon = stage?.icon;
@@ -199,7 +226,17 @@ function GameDetailsOverview({ data }) {
                       type="button"
                       role="radio"
                       aria-checked={currentStatus === status}
-                      onClick={() => setStatus(game, status)}
+                      title={
+                        currentStatus === status
+                          ? "Click again to remove from library"
+                          : undefined
+                      }
+                      // Pressing the current status again clears it
+                      onClick={() =>
+                        currentStatus === status
+                          ? requestRemove()
+                          : setStatus(game, status)
+                      }
                       className="flex-1 justify-center px-2 sm:flex-none sm:px-3.5"
                     >
                       <Icon className={`hidden h-3.5 w-3.5 sm:block ${color}`} />
@@ -213,9 +250,22 @@ function GameDetailsOverview({ data }) {
                 <LogGameDialog
                   key={savedStatus}
                   game={game}
-                  userGame={userGame?.data?.[0]}
-                  userGameReview={userGameReview?.data?.[0]}
+                  userGame={savedGame}
+                  userGameReview={savedReview}
+                  onRemove={requestRemove}
                 />
+              )}
+
+              {savedStatus && (
+                <button
+                  type="button"
+                  onClick={requestRemove}
+                  title="Remove from library"
+                  aria-label={`Remove ${name} from library`}
+                  className="text-text-main hover:text-text-error flex h-10 w-10 cursor-pointer items-center justify-center rounded-md border border-white/15 bg-black/45 backdrop-blur-md transition-colors duration-100 hover:bg-black/65"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
               )}
 
               {storeLinks.length > 0 && (
@@ -258,6 +308,16 @@ function GameDetailsOverview({ data }) {
           </p>
         </section>
       )}
+
+      <ConfirmDialog
+        open={isRemoveOpen}
+        onOpenChange={setIsRemoveOpen}
+        title={`Remove ${name} from your library?`}
+        description={`Your ${listOf([`${STATUS_LABELS[savedStatus]} status`, ...loggedParts])} will be deleted. This can't be undone.`}
+        confirmLabel="Remove game"
+        pendingLabel="Removing…"
+        onConfirm={removeGame}
+      />
     </>
   );
 }
