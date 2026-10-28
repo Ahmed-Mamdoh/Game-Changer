@@ -7,7 +7,7 @@ import BackdropImage from "@/ui/BackdropImage";
 import { coverUrlOf } from "@/utils/igdbImage";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { formatDate } from "date-fns";
-import { Bookmark, Trash2 } from "lucide-react";
+import { Bookmark, ChevronDown, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { FaPlaystation, FaSteam, FaXbox } from "react-icons/fa";
 import { SiEpicgames, SiGogdotcom } from "react-icons/si";
@@ -63,9 +63,9 @@ const companiesOf = (involved, role) =>
 function Detail({ label, value }) {
   if (!value) return null;
   return (
-    <div className="flex items-baseline justify-between gap-6 px-4 py-3 text-sm">
-      <dt className="text-text-dim shrink-0">{label}</dt>
-      <dd className="text-text-main text-right">{value}</dd>
+    <div className="grid grid-cols-[6.5rem_1fr] gap-4 px-4 py-3 text-sm">
+      <dt className="text-text-dim">{label}</dt>
+      <dd className="text-text-main">{value}</dd>
     </div>
   );
 }
@@ -89,6 +89,7 @@ function GameDetailsOverview({ data }) {
     name,
     first_release_date: releaseDate,
     summary,
+    storyline,
     total_rating: rating,
     total_rating_count: ratingCount,
     genres,
@@ -109,6 +110,7 @@ function GameDetailsOverview({ data }) {
   const { statusOf, setStatus } = useQuickStatus();
   const { removeGame } = useRemoveGame(game);
   const [isRemoveOpen, setIsRemoveOpen] = useState(false);
+  const [isStoryOpen, setIsStoryOpen] = useState(false);
 
   if (isLoadingUserGame || isLoadingUserGameReview) return <Spinner />;
 
@@ -366,18 +368,49 @@ function GameDetailsOverview({ data }) {
         </div>
       </section>
 
-      {(summary || details.some((d) => d.value)) && (
+      {(summary || storyline || details.some((d) => d.value)) && (
         <section
           id="About"
           aria-label={`About ${name}`}
           className="mx-auto w-full max-w-[1440px] px-4 pt-14 md:px-8"
         >
           <h2 className="mb-4">About</h2>
-          <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_24rem] lg:gap-12">
-            {summary && (
-              <p className="text-text-main max-w-[65ch] text-base leading-relaxed text-pretty md:text-lg">
-                {summary}
-              </p>
+          {/* Text and panel stay side by side instead of drifting apart on wide screens */}
+          <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,42rem)_22rem] lg:gap-16">
+            {(summary || storyline) && (
+              <div className="max-w-[65ch]">
+                {summary && (
+                  <p className="text-text-main text-base leading-relaxed text-pretty md:text-lg">
+                    {summary}
+                  </p>
+                )}
+                {storyline && (
+                  <>
+                    <div
+                      id="game-storyline"
+                      hidden={!isStoryOpen}
+                      className="mt-6"
+                    >
+                      <h3 className="mb-2 text-lg">Story</h3>
+                      <p className="text-text-dim leading-relaxed text-pretty whitespace-pre-line">
+                        {storyline}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      aria-expanded={isStoryOpen}
+                      aria-controls="game-storyline"
+                      onClick={() => setIsStoryOpen((open) => !open)}
+                      className="text-text-brand hover:text-pulse-primary mt-4 inline-flex cursor-pointer items-center gap-1 text-sm font-semibold transition-colors duration-100"
+                    >
+                      {isStoryOpen ? "Show less" : "Read more"}
+                      <ChevronDown
+                        className={`h-4 w-4 transition-transform duration-200 ${isStoryOpen ? "rotate-180" : ""}`}
+                      />
+                    </button>
+                  </>
+                )}
+              </div>
             )}
             {details.some((d) => d.value) && (
               <dl className="border-stroke-subtle bg-bg-surface divide-stroke-subtle w-full divide-y rounded-lg border lg:col-start-2">

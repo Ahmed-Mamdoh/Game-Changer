@@ -275,7 +275,7 @@ export async function getFreeGameData(search) {
 export async function getOneGame(id) {
   return igdbFetch(
     "games",
-    `fields name,cover.url,artworks.url,artworks.artwork_type,artworks.width,first_release_date,summary,keywords.name,
+    `fields name,cover.url,artworks.url,artworks.artwork_type,artworks.width,first_release_date,summary,storyline,keywords.name,
       age_ratings.rating,age_ratings.category,player_perspectives.name,
       total_rating,total_rating_count,game_status,
       genres.name,themes.name,
