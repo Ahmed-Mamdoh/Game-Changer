@@ -39,6 +39,8 @@ export function filtersFromParams(searchParams, libraryIds = []) {
   const rating = ids(searchParams.get("rating"))[0];
   const released = parseReleased(searchParams.get("released"));
   const stage = STAGE_CLAUSES[searchParams.get("stage")];
+  // Set from a developer or publisher link on a game page
+  const company = ids(searchParams.get("company"))[0];
   const platform = ids(searchParams.get("platform")).join(",") || null;
   const player_perspectives =
     ids(searchParams.get("player_perspectives")).join(",") || null;
@@ -69,6 +71,8 @@ export function filtersFromParams(searchParams, libraryIds = []) {
   if (rating) filters.push(`total_rating >= ${rating}`);
 
   if (stage) filters.push(stage());
+
+  if (company) filters.push(`involved_companies.company = ${company}`);
 
   if (searchParams.get("hideLibrary") === "true" && libraryIds.length)
     filters.push(`id != (${libraryIds.join(",")})`);

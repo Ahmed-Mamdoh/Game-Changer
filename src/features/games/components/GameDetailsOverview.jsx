@@ -50,15 +50,26 @@ function Fact({ label, value }) {
   );
 }
 
-// Distinct company names for one role ("developer" or "publisher")
-const companiesOf = (involved, role) =>
-  [
-    ...new Set(
-      involved?.filter((c) => c[role]).map((c) => c.company?.name) ?? [],
-    ),
-  ]
-    .filter(Boolean)
-    .join(", ");
+// Distinct companies for one role ("developer" or "publisher"), each a link
+// to Browse filtered by that company
+function companiesOf(involved, role) {
+  const companies = new Map();
+  for (const c of involved ?? []) {
+    if (c[role] && c.company?.id) companies.set(c.company.id, c.company.name);
+  }
+  if (!companies.size) return null;
+  return [...companies].map(([companyId, companyName], i) => (
+    <span key={companyId}>
+      {i > 0 && ", "}
+      <Link
+        to={`/games/allGames?company=${companyId}`}
+        className="hover:text-text-brand underline decoration-white/25 underline-offset-4 transition-colors duration-100 hover:decoration-current"
+      >
+        {companyName}
+      </Link>
+    </span>
+  ));
+}
 
 function Detail({ label, value }) {
   if (!value) return null;
@@ -375,8 +386,7 @@ function GameDetailsOverview({ data }) {
           className="mx-auto w-full max-w-[1440px] px-4 pt-14 md:px-8"
         >
           <h2 className="mb-4">About</h2>
-          {/* Text and panel stay side by side instead of drifting apart on wide screens */}
-          <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,42rem)_22rem] lg:gap-16">
+          <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_24rem] lg:gap-12">
             {(summary || storyline) && (
               <div className="max-w-[65ch]">
                 {summary && (

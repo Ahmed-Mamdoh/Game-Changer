@@ -1,5 +1,6 @@
-import { X } from "lucide-react";
+import { Building2, X } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
+import { useGetCompany } from "../hooks/useGetCompany";
 import {
   activeChips,
   withoutFilters,
@@ -11,13 +12,42 @@ import {
 function ActiveFilterChips({ menus, className = "" }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const chips = activeChips(searchParams, menus);
-  if (chips.length === 0) return null;
+  // The company filter has no menu, only links from game pages
+  const companyId = searchParams.get("company");
+  const { company } = useGetCompany(companyId);
+  if (chips.length === 0 && !companyId) return null;
+
+  function removeCompany() {
+    const next = new URLSearchParams(searchParams);
+    next.delete("company");
+    next.delete("page");
+    setSearchParams(next);
+  }
+
+  const companyLabel = company?.name ?? "Company";
 
   return (
     <ul
       aria-label="Active filters"
       className={`no-scrollbar flex items-center gap-1.5 max-sm:-mx-4 max-sm:overflow-x-auto max-sm:px-4 sm:flex-wrap ${className}`}
     >
+      {companyId && (
+        <li className="shrink-0">
+          <button
+            type="button"
+            onClick={removeCompany}
+            aria-label={`Remove ${companyLabel}`}
+            className="border-stroke-brand bg-pulse-primary/10 text-text-main hover:bg-pulse-primary/20 flex h-8 cursor-pointer items-center gap-1.5 rounded-full border pr-2 pl-3 text-sm whitespace-nowrap transition-colors duration-100"
+          >
+            <Building2
+              className="text-text-dim h-4 w-4 shrink-0"
+              aria-hidden="true"
+            />
+            {companyLabel}
+            <X className="text-text-dim h-3.5 w-3.5" aria-hidden="true" />
+          </button>
+        </li>
+      )}
       {chips.map(({ key, label, filter, item }) => (
         <li key={key} className="shrink-0">
           <button

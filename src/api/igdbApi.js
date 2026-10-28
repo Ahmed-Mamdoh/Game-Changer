@@ -214,7 +214,8 @@ export async function searchGames({
 
 // Typeahead lookup. IGDB's `search` matches whole words only, so a half-typed
 // title ("zeld") finds nothing; a name-contains query fills that gap.
-const QUICK_FIELDS = "name,cover.url,first_release_date,total_rating_count,hypes";
+const QUICK_FIELDS =
+  "name,cover.url,first_release_date,total_rating_count,hypes";
 
 export async function quickSearchGames(search, poolSize = 50) {
   const escaped = escapeIgdbString(search);
@@ -330,6 +331,10 @@ export async function getTimeToBeat(id) {
     "game_time_to_beats",
     `fields completely,hastily,normally; limit 500; where game_id = ${id};`,
   );
+}
+
+export async function getCompany(id) {
+  return igdbFetch("companies", `fields name; where id = ${id};`);
 }
 
 export async function getGamesForRecommending({ platform, playedGamesIds }) {
