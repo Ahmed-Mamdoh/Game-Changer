@@ -50,6 +50,26 @@ function Fact({ label, value }) {
   );
 }
 
+// Distinct company names for one role ("developer" or "publisher")
+const companiesOf = (involved, role) =>
+  [
+    ...new Set(
+      involved?.filter((c) => c[role]).map((c) => c.company?.name) ?? [],
+    ),
+  ]
+    .filter(Boolean)
+    .join(", ");
+
+function Detail({ label, value }) {
+  if (!value) return null;
+  return (
+    <div className="flex items-baseline justify-between gap-6 px-4 py-3 text-sm">
+      <dt className="text-text-dim shrink-0">{label}</dt>
+      <dd className="text-text-main text-right">{value}</dd>
+    </div>
+  );
+}
+
 function TagLinks({ items, param }) {
   return items?.map((item) => (
     <Link
@@ -75,6 +95,9 @@ function GameDetailsOverview({ data }) {
     themes,
     game_modes,
     external_games,
+    involved_companies,
+    platforms,
+    player_perspectives,
   } = game;
 
   const user_id = UserToken()?.user?.id;
@@ -116,6 +139,25 @@ function GameDetailsOverview({ data }) {
   const StageIcon = stage?.icon;
   const ttb = timeToBeat?.[0];
   const year = releaseDate ? new Date(releaseDate * 1000).getFullYear() : null;
+
+  const details = [
+    { label: "Developer", value: companiesOf(involved_companies, "developer") },
+    { label: "Publisher", value: companiesOf(involved_companies, "publisher") },
+    {
+      label: "Release date",
+      value: releaseDate
+        ? formatDate(new Date(releaseDate * 1000), "d MMM yyyy")
+        : null,
+    },
+    {
+      label: "Platforms",
+      value: platforms?.map((p) => p.abbreviation ?? p.name).join(", "),
+    },
+    {
+      label: "Perspective",
+      value: player_perspectives?.map((p) => p.name).join(", "),
+    },
+  ];
 
   const shownStores = new Set();
   const storeLinks = (external_games || [])
@@ -324,11 +366,27 @@ function GameDetailsOverview({ data }) {
         </div>
       </section>
 
-      {summary && (
-        <section className="mx-auto w-full max-w-[1440px] px-4 pt-6 md:px-8">
-          <p className="text-text-main max-w-[65ch] text-base leading-relaxed md:text-lg">
-            {summary}
-          </p>
+      {(summary || details.some((d) => d.value)) && (
+        <section
+          id="About"
+          aria-label={`About ${name}`}
+          className="mx-auto w-full max-w-[1440px] px-4 pt-14 md:px-8"
+        >
+          <h2 className="mb-4">About</h2>
+          <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_24rem] lg:gap-12">
+            {summary && (
+              <p className="text-text-main max-w-[65ch] text-base leading-relaxed text-pretty md:text-lg">
+                {summary}
+              </p>
+            )}
+            {details.some((d) => d.value) && (
+              <dl className="border-stroke-subtle bg-bg-surface divide-stroke-subtle w-full divide-y rounded-lg border lg:col-start-2">
+                {details.map((detail) => (
+                  <Detail key={detail.label} {...detail} />
+                ))}
+              </dl>
+            )}
+          </div>
         </section>
       )}
 
