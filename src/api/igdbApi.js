@@ -73,7 +73,7 @@ function browseScope({ filters = [], sortBy, isUpcoming }) {
 }
 
 const LIST_FIELDS =
-  "name,cover.url,first_release_date,genres.name,artworks.url,artworks.artwork_type,total_rating_count,hypes,game_status";
+  "name,cover.url,first_release_date,genres.name,artworks.url,artworks.artwork_type,artworks.width,total_rating_count,hypes,game_status";
 
 export async function getAllGames({
   filters = [],
@@ -241,7 +241,7 @@ export async function quickSearchGames(search, poolSize = 50) {
 export async function getUserGamesData(userGamesIds) {
   return igdbFetch(
     "games",
-    `fields name,cover.url,first_release_date,genres.name,themes.name,artworks.url,artworks.artwork_type;
+    `fields name,cover.url,first_release_date,genres.name,themes.name,artworks.url,artworks.artwork_type,artworks.width;
       limit 500;
       where id = (${userGamesIds.join(",")});
       `,
@@ -255,7 +255,7 @@ export async function searchReleasedGamesByName(name, limit = 10) {
   return igdbFetch(
     "games",
     `search "${escaped}";
-      fields name,cover.url,first_release_date,genres.name,artworks.url,artworks.artwork_type;
+      fields name,cover.url,first_release_date,genres.name,artworks.url,artworks.artwork_type,artworks.width;
       where game_type = (0,8,9) & version_parent = null &
       first_release_date <= ${Math.floor(Date.now() / 1000)};
       limit ${limit};`,
@@ -275,12 +275,12 @@ export async function getFreeGameData(search) {
 export async function getOneGame(id) {
   return igdbFetch(
     "games",
-    `fields name,cover.url,artworks.url,artworks.artwork_type,first_release_date,summary,keywords.name,
+    `fields name,cover.url,artworks.url,artworks.artwork_type,artworks.width,first_release_date,summary,keywords.name,
       age_ratings.rating,age_ratings.category,player_perspectives.name,
       total_rating,total_rating_count,game_status,
       genres.name,themes.name,
       involved_companies.company.name,
-      screenshots.url,
+      screenshots.url,screenshots.width,
       dlcs.name,dlcs.cover.url,
       external_games.url,external_games.category,
       franchises.name,
