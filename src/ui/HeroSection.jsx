@@ -26,9 +26,20 @@ function HeroSection({ popularGames = [], isLoading }) {
     }));
 
   const isContinue = Boolean(userId) && playing.length > 0;
-  const shelf = (isContinue ? playing : popularGames)
-    .filter((g) => g?.id)
-    .slice(0, SHELF_SIZE);
+  // Playing games come first; popular games fill the rest of the shelf so a
+  // short library doesn't leave it looking empty
+  const playingShelf = isContinue
+    ? playing.filter((g) => g?.id).slice(0, SHELF_SIZE)
+    : [];
+  const playingIds = new Set(playingShelf.map((g) => g.id));
+  const popularShelf = popularGames
+    .filter((g) => g?.id && !playingIds.has(g.id))
+    .slice(0, SHELF_SIZE - playingShelf.length);
+  const shelf = [...playingShelf, ...popularShelf];
+  const groups = [
+    { label: "Continue playing", games: playingShelf, offset: 0 },
+    { label: "Popular now", games: popularShelf, offset: playingShelf.length },
+  ].filter((g) => g.games.length);
 
   const [focusIndex, setFocusIndex] = useState(0);
   const tileRefs = useRef([]);
@@ -90,7 +101,7 @@ function HeroSection({ popularGames = [], isLoading }) {
         {focused ? (
           <div className="max-w-2xl">
             <p className="text-text-dim tabular mb-2 text-sm">
-              {isContinue
+              {focused.status
                 ? `${STATUS_LABELS[focused.status]} · ${focused.hours} h played`
                 : [year, genres].filter(Boolean).join(" · ")}
             </p>
@@ -105,7 +116,7 @@ function HeroSection({ popularGames = [], isLoading }) {
                   className="btn-primary h-11 px-6"
                   onClick={() => navigate(`/game/${focused.id}`)}
                 >
-                  {isContinue ? "Continue" : "Open game"}
+                  {focused.status ? "Continue" : "Open game"}
                 </button>
               ) : (
                 <button
@@ -138,49 +149,68 @@ function HeroSection({ popularGames = [], isLoading }) {
 
       {/* Shelf */}
       <div className="mx-auto w-full max-w-[1440px] px-4 pb-6 md:px-8">
-        <h2 className="text-text-dim mb-3 text-sm font-semibold tracking-normal">
-          {isContinue ? "Continue playing" : "Popular now"}
-        </h2>
         <div
           role="listbox"
           aria-label={isContinue ? "Continue playing" : "Popular now"}
           onKeyDown={onShelfKey}
           // Inset padding leaves room for the focused tile's scale + outline,
           // which the scroll container would otherwise clip
-          className="no-scrollbar -mx-4 flex gap-3 overflow-x-auto px-4 py-3 md:-mx-3 md:px-3"
+          className="no-scrollbar -mx-4 flex gap-5 overflow-x-auto px-4 py-3 md:-mx-3 md:px-3"
         >
-          {shelf.map((game, i) => (
-            <button
-              key={game.id}
-              ref={(el) => (tileRefs.current[i] = el)}
-              role="option"
-              aria-selected={i === index}
-              aria-label={game.name}
-              onMouseEnter={() => setFocusIndex(i)}
-              onFocus={() => setFocusIndex(i)}
-              onClick={() => navigate(`/game/${game.id}`)}
-              className={`relative aspect-[3/4] w-24 shrink-0 cursor-pointer overflow-hidden rounded-md outline-2 outline-offset-[3px] transition-[transform,outline-color] duration-150 ease-out md:w-28 ${
-                i === index
-                  ? "outline-pulse-accent scale-[1.04]"
-                  : "outline-transparent"
-              }`}
-            >
-              <img
-                src={coverUrlOf(game)}
-                alt=""
-                loading="lazy"
-                className="h-full w-full object-cover"
-              />
-            </button>
+          {groups.map((group, g) => (
+            <div key={group.label} className="flex shrink-0 gap-5">
+              {g > 0 && (
+                <div
+                  className="bg-stroke-medium w-px self-stretch"
+                  aria-hidden="true"
+                />
+              )}
+              <div role="group" aria-label={group.label}>
+                <h2 className="text-text-dim mb-3 text-sm font-semibold tracking-normal">
+                  {group.label}
+                </h2>
+                <div className="flex gap-3">
+                  {group.games.map((game, j) => {
+                    const i = group.offset + j;
+                    return (
+                      <button
+                        key={game.id}
+                        ref={(el) => (tileRefs.current[i] = el)}
+                        role="option"
+                        aria-selected={i === index}
+                        aria-label={game.name}
+                        onMouseEnter={() => setFocusIndex(i)}
+                        onFocus={() => setFocusIndex(i)}
+                        onClick={() => navigate(`/game/${game.id}`)}
+                        className={`relative aspect-[3/4] w-24 shrink-0 cursor-pointer overflow-hidden rounded-md outline-2 outline-offset-[3px] transition-[transform,outline-color] duration-150 ease-out md:w-28 ${
+                          i === index
+                            ? "outline-pulse-accent scale-[1.04]"
+                            : "outline-transparent"
+                        }`}
+                      >
+                        <img
+                          src={coverUrlOf(game)}
+                          alt=""
+                          loading="lazy"
+                          className="h-full w-full object-cover"
+                        />
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
           ))}
-          {isLoading &&
-            !shelf.length &&
-            Array.from({ length: 6 }).map((_, i) => (
-              <div
-                key={i}
-                className="bg-bg-chip aspect-[3/4] w-24 shrink-0 animate-pulse rounded-md md:w-28"
-              />
-            ))}
+          {isLoading && !shelf.length && (
+            <div className="flex gap-3">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="bg-bg-chip aspect-[3/4] w-24 shrink-0 animate-pulse rounded-md md:w-28"
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </section>
