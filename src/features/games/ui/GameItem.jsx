@@ -75,7 +75,7 @@ function GameItem({ game, className = "" }) {
 
   return (
     <article className={`group relative flex flex-col gap-2 ${className}`}>
-      <div className="bg-bg-surface relative isolate aspect-[3/4] w-full overflow-hidden rounded-md">
+      <div className="bg-bg-surface relative aspect-[3/4] w-full overflow-hidden rounded-md">
         {imageUrl ? (
           <img
             src={imageUrl}
