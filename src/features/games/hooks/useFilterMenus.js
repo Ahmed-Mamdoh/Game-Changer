@@ -1,4 +1,5 @@
 import {
+  BadgeCheck,
   Box,
   CalendarCheck,
   CalendarClock,
@@ -10,8 +11,11 @@ import {
   Crosshair,
   Crown,
   Ear,
+  Construction,
   Eye,
   Flame,
+  FlaskConical,
+  Hammer,
   Glasses,
   Globe,
   Handshake,
@@ -28,6 +32,7 @@ import {
   Type,
   User,
   Users,
+  Wrench,
 } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import { GENRE_ICONS, PLATFORM_ICONS, THEME_ICONS } from "../ui/filterIcons";
@@ -72,6 +77,14 @@ const STATUS = [
   { id: "dropped", name: "Dropped", icon: CircleX },
 ];
 
+// Development stage; ids map to IGDB clauses in useGetFiltersParams
+const STAGES = [
+  { id: "released", name: "Fully released", icon: BadgeCheck },
+  { id: "early_access", name: "Early access", icon: Construction },
+  { id: "beta", name: "Beta", icon: FlaskConical },
+  { id: "alpha", name: "Alpha", icon: Wrench },
+];
+
 // IGDB total_rating runs 0-100
 const RATINGS = [
   { id: "90", name: "90+ Exceptional" },
@@ -104,14 +117,15 @@ function releasedOptions(current) {
   return presets;
 }
 
-// Upcoming games have no platforms worth filtering yet, and no release date
-// or rating to filter on
+// Upcoming games have no platforms worth filtering yet, and no release date,
+// rating or development stage to filter on
 export const UPCOMING_FILTERS = {
   isUpcoming: true,
   showPlatform: false,
   showPerspective: false,
   showReleased: false,
   showRating: false,
+  showStage: false,
 };
 
 export function sortOptions({ isAccount, isUpcoming }) {
@@ -141,6 +155,7 @@ export function useFilterMenus({
   showPerspective = true,
   showReleased = true,
   showRating = true,
+  showStage = true,
 } = {}) {
   const [searchParams] = useSearchParams();
   const { data: genres, isLoading: isLoadingGenres } = useGetGenres();
@@ -217,6 +232,14 @@ export function useFilterMenus({
       sort: false,
       or: true,
       icon: Star,
+    },
+    showStage && {
+      category: STAGES,
+      name: "Stage",
+      paramName: "stage",
+      sort: false,
+      or: true,
+      icon: Hammer,
     },
   ].filter(Boolean);
 

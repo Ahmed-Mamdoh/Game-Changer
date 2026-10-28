@@ -14,6 +14,19 @@ export function parseReleased(value) {
   return from <= to ? { from, to } : { from: to, to: from };
 }
 
+// Midnight UTC today, so the query (and its cache key) stays the same all day
+const today = () => Math.floor(new Date().setUTCHours(0, 0, 0, 0) / 1000);
+
+// IGDB game_status ids. Most finished games have no status at all, so
+// "released" means no status (or Released) and already out.
+const STAGE_CLAUSES = {
+  released: () =>
+    `(game_status = null | game_status = 0) & first_release_date <= ${today()}`,
+  early_access: () => "game_status = 4",
+  beta: () => "game_status = 3",
+  alpha: () => "game_status = 2",
+};
+
 // Builds the IGDB filter clauses from the URL. Pure, so the empty state can
 // ask "how many games without this one filter?" without touching the URL.
 export function filtersFromParams(searchParams) {
@@ -22,6 +35,7 @@ export function filtersFromParams(searchParams) {
   const gameMode = ids(searchParams.get("gameMode"));
   const rating = ids(searchParams.get("rating"))[0];
   const released = parseReleased(searchParams.get("released"));
+  const stage = STAGE_CLAUSES[searchParams.get("stage")];
   const platform = ids(searchParams.get("platform")).join(",") || null;
   const player_perspectives =
     ids(searchParams.get("player_perspectives")).join(",") || null;
@@ -50,6 +64,8 @@ export function filtersFromParams(searchParams) {
   }
 
   if (rating) filters.push(`total_rating >= ${rating}`);
+
+  if (stage) filters.push(stage());
 
   if (released) {
     filters.push(
