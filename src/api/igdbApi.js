@@ -73,7 +73,7 @@ function browseScope({ filters = [], sortBy, isUpcoming }) {
 }
 
 const LIST_FIELDS =
-  "name,cover.url,first_release_date,genres.name,artworks.url,artworks.artwork_type,total_rating_count,hypes";
+  "name,cover.url,first_release_date,genres.name,artworks.url,artworks.artwork_type,total_rating_count,hypes,game_status";
 
 export async function getAllGames({
   filters = [],
@@ -277,7 +277,7 @@ export async function getOneGame(id) {
     "games",
     `fields name,cover.url,artworks.url,artworks.artwork_type,first_release_date,summary,keywords.name,
       age_ratings.rating,age_ratings.category,player_perspectives.name,
-      total_rating,total_rating_count,
+      total_rating,total_rating_count,game_status,
       genres.name,themes.name,
       involved_companies.company.name,
       screenshots.url,

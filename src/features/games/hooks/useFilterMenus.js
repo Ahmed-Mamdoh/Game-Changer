@@ -1,5 +1,4 @@
 import {
-  BadgeCheck,
   Box,
   CalendarCheck,
   CalendarClock,
@@ -11,10 +10,8 @@ import {
   Crosshair,
   Crown,
   Ear,
-  Construction,
   Eye,
   Flame,
-  FlaskConical,
   Hammer,
   Glasses,
   Globe,
@@ -32,9 +29,9 @@ import {
   Type,
   User,
   Users,
-  Wrench,
 } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
+import { STAGES } from "@/utils/gameStage";
 import { GENRE_ICONS, PLATFORM_ICONS, THEME_ICONS } from "../ui/filterIcons";
 import { parseReleased } from "./useGetFiltersParams";
 import { useGetGameModes } from "./useGetGameModes";
@@ -75,14 +72,6 @@ const STATUS = [
   { id: "finished", name: "Finished", icon: CircleCheck },
   { id: "playing", name: "Playing", icon: Play },
   { id: "dropped", name: "Dropped", icon: CircleX },
-];
-
-// Development stage; ids map to IGDB clauses in useGetFiltersParams
-const STAGES = [
-  { id: "released", name: "Fully released", icon: BadgeCheck },
-  { id: "early_access", name: "Early access", icon: Construction },
-  { id: "beta", name: "Beta", icon: FlaskConical },
-  { id: "alpha", name: "Alpha", icon: Wrench },
 ];
 
 // IGDB total_rating runs 0-100

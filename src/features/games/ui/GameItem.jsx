@@ -1,3 +1,4 @@
+import { stageOf } from "@/utils/gameStage";
 import { coverUrlOf } from "@/utils/igdbImage";
 import { formatDate, intervalToDuration, formatDistanceToNow } from "date-fns";
 import { Bookmark, Check, Clock, Play, Square } from "lucide-react";
@@ -72,6 +73,8 @@ function GameItem({ game, className = "" }) {
 
   const StoreIcon = STORE_ICONS[game?.freeOn];
   const StatusIcon = STATUS_ICONS[libraryStatus]?.icon;
+  const stage = stageOf(game);
+  const StageIcon = stage?.icon;
 
   return (
     <article className={`group relative flex flex-col gap-2 ${className}`}>
@@ -90,6 +93,13 @@ function GameItem({ game, className = "" }) {
           </div>
         )}
         <div className="border-stroke-subtle pointer-events-none absolute inset-0 rounded-md border" />
+
+        {stage && (
+          <span className="text-text-main pointer-events-none absolute bottom-1.5 left-1.5 flex items-center gap-1 rounded-sm border border-white/15 bg-black/65 px-1.5 py-0.5 text-[11px] font-semibold backdrop-blur-md">
+            <StageIcon className="text-pulse-warning h-3 w-3" />
+            {stage.name}
+          </span>
+        )}
 
         {/* Quick status: above the stretched link so it presses on its own */}
         <div className="absolute top-1.5 right-1.5 z-20 hidden gap-1 opacity-0 transition-opacity duration-100 group-focus-within:opacity-100 group-hover:opacity-100 [@media(hover:hover)]:flex">

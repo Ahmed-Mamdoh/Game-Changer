@@ -2,6 +2,7 @@ import { useGetUserGame } from "@/features/User/hooks/useGetUserGame";
 import { useGetUserGameReview } from "@/features/User/hooks/useGetUserGameReview";
 import { UserToken } from "@/hooks/useUserToken";
 import Spinner from "@/ui/Spinner";
+import { stageOf } from "@/utils/gameStage";
 import { coverUrlOf, pickBackdrop } from "@/utils/igdbImage";
 import { formatDate } from "date-fns";
 import { FaPlaystation, FaSteam, FaXbox } from "react-icons/fa";
@@ -78,6 +79,8 @@ function GameDetailsOverview({ data }) {
     ? ["to play", "playing", "finished", "dropped"]
     : ["to play"];
 
+  const stage = stageOf(game);
+  const StageIcon = stage?.icon;
   const ttb = timeToBeat?.[0];
   const year = releaseDate ? new Date(releaseDate * 1000).getFullYear() : null;
 
@@ -127,6 +130,15 @@ function GameDetailsOverview({ data }) {
                   .join(" · ")}
               </p>
               <h1 className="text-balance">{name}</h1>
+              {stage && (
+                <Link
+                  to={`/games/allGames?stage=${stage.id}`}
+                  className="text-text-main mt-3 inline-flex items-center gap-1.5 rounded-sm border border-white/15 bg-black/45 px-2.5 py-1 text-xs font-semibold backdrop-blur-md transition-colors duration-100 hover:bg-black/65"
+                >
+                  <StageIcon className="text-pulse-warning h-3.5 w-3.5" />
+                  {stage.name}
+                </Link>
+              )}
             </div>
 
             <div className="border-stroke-subtle grid w-full grid-cols-2 rounded-lg border bg-black/45 backdrop-blur-md sm:flex sm:w-fit sm:max-w-full">
