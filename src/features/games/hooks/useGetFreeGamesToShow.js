@@ -9,8 +9,14 @@ export function useGetFreeGamesToShow() {
   // get the names of the free games from gamerPower api
   const { data: freeGamesData, isLoading: isLoadingFreeGamesNames } =
     useGetFreePcGames();
-  // GamerPower can answer with an error object too
-  const freeGamesNames = Array.isArray(freeGamesData) ? freeGamesData : null;
+  // GamerPower can answer with an error object too, and keeps ended
+  // giveaways marked "Active" for a while, so drop the ones past end_date
+  const freeGamesNames = Array.isArray(freeGamesData)
+    ? freeGamesData.filter((game) => {
+        const end = new Date(game.end_date).getTime();
+        return !Number.isFinite(end) || end > Date.now();
+      })
+    : null;
 
   // clean the title to get only the name of the game
   // ex. inscryption (steam) xxxxxxx
@@ -61,16 +67,8 @@ export function useGetFreeGamesToShow() {
                 };
               }
 
-              // As last resort, use the first result with a warning
-              console.warn(
-                `No good match found for "${gamesCleanNames[i]}", using first result`,
-              );
-              return {
-                ...searchResult[0],
-                freeOn: freeOnPlatform[i],
-                endDate: freeGamesNames[i].end_date,
-                giveAwayLink: freeGamesNames[i].open_giveaway,
-              };
+              // No real match: skip it rather than show some other game
+              return null;
             }
 
             // Return matched game with additional data
@@ -87,6 +85,13 @@ export function useGetFreeGamesToShow() {
             return null;
           })
           .filter(Boolean) // Remove null entries
+          // Most rated first so a big game never hides behind small ones;
+          // ties keep GamerPower's order (by store value)
+          .sort(
+            (a, b) =>
+              (b.total_rating_count || 0) - (a.total_rating_count || 0) ||
+              (b.hypes || 0) - (a.hypes || 0),
+          )
       : [];
 
   return { dataToShow, isLoadingFreeGamesIgdbData, isLoadingFreeGamesNames };

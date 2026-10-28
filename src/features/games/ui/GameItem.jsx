@@ -142,11 +142,13 @@ function GameItem({ game, className = "" }) {
               {StoreIcon && <StoreIcon className="h-3.5 w-3.5" />}
               {game.freeOn}
             </a>
-            {countDown && (
+            {countDown ? (
               <span className="text-pulse-warning tabular flex items-center gap-1">
                 <Clock className="h-3.5 w-3.5" />
                 {formatCountdown(countDown)}
               </span>
+            ) : (
+              <span className="text-text-muted">While keys last</span>
             )}
           </div>
         )}

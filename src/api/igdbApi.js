@@ -251,7 +251,7 @@ export async function getFreeGameData(search) {
   const searchString = search ? `search "${escapeIgdbString(search)}";` : "";
   return igdbFetch(
     "games",
-    `fields name,cover.url;
+    `fields name,cover.url,total_rating_count,hypes;
       ${searchString};limit 1;
       `,
   );

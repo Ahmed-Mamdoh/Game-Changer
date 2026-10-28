@@ -11,7 +11,7 @@ export default async function handler(req, res) {
 
   try {
     const url =
-      "https://gamerpower.p.rapidapi.com/api/filter?platform=steam.gog.epic-games-store&type=game.beta&sort-by=value";
+      "https://gamerpower.p.rapidapi.com/api/filter?platform=steam.gog.epic-games-store&type=game&sort-by=value";
 
     const response = await fetch(url, {
       method: "GET",
