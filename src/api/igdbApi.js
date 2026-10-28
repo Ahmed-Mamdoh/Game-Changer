@@ -58,6 +58,20 @@ function buildGamesWhere({
       ${filtersString};`;
 }
 
+// Browse's default sort
+export const DEFAULT_BROWSE_SORT = "first_release_date";
+
+// Days-old releases are mostly tiny uploads nobody has heard of yet, so the
+// Newest sort only lists released games with some anticipation or ratings.
+const NEWEST_NOTABLE = "(hypes >= 10 | total_rating_count >= 10)";
+
+// Browse sorts that also narrow the list, so the count applies them too.
+function browseScope({ filters = [], sortBy, isUpcoming }) {
+  if (!isUpcoming && sortBy === "first_release_date")
+    return { filters: [...filters, NEWEST_NOTABLE], isReleased: true };
+  return { filters };
+}
+
 const LIST_FIELDS =
   "name,cover.url,first_release_date,genres.name,artworks.url,artworks.artwork_type,total_rating_count,hypes";
 
@@ -72,6 +86,7 @@ export async function getAllGames({
   player_perspectives,
 }) {
   const offset = (page - 1) * LIMIT;
+  const scope = browseScope({ filters, sortBy, isUpcoming });
 
   const sortByString = sortBy
     ? `sort ${sortBy} ${sortBy === "name" || (isUpcoming && sortBy === "first_release_date") ? "asc" : "desc"};`
@@ -83,7 +98,7 @@ export async function getAllGames({
       limit ${limit || LIMIT};
       offset ${offset};
       ${sortByString}
-      ${buildGamesWhere({ filters, platform, player_perspectives, isUpcoming, isReleased })}`,
+      ${buildGamesWhere({ platform, player_perspectives, isUpcoming, isReleased, ...scope })}`,
   );
 }
 
@@ -284,10 +299,16 @@ export async function getNumberOfResults({
   platform,
   player_perspectives,
   isUpcoming = false,
+  sortBy,
 }) {
   return igdbFetch(
     "games/count",
-    buildGamesWhere({ filters, platform, player_perspectives, isUpcoming }),
+    buildGamesWhere({
+      platform,
+      player_perspectives,
+      isUpcoming,
+      ...browseScope({ filters, sortBy, isUpcoming }),
+    }),
   );
 }
 

@@ -1,5 +1,6 @@
 import { memo } from "react";
 import { useSearchParams } from "react-router-dom";
+import { DEFAULT_BROWSE_SORT } from "@/api/igdbApi";
 import { sortOptions, useFilterMenus } from "../hooks/useFilterMenus";
 import { withoutFilters } from "../hooks/useFilterParams";
 import ActiveFilterChips from "./ActiveFilterChips";
@@ -37,7 +38,7 @@ function Filters({
             variant="segmented"
             className="max-sm:flex-1"
             defaultValue={
-              isAccount ? [] : isUpcoming ? ["hypes"] : ["total_rating_count"]
+              isAccount ? [] : isUpcoming ? ["hypes"] : [DEFAULT_BROWSE_SORT]
             }
           />
         )}

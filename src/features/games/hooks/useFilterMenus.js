@@ -126,8 +126,8 @@ export function sortOptions({ isAccount, isUpcoming }) {
       { id: "first_release_date", name: "Soonest", icon: CalendarClock },
     ];
   return [
-    { id: "total_rating_count", name: "Popular", icon: Flame },
     { id: "first_release_date", name: "Newest", icon: Sparkles },
+    { id: "total_rating_count", name: "Popular", icon: Flame },
   ];
 }
 

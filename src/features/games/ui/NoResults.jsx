@@ -1,7 +1,7 @@
 import { useQueries } from "@tanstack/react-query";
 import { SearchX } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
-import { getNumberOfResults } from "../../../api/igdbApi";
+import { getNumberOfResults, DEFAULT_BROWSE_SORT } from "../../../api/igdbApi";
 import { useFilterMenus } from "../hooks/useFilterMenus";
 import {
   activeChips,
@@ -16,6 +16,7 @@ function NoResults({ isUpcoming = false, menuOptions }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const { menus } = useFilterMenus(menuOptions);
   const search = searchParams.get("search");
+  const sortBy = searchParams.get("sortBy") || DEFAULT_BROWSE_SORT;
   const chips = activeChips(searchParams, menus);
 
   // Counts mirror useGetNumberOfResults, so they share its cache
@@ -26,7 +27,7 @@ function NoResults({ isUpcoming = false, menuOptions }) {
         filtersFromParams(next);
       const params = isUpcoming
         ? { filters, isUpcoming }
-        : { filters, platform, player_perspectives, isUpcoming };
+        : { filters, platform, player_perspectives, isUpcoming, sortBy };
       return {
         queryKey: [
           "numberOfResults",
@@ -34,6 +35,7 @@ function NoResults({ isUpcoming = false, menuOptions }) {
           filters,
           params.platform || null,
           params.player_perspectives || null,
+          params.sortBy || null,
         ],
         queryFn: () => getNumberOfResults(params),
         enabled: !search,

@@ -13,6 +13,7 @@ import {
   getGenres,
   getNumberOfResults,
   getThemes,
+  DEFAULT_BROWSE_SORT,
 } from "@/api/igdbApi";
 import useWishlistAlerts from "@/features/games/hooks/useWishlistAlerts";
 
@@ -36,16 +37,21 @@ function AppLayout() {
       queryFn: getGameModes,
     });
     queryClient.prefetchQuery({
-      queryKey: ["numberOfResults", "all", [], null, null],
-      queryFn: () => getNumberOfResults({ filters: [], isUpcoming: false }),
+      queryKey: ["numberOfResults", "all", [], null, null, DEFAULT_BROWSE_SORT],
+      queryFn: () =>
+        getNumberOfResults({
+          filters: [],
+          isUpcoming: false,
+          sortBy: DEFAULT_BROWSE_SORT,
+        }),
     });
     queryClient.prefetchQuery({
-      queryKey: ["numberOfResults", "upcoming", [], null, null],
+      queryKey: ["numberOfResults", "upcoming", [], null, null, null],
       queryFn: () => getNumberOfResults({ filters: [], isUpcoming: true }),
     });
     queryClient.prefetchQuery({
       queryKey: ["games", "all", 1, null, [], null, null, null],
-      queryFn: () => getAllGames({ sortBy: "total_rating_count", page: 1 }),
+      queryFn: () => getAllGames({ sortBy: DEFAULT_BROWSE_SORT, page: 1 }),
     });
     queryClient.prefetchQuery({
       queryKey: ["games", "upcoming", 1, null, [], undefined, null],

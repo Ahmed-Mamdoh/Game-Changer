@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getAllGames } from "../../../api/igdbApi";
+import { getAllGames, DEFAULT_BROWSE_SORT } from "../../../api/igdbApi";
 import { LIMIT } from "@/constants/constant";
 import useGetFiltersParams from "./useGetFiltersParams";
 import { useSearchGames } from "./useSearchGames";
@@ -26,7 +26,7 @@ export function useGetAllGames() {
     getAllGames({
       filters,
       platform,
-      sortBy: sortBy || "total_rating_count",
+      sortBy: sortBy || DEFAULT_BROWSE_SORT,
       page: pageNumber,
       player_perspectives,
     });
