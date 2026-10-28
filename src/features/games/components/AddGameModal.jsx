@@ -7,6 +7,7 @@ import {
   DialogFooter,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { UserToken } from "@/hooks/useUserToken";
@@ -189,12 +190,17 @@ function AddGameModal({ game, isUpdate = false, userGame, userGameReview }) {
             <div className="flex w-full flex-col gap-4 ">
               {/* Form header */}
               <div className="flex w-full flex-col items-center justify-center gap-1">
-                <h2>{isUpdate ? "Update Game" : "Add Game"}</h2>
-                <p>
-                  {isUpdate
-                    ? "Update game details"
-                    : "Add a new game to your list."}
-                </p>
+                {/* Unstyled Radix parts so the heading keeps its look */}
+                <DialogPrimitive.Title asChild>
+                  <h2>{isUpdate ? "Update Game" : "Add Game"}</h2>
+                </DialogPrimitive.Title>
+                <DialogPrimitive.Description asChild>
+                  <p>
+                    {isUpdate
+                      ? "Update game details"
+                      : "Add a new game to your list."}
+                  </p>
+                </DialogPrimitive.Description>
               </div>
 
               {/* Status and Rating fields */}

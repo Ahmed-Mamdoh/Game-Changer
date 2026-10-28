@@ -19,9 +19,9 @@ function Rating({ defaultValue, control, name }) {
           className="mask mask-star-2 bg-pulse-primary"
           aria-label={`${num} star`}
           checked={field.value === num}
-          onClick={() => {
-            field.onChange(num === field.value ? "" : num);
-          }}
+          onChange={() => field.onChange(num)}
+          // A checked radio fires no change event, so clicking it again clears
+          onClick={() => num === field.value && field.onChange("")}
         />
       ))}
     </div>
