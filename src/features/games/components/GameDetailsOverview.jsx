@@ -3,7 +3,8 @@ import { useGetUserGameReview } from "@/features/User/hooks/useGetUserGameReview
 import { UserToken } from "@/hooks/useUserToken";
 import Spinner from "@/ui/Spinner";
 import { stageOf } from "@/utils/gameStage";
-import { backdropSrcSet, coverUrlOf, pickBackdrop } from "@/utils/igdbImage";
+import BackdropImage from "@/ui/BackdropImage";
+import { coverUrlOf } from "@/utils/igdbImage";
 import { formatDate } from "date-fns";
 import { FaPlaystation, FaSteam, FaXbox } from "react-icons/fa";
 import { SiEpicgames, SiGogdotcom } from "react-icons/si";
@@ -99,14 +100,12 @@ function GameDetailsOverview({ data }) {
   return (
     <>
       <section className="relative isolate flex min-h-dvh w-full items-end overflow-hidden">
-        <img
-          src={pickBackdrop(game)}
-          srcSet={backdropSrcSet(game)}
-          sizes="max(100vw, 178vh)"
-          alt=""
+        <BackdropImage
+          game={game}
           loading="eager"
           fetchPriority="high"
-          className="art-fade absolute inset-0 -z-10 h-full w-full object-cover object-top brightness-90"
+          className="art-fade absolute inset-0 -z-10"
+          imgClassName="object-top brightness-90"
         />
         <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black/50 via-transparent to-transparent" />
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-black/70 via-black/20 to-transparent" />

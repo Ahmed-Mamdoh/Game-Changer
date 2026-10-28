@@ -1,7 +1,7 @@
 import { Helmet } from "react-helmet-async";
 import { AuthForm } from "./../features/Auth/AuthForm";
 import { useGetGameSection } from "@/features/games/hooks/useGetGameSection";
-import { backdropSrcSet, pickBackdrop } from "@/utils/igdbImage";
+import BackdropImage from "@/ui/BackdropImage";
 function Auth() {
   const { data: games } = useGetGameSection("total_rating_count", 16);
   const backdropGame = Array.isArray(games) ? games[1] || games[0] : null;
@@ -23,12 +23,10 @@ function Auth() {
       </Helmet>
       <div className="relative isolate flex min-h-[100dvh] items-center px-4 pt-24 pb-12 md:px-8">
         {backdropGame && (
-          <img
-            src={pickBackdrop(backdropGame)}
-            srcSet={backdropSrcSet(backdropGame)}
-            sizes="max(100vw, 178vh)"
-            alt=""
-            className="art-fade absolute inset-0 -z-10 h-full w-full object-cover brightness-90"
+          <BackdropImage
+            game={backdropGame}
+            className="art-fade absolute inset-0 -z-10"
+            imgClassName="brightness-90"
           />
         )}
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-black/80 via-black/45 to-black/10" />

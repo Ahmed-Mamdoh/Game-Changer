@@ -4,7 +4,8 @@ import { ArrowRight } from "lucide-react";
 import { UserToken } from "@/hooks/useUserToken";
 import { useGetUserGames } from "@/features/User/hooks/useGetUserGames";
 import { STATUS_LABELS } from "@/features/games/hooks/useQuickStatus";
-import { backdropSrcSet, coverUrlOf, pickBackdrop } from "@/utils/igdbImage";
+import BackdropImage from "@/ui/BackdropImage";
+import { coverUrlOf } from "@/utils/igdbImage";
 
 const SHELF_SIZE = 8;
 
@@ -75,17 +76,15 @@ function HeroSection({ popularGames = [], isLoading }) {
         aria-hidden="true"
       >
         {shelf.map((game, i) => (
-          <img
+          <BackdropImage
             key={game.id}
-            src={pickBackdrop(game)}
-            srcSet={backdropSrcSet(game)}
-            sizes="max(100vw, 178vh)"
-            alt=""
+            game={game}
             loading={i === 0 ? "eager" : "lazy"}
             fetchPriority={i === 0 ? "high" : "low"}
-            className={`absolute inset-0 h-full w-full object-cover brightness-90 transition-opacity duration-500 ease-out ${
+            className={`absolute inset-0 transition-opacity duration-500 ease-out ${
               i === index ? "opacity-100" : "opacity-0"
             }`}
+            imgClassName="brightness-90"
           />
         ))}
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-transparent" />
