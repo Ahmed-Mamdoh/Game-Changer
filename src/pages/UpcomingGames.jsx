@@ -1,5 +1,6 @@
 import GamesGallery from "@/features/games/ui/GamesGallery";
-import Filters from "@/features/games/ui/Filters";
+import NoResults from "@/features/games/ui/NoResults";
+import { UPCOMING_FILTERS } from "@/features/games/hooks/useFilterMenus";
 import { useGetUpcomingGames } from "@/features/games/hooks/useGetUpcomingGames";
 import { Helmet } from "react-helmet-async";
 
@@ -24,13 +25,11 @@ function UpcomingGames() {
           href="https://game-changer-gg.vercel.app/games/upcomingGames"
         />
       </Helmet>
-      <Filters
-        isUpcoming
-        showPlatform={false}
-        showPerspective={false}
-        className="pb-2"
+      <GamesGallery
+        data={data}
+        isLoading={isLoading}
+        emptyState={<NoResults isUpcoming menuOptions={UPCOMING_FILTERS} />}
       />
-      <GamesGallery data={data} isLoading={isLoading} />
     </>
   );
 }

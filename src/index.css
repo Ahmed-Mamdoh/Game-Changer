@@ -342,6 +342,57 @@
   );
 }
 
+/* Filter dropdowns grow out of their button (Radix sets the origin) and
+   leave faster than they arrive. Radix waits for the exit before unmounting. */
+.dropdown-pop[data-state="open"] {
+  animation: dropdown-in 180ms var(--ease-out-expo);
+}
+.dropdown-pop[data-state="closed"] {
+  animation: dropdown-out 120ms var(--ease-out-expo);
+}
+@keyframes dropdown-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.96);
+  }
+}
+@keyframes dropdown-out {
+  to {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.96);
+  }
+}
+
+/* Bottom sheet (phone filters): slides up, and back down on close. Radix waits
+   for the closing animation before it unmounts. */
+.sheet-panel[data-state="open"] {
+  animation: sheet-up 280ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+.sheet-panel[data-state="closed"] {
+  animation: sheet-down 200ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+.sheet-overlay[data-state="open"] {
+  animation: sheet-fade 200ms ease-out;
+}
+.sheet-overlay[data-state="closed"] {
+  animation: sheet-fade 200ms ease-in reverse;
+}
+@keyframes sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+}
+@keyframes sheet-down {
+  to {
+    transform: translateY(100%);
+  }
+}
+@keyframes sheet-fade {
+  from {
+    opacity: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

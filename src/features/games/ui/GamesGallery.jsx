@@ -7,6 +7,7 @@ function GamesGallery({
   emptyTitle = "No games match",
   emptyText = "Try fewer filters or a different search.",
   emptyAction,
+  emptyState,
 }) {
   const errorMessage = data?.message || data?.[0]?.message;
 
@@ -26,7 +27,9 @@ function GamesGallery({
         </p>
       )}
 
-      {!isLoading && !errorMessage && data?.length === 0 && (
+      {!isLoading && !errorMessage && data?.length === 0 && emptyState}
+
+      {!isLoading && !errorMessage && data?.length === 0 && !emptyState && (
         <div className="col-span-full py-16 text-center">
           <h3>{emptyTitle}</h3>
           <p className="mx-auto mt-1 max-w-[50ch]">{emptyText}</p>
