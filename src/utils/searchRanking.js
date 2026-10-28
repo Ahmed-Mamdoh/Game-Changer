@@ -1,6 +1,5 @@
-// Ranks IGDB search results by how well the name matches the query, then by
-// popularity (total_rating_count). IGDB's own `search` order is used as the
-// last tie-breaker.
+// Ranks IGDB search results for the header dropdown and the results page.
+// IGDB's own `search` order is used as the last tie-breaker.
 
 function normalize(text = "") {
   return text
@@ -27,20 +26,27 @@ function matchTier(name, query) {
   return 0;
 }
 
+// People search for the game they have in mind,
+// which is usually a well-known one. Popularity (ratings + pre-release hype,
+// on a log scale) leads; match quality only nudges. So "hollow" puts Hollow
+// Knight above an obscure game named exactly "Hollow".
+const QUICK_MATCH_BONUS = { 5: 1.5, 4: 1, 3: 0.75, 2: 0.5, 1: 0.25, 0: -3 };
+
 export function rankSearchResults(games, search) {
   if (!Array.isArray(games)) return [];
   const query = normalize(search);
 
   return games
-    .map((game, index) => ({
-      game,
-      index,
-      tier: matchTier(game.name, query),
-      popularity: game.total_rating_count || 0,
-    }))
-    .sort(
-      (a, b) =>
-        b.tier - a.tier || b.popularity - a.popularity || a.index - b.index,
-    )
+    .map((game, index) => {
+      const popularity = (game.total_rating_count || 0) + (game.hypes || 0);
+      return {
+        game,
+        index,
+        score:
+          Math.log10(popularity + 1) * 2 +
+          QUICK_MATCH_BONUS[matchTier(game.name, query)],
+      };
+    })
+    .sort((a, b) => b.score - a.score || a.index - b.index)
     .map(({ game }) => game);
 }

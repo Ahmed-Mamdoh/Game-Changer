@@ -2,7 +2,7 @@ import { IoLogoGithub, IoLogoLinkedin } from "react-icons/io5";
 
 function Footer() {
   return (
-    <footer className="border-stroke-subtle mt-16 w-full border-t">
+    <footer className="bg-bg-surface border-stroke-medium mt-16 w-full border-t">
       <div className="text-text-dim mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-3 px-4 py-6 text-sm md:flex-row md:px-8">
         <p className="text-sm">
           Built by{" "}

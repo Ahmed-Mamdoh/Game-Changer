@@ -1,16 +1,15 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Logo from "./Logo";
 import { Link, useNavigate } from "react-router-dom";
-import { Menu, Search } from "lucide-react";
+import { Menu } from "lucide-react";
 
 import Tabs from "./Tabs";
 import Drawer from "./Drawer";
+import SearchBox from "./SearchBox";
 import { UserToken } from "@/hooks/useUserToken";
 
 function Header() {
-  const [search, setSearch] = useState("");
   const [scrolled, setScrolled] = useState(false);
-  const inputRef = useRef(null);
   const navigate = useNavigate();
   const supabaseToken = UserToken();
   const username = supabaseToken?.user?.user_metadata?.username;
@@ -22,35 +21,11 @@ function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Ctrl/Cmd + K or "/" focuses search
-  useEffect(() => {
-    function onKey(e) {
-      const typing = ["INPUT", "TEXTAREA"].includes(e.target.tagName);
-      if (
-        (e.key === "k" && (e.ctrlKey || e.metaKey)) ||
-        (e.key === "/" && !typing)
-      ) {
-        e.preventDefault();
-        inputRef.current?.focus();
-      }
-    }
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, []);
-
-  function handleSearch(e) {
-    e.preventDefault();
-    const query = search.trim();
-    if (!query) return;
-    navigate(`/games/allGames?search=${encodeURIComponent(query)}`);
-    inputRef.current?.blur();
-  }
-
   return (
     <header
       className={`fixed top-0 z-50 w-full transition-colors duration-200 ${
         scrolled
-          ? "bg-bg-base/90 border-stroke-subtle border-b backdrop-blur-md"
+          ? "bg-bg-surface/90 border-stroke-medium border-b shadow-[0_8px_24px_-12px_rgba(0,0,0,0.6)] backdrop-blur-md"
           : "border-b border-transparent bg-gradient-to-b from-black/60 to-transparent"
       }`}
     >
@@ -58,29 +33,7 @@ function Header() {
         <Logo />
         <Tabs />
 
-        <form
-          role="search"
-          onSubmit={handleSearch}
-          className="border-stroke-subtle focus-within:border-stroke-brand ml-auto flex h-9 w-full max-w-72 items-center gap-2 rounded-md border bg-black/40 px-2.5 backdrop-blur-md transition-colors"
-        >
-          <Search className="text-text-muted h-4 w-4 shrink-0" />
-          <label htmlFor="search" className="sr-only">
-            Search games
-          </label>
-          <input
-            ref={inputRef}
-            type="search"
-            autoComplete="off"
-            placeholder="Search games"
-            value={search}
-            id="search"
-            onChange={(e) => setSearch(e.target.value)}
-            className="placeholder:text-text-muted w-full min-w-0 border-0 bg-transparent text-sm focus:outline-none"
-          />
-          <kbd className="text-text-muted border-stroke-subtle hidden rounded-sm border px-1.5 text-xs whitespace-nowrap md:block">
-            Ctrl K
-          </kbd>
-        </form>
+        <SearchBox />
 
         {supabaseToken ? (
           <Link

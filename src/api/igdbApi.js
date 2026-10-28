@@ -18,6 +18,13 @@ export function escapeIgdbString(value = "") {
   return String(value).replace(/\\/g, "\\\\").replace(/"/g, '\\"');
 }
 
+// IGDB keyword ids for unofficial games: fangames, demakes, ROM hacks,
+// bootlegs, homebrew and unofficial ports/remakes/crossovers.
+const UNOFFICIAL_KEYWORDS = [
+  1603, 1617, 1787, 2004, 16696, 24124, 24799, 25362, 25548, 25908, 27055,
+  27117, 27216, 29423, 30303, 37863, 38275, 38511, 52180,
+];
+
 // Shared where-clause so the list and the result count always agree.
 function buildGamesWhere({
   filters = [],
@@ -44,7 +51,7 @@ function buildGamesWhere({
       : ``;
 
   return `where game_type = (0,8,9) & version_parent = null &
-      themes != (42)  & (game_status = null | game_status != (5,6,7,8))
+      themes != (42) & keywords != (${UNOFFICIAL_KEYWORDS.join(",")}) & (game_status = null | game_status != (5,6,7,8))
       ${platformString}
       ${player_perspectivesString} 
       ${releaseDateString}
@@ -52,7 +59,7 @@ function buildGamesWhere({
 }
 
 const LIST_FIELDS =
-  "name,cover.url,first_release_date,genres.name,artworks.url,artworks.artwork_type,total_rating_count";
+  "name,cover.url,first_release_date,genres.name,artworks.url,artworks.artwork_type,total_rating_count,hypes";
 
 export async function getAllGames({
   filters = [],
@@ -188,6 +195,32 @@ export async function searchGames({
       ${buildGamesWhere({ filters, platform, player_perspectives, isUpcoming, isReleased })}`,
   );
   return rankSearchResults(response, search);
+}
+
+// Typeahead lookup. IGDB's `search` matches whole words only, so a half-typed
+// title ("zeld") finds nothing; a name-contains query fills that gap.
+const QUICK_FIELDS = "name,cover.url,first_release_date,total_rating_count,hypes";
+
+export async function quickSearchGames(search, poolSize = 50) {
+  const escaped = escapeIgdbString(search);
+  const where = buildGamesWhere({});
+  const [searched, contains] = await Promise.all([
+    igdbFetch(
+      "games",
+      `search "${escaped}"; fields ${QUICK_FIELDS}; limit ${poolSize}; ${where}`,
+    ),
+    igdbFetch(
+      "games",
+      `fields ${QUICK_FIELDS}; limit ${poolSize}; sort total_rating_count desc;
+      ${where.replace(/;$/, "")} & name ~ *"${escaped}"*;`,
+    ),
+  ]);
+  const seen = new Set();
+  const pool = [searched, contains]
+    .filter(Array.isArray)
+    .flat()
+    .filter((game) => !seen.has(game.id) && seen.add(game.id));
+  return rankSearchResults(pool, search);
 }
 
 export async function getUserGamesData(userGamesIds) {
