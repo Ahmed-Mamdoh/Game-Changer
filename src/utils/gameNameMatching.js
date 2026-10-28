@@ -114,7 +114,8 @@ function extractBaseGameName(name) {
  * @returns {Object|null} Best matching game or null
  */
 function findBestMatchingGame(igdbGames, targetName) {
-  if (!igdbGames || igdbGames.length === 0 || !targetName) {
+  // IGDB answers errors (rate limit, bad query) with an object, not a list
+  if (!Array.isArray(igdbGames) || igdbGames.length === 0 || !targetName) {
     return null;
   }
 

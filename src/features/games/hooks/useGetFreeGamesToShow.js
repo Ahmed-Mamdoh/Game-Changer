@@ -7,8 +7,10 @@ import { useGetFreePcGames } from "./useGetFreePcGames";
 
 export function useGetFreeGamesToShow() {
   // get the names of the free games from gamerPower api
-  const { data: freeGamesNames, isLoading: isLoadingFreeGamesNames } =
+  const { data: freeGamesData, isLoading: isLoadingFreeGamesNames } =
     useGetFreePcGames();
+  // GamerPower can answer with an error object too
+  const freeGamesNames = Array.isArray(freeGamesData) ? freeGamesData : null;
 
   // clean the title to get only the name of the game
   // ex. inscryption (steam) xxxxxxx
@@ -25,11 +27,11 @@ export function useGetFreeGamesToShow() {
   // ex. inscryption (steam) giveaway
   // gets only steam
   const freeOnPlatform = freeGamesNames?.map(
-    (game) => game.title.match(/\(([^)]+)\)/)[1],
+    (game) => game.title.match(/\(([^)]+)\)/)?.[1],
   );
 
   const dataToShow =
-    freeGamesIgdbData?.length > 0
+    Array.isArray(freeGamesIgdbData) && freeGamesIgdbData.length > 0
       ? freeGamesIgdbData
           ?.map((searchResult, i) => {
             // Use the new robust matching function
@@ -37,6 +39,9 @@ export function useGetFreeGamesToShow() {
               searchResult,
               gamesCleanNames[i],
             );
+
+            // IGDB answers errors (rate limit, bad query) with an object
+            if (!Array.isArray(searchResult)) return null;
 
             // Fallback logic if no match found
             if (!intendedGame && searchResult.length > 0) {

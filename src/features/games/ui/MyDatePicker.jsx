@@ -27,7 +27,10 @@ export function MyDatePicker({ onSelect }) {
       className="rdp-root"
       mode="single"
       selected={selected}
-      onSelect={onSelect}
+      onSelect={(date) => {
+        setSelected(date);
+        onSelect(date);
+      }}
     />
   );
 }
