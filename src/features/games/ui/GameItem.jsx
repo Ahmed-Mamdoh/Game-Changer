@@ -1,22 +1,16 @@
 import { stageOf } from "@/utils/gameStage";
 import { coverUrlOf } from "@/utils/igdbImage";
 import { formatDate, intervalToDuration, formatDistanceToNow } from "date-fns";
-import { Bookmark, Check, Clock, Play, Square } from "lucide-react";
+import { Clock } from "lucide-react";
 import { useEffect, useState } from "react";
 import { FaSteam } from "react-icons/fa";
 import { SiEpicgames, SiGogdotcom } from "react-icons/si";
 import { Link } from "react-router-dom";
 import {
+  STATUS_ICONS,
   STATUS_LABELS,
   useQuickStatus,
 } from "@/features/games/hooks/useQuickStatus";
-
-const STATUS_ICONS = {
-  "to play": { icon: Bookmark, color: "text-pulse-warning" },
-  playing: { icon: Play, color: "text-pulse-primary" },
-  finished: { icon: Check, color: "text-pulse-success" },
-  dropped: { icon: Square, color: "text-pulse-error" },
-};
 
 const STORE_ICONS = {
   Steam: FaSteam,

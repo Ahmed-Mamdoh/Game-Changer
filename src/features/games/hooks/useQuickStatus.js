@@ -3,6 +3,7 @@ import { useGetUserGames } from "@/features/User/hooks/useGetUserGames";
 import { UserToken } from "@/hooks/useUserToken";
 import { formatIGDBImage } from "@/utils/igdbImage";
 import { useQueryClient } from "@tanstack/react-query";
+import { Bookmark, Check, Play, Square } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
@@ -12,6 +13,13 @@ export const STATUS_LABELS = {
   playing: "Playing",
   finished: "Played",
   dropped: "Dropped",
+};
+
+export const STATUS_ICONS = {
+  "to play": { icon: Bookmark, color: "text-pulse-warning" },
+  playing: { icon: Play, color: "text-pulse-primary" },
+  finished: { icon: Check, color: "text-pulse-success" },
+  dropped: { icon: Square, color: "text-pulse-error" },
 };
 
 // Set a game's library status straight from a card, without opening the game.

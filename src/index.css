@@ -300,6 +300,10 @@
   .segmented > button[aria-checked="true"] {
     @apply bg-action text-on-action font-semibold;
   }
+  /* Status colors wash out on the white fill */
+  .segmented > button[aria-checked="true"] > svg {
+    @apply text-on-action;
+  }
   .segmented > button:disabled {
     @apply cursor-wait opacity-60;
   }

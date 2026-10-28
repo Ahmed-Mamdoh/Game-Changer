@@ -66,12 +66,13 @@ export async function updateUserGame({ game_id, user_id, ...formData }) {
   if (error) return { data: null, error };
 
   if (formData.review !== undefined || formData.rating !== undefined) {
-    await updateReview({
+    const { error: reviewError } = await updateReview({
       user_id,
       game_id,
       review: formData.review,
       rating: formData.rating,
     });
+    if (reviewError) return { data: null, error: reviewError };
   }
   return { data, error };
 }
@@ -170,14 +171,18 @@ export async function deleteReview({ user_id, game_id }) {
 }
 
 export async function updateReview({ user_id, game_id, review, rating }) {
-  if (!user_id || !game_id || !rating) return { data: null, error: null };
+  if (!user_id || !game_id) return { data: null, error: null };
+  // A review only exists with a rating, so clearing the rating removes it
+  if (!rating) return deleteReview({ user_id, game_id });
   const { data, error } = await supabase
     .from("game_reviews")
     .update({ review, rating })
     .eq("user_id", user_id)
     .eq("game_id", game_id)
     .select();
-  return { data, error };
+  if (error || data?.length) return { data, error };
+  // Games added from a quick status have no review row yet
+  return addReview({ user_id, game_id, review, rating });
 }
 
 export async function getGameReviews({ game_id }) {

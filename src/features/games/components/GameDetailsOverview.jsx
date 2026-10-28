@@ -10,9 +10,12 @@ import { FaPlaystation, FaSteam, FaXbox } from "react-icons/fa";
 import { SiEpicgames, SiGogdotcom } from "react-icons/si";
 import { Link } from "react-router-dom";
 import { useGetTimeToBeat } from "../hooks/useGetTimeToBeat";
-import { STATUS_LABELS, useQuickStatus } from "../hooks/useQuickStatus";
-import AddGameModal from "./AddGameModal";
-import AddedGameActions from "./AddedGameActions";
+import {
+  STATUS_ICONS,
+  STATUS_LABELS,
+  useQuickStatus,
+} from "../hooks/useQuickStatus";
+import LogGameDialog from "./LogGameDialog";
 
 const STORES = [
   { name: "Steam", urlPattern: "steam", icon: FaSteam },
@@ -186,33 +189,34 @@ function GameDetailsOverview({ data }) {
               <div
                 role="radiogroup"
                 aria-label="Library status"
-                className="segmented"
+                className="segmented w-full sm:w-fit"
               >
-                {statusOptions.map((status) => (
-                  <button
-                    key={status}
-                    type="button"
-                    role="radio"
-                    aria-checked={currentStatus === status}
-                    onClick={() => setStatus(game, status)}
-                  >
-                    {STATUS_LABELS[status]}
-                  </button>
-                ))}
+                {statusOptions.map((status) => {
+                  const { icon: Icon, color } = STATUS_ICONS[status];
+                  return (
+                    <button
+                      key={status}
+                      type="button"
+                      role="radio"
+                      aria-checked={currentStatus === status}
+                      onClick={() => setStatus(game, status)}
+                      className="flex-1 justify-center px-2 sm:flex-none sm:px-3.5"
+                    >
+                      <Icon className={`hidden h-3.5 w-3.5 sm:block ${color}`} />
+                      {STATUS_LABELS[status]}
+                    </button>
+                  );
+                })}
               </div>
 
-              {isReleased &&
-                (isLogged ? (
-                  <AddedGameActions
-                    game={game}
-                    userGame={userGame?.data?.[0]}
-                    userGameReview={userGameReview?.data?.[0]}
-                  />
-                ) : (
-                  user_id && (
-                    <AddGameModal game={game} userGame={userGame?.data?.[0]} />
-                  )
-                ))}
+              {isReleased && isLogged && (
+                <LogGameDialog
+                  key={savedStatus}
+                  game={game}
+                  userGame={userGame?.data?.[0]}
+                  userGameReview={userGameReview?.data?.[0]}
+                />
+              )}
 
               {storeLinks.length > 0 && (
                 <div className="flex items-center gap-2">

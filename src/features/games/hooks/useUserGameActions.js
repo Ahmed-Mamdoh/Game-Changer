@@ -54,9 +54,7 @@ export function useUserGameActions(gameId) {
     });
   }
 
-  async function handleFavoriteChange(e) {
-    const isFavorite = e.target.checked;
-
+  async function handleFavoriteChange(isFavorite) {
     const { error } = await updateUserGame({
       game_id: gameId,
       user_id,
