@@ -8,7 +8,10 @@ import {
   withoutFilters,
   withoutItem,
 } from "../hooks/useFilterParams";
-import { filtersFromParams } from "../hooks/useGetFiltersParams";
+import {
+  filtersFromParams,
+  useLibraryIds,
+} from "../hooks/useGetFiltersParams";
 
 // Shown when filters leave nothing. For each picked filter it counts what
 // dropping just that one would bring back, and offers the best of those.
@@ -18,13 +21,14 @@ function NoResults({ isUpcoming = false, menuOptions }) {
   const search = searchParams.get("search");
   const sortBy = searchParams.get("sortBy") || DEFAULT_BROWSE_SORT;
   const chips = activeChips(searchParams, menus);
+  const libraryIds = useLibraryIds();
 
   // Counts mirror useGetNumberOfResults, so they share its cache
   const counts = useQueries({
     queries: chips.map((chip) => {
       const next = withoutItem(searchParams, chip.filter, chip.item);
       const { filters, platform, player_perspectives } =
-        filtersFromParams(next);
+        filtersFromParams(next, libraryIds);
       const params = isUpcoming
         ? { filters, isUpcoming }
         : { filters, platform, player_perspectives, isUpcoming, sortBy };

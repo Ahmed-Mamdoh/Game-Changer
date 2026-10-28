@@ -1,11 +1,34 @@
 import { memo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { DEFAULT_BROWSE_SORT } from "@/api/igdbApi";
+import { UserToken } from "@/hooks/useUserToken";
 import { sortOptions, useFilterMenus } from "../hooks/useFilterMenus";
 import { withoutFilters } from "../hooks/useFilterParams";
 import ActiveFilterChips from "./ActiveFilterChips";
 import FilterButtons from "./FilterButtons";
 import MobileFilters from "./MobileFilters";
+
+// An on/off filter stored in the URL as `param=true`
+function Toggle({ param, label }) {
+  const [searchParams, setSearchParams] = useSearchParams();
+  return (
+    <label className="border-stroke-subtle text-text-dim has-checked:text-text-main has-checked:border-stroke-brand flex h-10 cursor-pointer items-center gap-2 rounded-md border px-3 text-sm whitespace-nowrap">
+      <input
+        type="checkbox"
+        className="accent-pulse-primary h-4 w-4"
+        checked={searchParams.get(param) === "true"}
+        onChange={(e) => {
+          const next = new URLSearchParams(searchParams);
+          if (e.target.checked) next.set(param, "true");
+          else next.delete(param);
+          next.delete("page");
+          setSearchParams(next);
+        }}
+      />
+      {label}
+    </label>
+  );
+}
 
 function Filters({
   showSortBy = true,
@@ -18,6 +41,7 @@ function Filters({
   const { menus, isLoading } = useFilterMenus(menuOptions);
   const [searchParams, setSearchParams] = useSearchParams();
   const search = searchParams.get("search");
+  const isSignedIn = Boolean(UserToken()?.user?.id);
 
   const clearAll = () => setSearchParams(withoutFilters(searchParams));
 
@@ -53,19 +77,10 @@ function Filters({
         ))}
 
         {showFavorite && (
-          <label className="border-stroke-subtle text-text-dim has-checked:text-text-main has-checked:border-stroke-brand flex h-10 cursor-pointer items-center gap-2 rounded-md border px-3 text-sm">
-            <input
-              type="checkbox"
-              className="accent-pulse-primary h-4 w-4"
-              checked={searchParams.get("isFavorite") === "true"}
-              onChange={(e) => {
-                if (e.target.checked) searchParams.set("isFavorite", "true");
-                else searchParams.delete("isFavorite");
-                setSearchParams(searchParams);
-              }}
-            />
-            Favorites only
-          </label>
+          <Toggle param="isFavorite" label="Favorites only" />
+        )}
+        {!isAccount && isSignedIn && (
+          <Toggle param="hideLibrary" label="Hide my library" />
         )}
       </div>
 

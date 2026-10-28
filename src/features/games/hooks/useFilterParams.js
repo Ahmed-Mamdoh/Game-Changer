@@ -109,10 +109,11 @@ export function activeChips(searchParams, menus) {
   );
 }
 
-// Clears every filter but keeps the search and the sort order
+// Clears every filter but keeps the search, the sort order and the
+// "Hide my library" toggle
 export function withoutFilters(searchParams) {
   const next = new URLSearchParams();
-  for (const key of ["search", "sortBy"]) {
+  for (const key of ["search", "sortBy", "hideLibrary"]) {
     const value = searchParams.get(key);
     if (value) next.set(key, value);
   }
