@@ -294,6 +294,14 @@ export function scoreCandidate(profile, candidate, links) {
   return { score, match, becauseOf, link, studioName };
 }
 
+// Score taken off games released in or before the year the player calls too
+// old: 0.2 at that year, growing with age up to 0.4. Soft, so a classic that
+// fits very well can still make the list.
+export function agePenalty(year, yearFloor) {
+  if (!year || !yearFloor || year > yearFloor) return 0;
+  return Math.min(0.2 + (yearFloor - year) * 0.02, 0.4);
+}
+
 // Greedy pick that keeps the list varied: at most two games per series and
 // two per "because of" game. No genre cap: IGDB lists genres by id, so the first
 // genre is arbitrary, and a player who loves RPGs should get RPGs.

@@ -10,10 +10,12 @@ import {
   addDismissedGames,
   deleteDismissedGame,
   getDismissedGames,
+  setDismissReason,
 } from "@/api/supabase";
 import { UserToken } from "@/hooks/useUserToken";
 import { getRecommendationCandidates, getTasteDetails } from "@/api/igdbApi";
 import {
+  agePenalty,
   buildLibraryLinks,
   buildTasteProfile,
   gameFeatures,
@@ -36,7 +38,15 @@ import {
 const CACHE_PREFIX = "recommendations:v7:";
 const SEEN_PREFIX = "recommendations:seen:";
 const DISMISSED_PREFIX = "recommendations:dismissed:";
+// Why each game was dismissed, by id. Starts with DISMISSED_PREFIX so the
+// old-format cleanup below keeps it.
+const REASONS_PREFIX = DISMISSED_PREFIX + "reasons:";
 const DISMISSED_LIMIT = 300;
+// How hard a "Not my style" game pulls against its tags; a dropped game with
+// no rating weighs -0.8
+const STYLE_DISMISS_WEIGHT = -0.5;
+// Most recent "Too old" and "Not my style" games the engine learns from
+const LEARN_LIMIT = 60;
 const CACHE_MAX_AGE = 24 * 60 * 60 * 1000; // 1 day
 const PICKS_TO_SHOW = 8;
 // Picks built without the model's reasons are kept only briefly, so the next
@@ -94,11 +104,15 @@ function clearCache(user_id) {
 // "Not for me" games live in Supabase so they follow the player across
 // devices. This browser keeps a copy, which also covers the time before the
 // dismissed_games table exists; anything only stored here is uploaded once
-// the table answers.
+// the table answers. Reasons work the same way.
 async function loadDismissed(user_id) {
   const local = readStorage(DISMISSED_PREFIX + user_id) || [];
-  const { data: remote, error } = await getDismissedGames(user_id);
-  if (error || !remote) return new Set(local);
+  const localReasons = readStorage(REASONS_PREFIX + user_id) || {};
+  const { data: rows, error } = await getDismissedGames(user_id);
+  if (error || !rows) return toDismissed(local, localReasons);
+  const remote = rows.map((row) => row.game_id);
+  const reasons = { ...localReasons };
+  for (const row of rows) if (row.reason) reasons[row.game_id] = row.reason;
   const remoteSet = new Set(remote);
   const missing = local.filter((id) => !remoteSet.has(id));
   if (missing.length) {
@@ -106,12 +120,20 @@ async function loadDismissed(user_id) {
       user_id,
       game_ids: missing,
     });
-    if (uploadError) return new Set([...remote, ...local]);
+    if (uploadError) return toDismissed([...remote, ...local], reasons);
   }
   const all = [...new Set([...remote, ...local])];
   writeStorage(DISMISSED_PREFIX + user_id, all.slice(0, DISMISSED_LIMIT));
-  return new Set(all);
+  writeStorage(REASONS_PREFIX + user_id, reasons);
+  return toDismissed(all, reasons);
 }
+
+const toDismissed = (ids, reasons) => ({
+  hiddenIds: new Set(ids),
+  reasons: new Map(
+    Object.entries(reasons).map(([id, reason]) => [Number(id), reason]),
+  ),
+});
 
 // Earlier cache formats held AI-guessed titles and match scores.
 try {
@@ -278,21 +300,42 @@ function fallbackReason(item, profile) {
 export async function buildPicks({
   library,
   hiddenIds = new Set(),
+  dismissReasons = new Map(),
   platformIds = [],
 }) {
-  const details = await getTasteDetails(library.map((entry) => entry.id));
+  // "Too old" and "Not my style" games teach the engine; "Just this one" and
+  // unexplained dismissals only hide the game
+  const learnIds = [...dismissReasons]
+    .filter(([, reason]) => reason === "old" || reason === "style")
+    .slice(-LEARN_LIMIT)
+    .map(([id]) => id);
+  const [details, learnDetails] = await Promise.all([
+    getTasteDetails(library.map((entry) => entry.id)),
+    getTasteDetails(learnIds).catch(() => []),
+  ]);
   const detailsById = new Map(
     (Array.isArray(details) ? details : []).map((game) => [game.id, game]),
   );
   const withDetails = library.filter((entry) => detailsById.has(entry.id));
   if (!withDetails.length) throw new Error("Library details didn't load");
+  const learned = Array.isArray(learnDetails) ? learnDetails : [];
+  const disliked = learned.filter(
+    (game) => dismissReasons.get(game.id) === "style",
+  );
+  // The newest game the player called too old sets the cutoff year
+  const oldYears = learned
+    .filter((game) => dismissReasons.get(game.id) === "old")
+    .map(yearOf)
+    .filter(Boolean);
+  const yearFloor = oldYears.length ? Math.max(...oldYears) : null;
 
-  const baseProfile = buildTasteProfile(
-    withDetails.map((entry) => ({
+  const baseProfile = buildTasteProfile([
+    ...withDetails.map((entry) => ({
       game: detailsById.get(entry.id),
       weight: entry.weight,
     })),
-  );
+    ...disliked.map((game) => ({ game, weight: STYLE_DISMISS_WEIGHT })),
+  ]);
 
   const links = buildLibraryLinks(
     withDetails.map((entry) => ({ ...entry, game: detailsById.get(entry.id) })),
@@ -344,11 +387,15 @@ export async function buildPicks({
   if (!pool.length) return { picks: [], tasteTags: baseProfile.topTags };
   const profile = withRarity(baseProfile, pool);
 
-  const scored = pool.map((game) => ({
-    game,
-    features: new Set(gameFeatures(game).keys()),
-    ...scoreCandidate(profile, game, links),
-  }));
+  const scored = pool.map((game) => {
+    const result = scoreCandidate(profile, game, links);
+    return {
+      game,
+      features: new Set(gameFeatures(game).keys()),
+      ...result,
+      score: result.score - agePenalty(yearOf(game), yearFloor),
+    };
+  });
 
   // Best scores first, at most two games per series and two per source game
   const chosen = pickVaried(scored, PICKS_TO_SHOW);
@@ -469,9 +516,11 @@ export function useGetRecommendations({ platformIds = [] } = {}) {
       const cached = readCache(user_id, libraryHash, platformKey);
       if (cached && cached.createdAt > refreshedAt) return cached;
 
+      const { hiddenIds, reasons } = await loadDismissed(user_id);
       const { picks, tasteTags, explain } = await buildPicks({
         library,
-        hiddenIds: await loadDismissed(user_id),
+        hiddenIds,
+        dismissReasons: reasons,
         platformIds,
       });
       // The set on screen, so wishlisting one of its games doesn't rebuild it
@@ -555,6 +604,9 @@ export function useGetRecommendations({ platformIds = [] } = {}) {
       DISMISSED_PREFIX + user_id,
       dismissed.filter((id) => id !== game.id),
     );
+    const reasons = readStorage(REASONS_PREFIX + user_id) || {};
+    delete reasons[game.id];
+    writeStorage(REASONS_PREFIX + user_id, reasons);
     deleteDismissedGame({ user_id, game_id: game.id });
     updatePicks((picks) => {
       if (picks.some((pick) => pick.id === game.id)) return picks;
@@ -562,6 +614,17 @@ export function useGetRecommendations({ platformIds = [] } = {}) {
       next.splice(index < 0 ? next.length : index, 0, game);
       return next;
     });
+  }
+
+  // "old", "style" or "this". The current set stays put; the next built set
+  // (Refresh picks, or the next visit) learns from it.
+  function explainDismiss(game, reason) {
+    writeStorage(REASONS_PREFIX + user_id, {
+      ...(readStorage(REASONS_PREFIX + user_id) || {}),
+      [game.id]: reason,
+    });
+    setDismissReason({ user_id, game_id: game.id, reason });
+    clearCache(user_id);
   }
 
   // Recalculate from scratch: reload the library so new ratings, hours and
@@ -586,5 +649,6 @@ export function useGetRecommendations({ platformIds = [] } = {}) {
     refresh,
     dismiss,
     undoDismiss,
+    explainDismiss,
   };
 }

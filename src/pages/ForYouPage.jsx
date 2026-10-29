@@ -35,6 +35,23 @@ import { Helmet } from "react-helmet-async";
 import toast from "react-hot-toast";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 
+// "Not for me" follow-up: what the engine should take from it
+const DISMISS_REASONS = [
+  {
+    reason: "old",
+    label: "Too old",
+    learned: (game) =>
+      `Games as old as ${game.name} will rank lower after you refresh.`,
+  },
+  {
+    reason: "style",
+    label: "Not my style",
+    learned: (game) =>
+      `Games like ${game.name} will rank lower after you refresh.`,
+  },
+  { reason: "this", label: "Just this one" },
+];
+
 const SEO = (
   <Helmet>
     <title>For You | Game-Changer</title>
@@ -652,6 +669,7 @@ function ForYouPage() {
     refresh,
     dismiss,
     undoDismiss,
+    explainDismiss,
   } = useGetRecommendations({ platformIds: platforms.platformIds });
   // A new set is on its way: Refresh picks, a platform change, or a log
   const isRebuilding = isRefreshing;
@@ -680,21 +698,39 @@ function ForYouPage() {
     const index = dismiss(game);
     toast(
       (t) => (
-        <span className="flex items-center gap-3">
-          <span>{game.name} won't come up again.</span>
-          <button
-            type="button"
-            className="text-text-brand cursor-pointer font-semibold hover:underline hover:underline-offset-4"
-            onClick={() => {
-              undoDismiss(game, index);
-              toast.dismiss(t.id);
-            }}
-          >
-            Undo
-          </button>
-        </span>
+        <div className="flex flex-col gap-2.5">
+          <span className="flex items-center justify-between gap-3">
+            <span>{game.name} won't come up again. Why?</span>
+            <button
+              type="button"
+              className="text-text-brand cursor-pointer font-semibold hover:underline hover:underline-offset-4"
+              onClick={() => {
+                undoDismiss(game, index);
+                toast.dismiss(t.id);
+              }}
+            >
+              Undo
+            </button>
+          </span>
+          <span className="flex flex-wrap gap-2">
+            {DISMISS_REASONS.map(({ reason, label, learned }) => (
+              <button
+                key={reason}
+                type="button"
+                className="text-text-main h-8 cursor-pointer rounded-full border border-white/15 px-3 text-xs font-semibold hover:bg-white/10"
+                onClick={() => {
+                  explainDismiss(game, reason);
+                  toast.dismiss(t.id);
+                  if (learned) toast.success(learned(game));
+                }}
+              >
+                {label}
+              </button>
+            ))}
+          </span>
+        </div>
       ),
-      { duration: 6000 },
+      { duration: 10000 },
     );
   }
 

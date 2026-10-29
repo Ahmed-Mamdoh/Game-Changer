@@ -236,11 +236,20 @@ export async function insertGame({ game_id }) {
 
 // dismissed games ("Not for me" on For You)
 export async function getDismissedGames(user_id) {
-  const { data, error } = await supabase
+  const select = (columns) =>
+    supabase.from("dismissed_games").select(columns).eq("user_id", user_id);
+  const result = await select("game_id, reason");
+  // 42703: the reason column isn't migrated yet, so read the games alone
+  if (result.error?.code === "42703") return select("game_id");
+  return { data: result.data, error: result.error };
+}
+
+// "old", "style" or "this": why the player said "Not for me"
+export async function setDismissReason({ user_id, game_id, reason }) {
+  const { error } = await supabase
     .from("dismissed_games")
-    .select("game_id")
-    .eq("user_id", user_id);
-  return { data: data?.map((row) => row.game_id) ?? null, error };
+    .upsert({ user_id, game_id, reason }, { onConflict: "user_id,game_id" });
+  return { error };
 }
 
 export async function addDismissedGames({ user_id, game_ids }) {

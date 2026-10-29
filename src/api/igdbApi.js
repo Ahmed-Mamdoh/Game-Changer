@@ -332,7 +332,7 @@ export async function getTasteDetails(ids) {
   if (!ids?.length) return [];
   return igdbFetch(
     "games",
-    `fields name,${TASTE_FIELDS},similar_games,remakes,remasters,version_parent;
+    `fields name,first_release_date,${TASTE_FIELDS},similar_games,remakes,remasters,version_parent;
       where id = (${ids.join(",")});
       limit 500;`,
   );
