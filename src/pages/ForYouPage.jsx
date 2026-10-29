@@ -370,7 +370,7 @@ function FocusedPick({ game, onDismiss, onLogged, reasonsPending }) {
 
       {/* Fixed height for three lines, so moving across the shelf doesn't
           make the actions jump */}
-      <div className="short:mb-5 short:sm:min-h-[calc(1.55em*2)] mb-7 min-h-[calc(1.55em*4)] text-lg leading-[1.55] sm:min-h-[calc(1.55em*3)]">
+      <div className="short:mb-5 short:sm:min-h-[calc(1.55em*2)] mb-[clamp(1.25rem,3.5vh,2.5rem)] min-h-[calc(1.55em*4)] text-lg leading-[1.55] sm:min-h-[calc(1.55em*3)]">
         {reasonsPending ? (
           <div aria-live="polite" className="max-w-[58ch]">
             <div aria-hidden="true">
@@ -423,8 +423,9 @@ function PicksStage({
   return (
     <section
       aria-label="Your picks"
-      // One screen tall, like the other stages; short screens tighten below
-      className="relative isolate flex min-h-dvh w-full flex-col overflow-hidden"
+      // One screen tall, like the other stages. Covers grow with the screen
+      // height (7rem to 12rem past phones) and short screens tighten below
+      className="relative isolate flex min-h-dvh w-full flex-col overflow-hidden [--cover-w:6rem] md:[--cover-w:clamp(7rem,18vh,12rem)]"
     >
       {/* Backdrops: all mounted, only the focused one visible, so swaps are instant */}
       <div
@@ -451,9 +452,14 @@ function PicksStage({
         {header}
       </div>
 
-      {/* The pick sits a fixed step under the header; spare height on tall
-          screens opens above the shelf, where the art shows through */}
-      <div className="short:pt-4 short:pb-3 mx-auto flex w-full max-w-[1440px] flex-1 flex-col px-4 pt-10 pb-10 md:px-8">
+      {/* Spare height splits a third above the pick, two thirds below, so the
+          pick reads from the upper part of the screen and the art shows above
+          the shelf. Both gaps keep a floor that follows the screen height. */}
+      <div className="mx-auto flex w-full max-w-[1440px] flex-1 flex-col px-4 md:px-8">
+        <div
+          aria-hidden="true"
+          className="min-h-[clamp(0.75rem,2vh,2rem)] grow basis-0"
+        />
         {focused && (
           <FocusedPick
             game={focused}
@@ -462,6 +468,10 @@ function PicksStage({
             reasonsPending={reasonsPending}
           />
         )}
+        <div
+          aria-hidden="true"
+          className="min-h-[clamp(0.75rem,2vh,2rem)] grow-[2] basis-0"
+        />
       </div>
 
       {/* Shelf: hovering or pressing a cover focuses it; pressing the focused
@@ -497,7 +507,7 @@ function PicksStage({
               onClick={() =>
                 i === index ? navigate(`/game/${game.id}`) : setFocusIndex(i)
               }
-              className="group flex w-24 shrink-0 cursor-pointer flex-col gap-1.5 text-left md:w-28"
+              className="group flex w-(--cover-w) shrink-0 cursor-pointer flex-col gap-1.5 text-left"
             >
               <span
                 className={`bg-bg-raised block aspect-[3/4] w-full overflow-hidden rounded-md outline-2 outline-offset-[3px] transition-[outline-color] duration-150 ease-out ${
@@ -579,7 +589,7 @@ function StageSkeleton({ header, note }) {
     <section
       aria-label="Loading your picks"
       aria-busy="true"
-      className="relative flex min-h-dvh w-full flex-col"
+      className="relative flex min-h-dvh w-full flex-col [--cover-w:6rem] md:[--cover-w:clamp(7rem,18vh,12rem)]"
     >
       <div className="mx-auto w-full max-w-[1440px] px-4 pt-22 md:px-8">
         {header}
@@ -600,7 +610,7 @@ function StageSkeleton({ header, note }) {
           {Array.from({ length: 8 }).map((_, i) => (
             <div
               key={i}
-              className="bg-bg-chip aspect-[3/4] w-24 shrink-0 animate-pulse rounded-md motion-reduce:animate-none md:w-28"
+              className="bg-bg-chip aspect-[3/4] w-(--cover-w) shrink-0 animate-pulse rounded-md motion-reduce:animate-none"
             />
           ))}
         </div>
