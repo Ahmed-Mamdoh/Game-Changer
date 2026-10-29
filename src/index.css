@@ -445,16 +445,12 @@
   }
 }
 
-/* Media lightbox: the viewer swells in from just under full size, and each
-   new item fades over the last so stepping reads as one continuous view. */
+/* Media lightbox: the viewer swells in from just under full size. */
 .lightbox-panel[data-state="open"] {
   animation: lightbox-in 260ms var(--ease-out-expo);
 }
 .lightbox-panel[data-state="closed"] {
   animation: lightbox-out 160ms var(--ease-out-expo);
-}
-.lightbox-slide {
-  animation: sheet-fade 200ms ease-out;
 }
 @keyframes lightbox-in {
   from {

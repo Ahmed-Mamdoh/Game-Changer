@@ -54,7 +54,7 @@ function MediaLightbox({ items, index, onIndexChange, title }) {
         onTouchStart={(e) => (touchX.current = e.touches[0].clientX)}
         onTouchEnd={handleTouchEnd}
         onClick={(e) => e.target === e.currentTarget && onIndexChange(null)}
-        overlayClassName="confirm-overlay bg-black/90 backdrop-blur-sm"
+        overlayClassName="confirm-overlay bg-black/75 backdrop-blur-sm"
         className="lightbox-panel inset-0 top-0 left-0 flex h-dvh max-w-none translate-x-0 translate-y-0 items-center justify-center gap-0 rounded-none border-0 bg-transparent px-4 py-16 shadow-none sm:max-w-none md:px-24"
       >
         <DialogTitle className="sr-only">{title} media</DialogTitle>
@@ -69,13 +69,13 @@ function MediaLightbox({ items, index, onIndexChange, title }) {
           <XIcon className="h-6 w-6" />
         </DialogClose>
 
+        {/* One frame and one <img> for every step: swapping src keeps the
+            current picture up until the next (preloaded) one paints, so
+            stepping never flashes black */}
         {item && (
-          <div
-            key={index}
-            className="lightbox-slide aspect-video w-full max-w-[min(1600px,calc((100dvh-8rem)*16/9))] overflow-hidden rounded-lg bg-black"
-          >
+          <div className="aspect-video w-full max-w-[min(1600px,calc((100dvh-8rem)*16/9))] overflow-hidden rounded-lg bg-black">
             {item.type === "video" ? (
-              <YoutubeEmbed videoId={item.videoId} autoplay />
+              <YoutubeEmbed key={item.videoId} videoId={item.videoId} autoplay />
             ) : (
               <img
                 src={item.src}
