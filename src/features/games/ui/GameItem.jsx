@@ -1,7 +1,7 @@
 import { stageOf } from "@/utils/gameStage";
 import { coverUrlOf } from "@/utils/igdbImage";
 import { formatDate, intervalToDuration, formatDistanceToNow } from "date-fns";
-import { Clock } from "lucide-react";
+import { Clock, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { FaSteam } from "react-icons/fa";
 import { SiEpicgames, SiGogdotcom } from "react-icons/si";
@@ -12,6 +12,7 @@ import {
   useQuickStatus,
 } from "@/features/games/hooks/useQuickStatus";
 import LogGameDialog from "@/features/games/components/LogGameDialog";
+import { useRemoveGame } from "@/features/games/hooks/useRemoveGame";
 
 const STORE_ICONS = {
   Steam: FaSteam,
@@ -43,7 +44,9 @@ function GameItem({ game, className = "" }) {
   const imageUrl = coverUrlOf(game);
   const { statusOf, logOf, setStatus, ratePrompt, closeRatePrompt } =
     useQuickStatus();
-  const libraryStatus = game.status || statusOf(game.id);
+  const { removeGame } = useRemoveGame(game);
+  const [isRemoving, setIsRemoving] = useState(false);
+  const libraryStatus = isRemoving ? null : game.status || statusOf(game.id);
   const isUnreleased =
     game?.first_release_date &&
     game.first_release_date > Math.floor(Date.now() / 1000);
@@ -66,6 +69,17 @@ function GameItem({ game, className = "" }) {
   const quickOptions = isUnreleased
     ? ["to play"]
     : ["to play", "playing", "finished"];
+  // A dropped game shows its own button too, so it can be removed from here
+  if (libraryStatus && !quickOptions.includes(libraryStatus)) {
+    quickOptions.push(libraryStatus);
+  }
+
+  // Pressing the active status again takes the game out; the toast has Undo
+  async function removeFromLibrary() {
+    setIsRemoving(true);
+    await removeGame(libraryStatus === "to play" ? "wishlist" : "library");
+    setIsRemoving(false);
+  }
 
   const StoreIcon = STORE_ICONS[game?.freeOn];
   const StatusIcon = STATUS_ICONS[libraryStatus]?.icon;
@@ -108,19 +122,30 @@ function GameItem({ game, className = "" }) {
                 type="button"
                 title={
                   active
-                    ? STATUS_LABELS[status]
+                    ? `${STATUS_LABELS[status]} · press to remove`
                     : `Mark as ${STATUS_LABELS[status]}`
                 }
-                aria-label={`Mark ${game.name} as ${STATUS_LABELS[status]}`}
-                aria-pressed={active}
-                onClick={() => setStatus(game, status)}
-                className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-sm backdrop-blur-md transition-colors duration-100 ${
+                aria-label={
                   active
-                    ? "bg-action text-on-action"
+                    ? `Remove ${game.name} from your ${status === "to play" ? "wishlist" : "library"}`
+                    : `Mark ${game.name} as ${STATUS_LABELS[status]}`
+                }
+                aria-pressed={active}
+                onClick={() =>
+                  active ? removeFromLibrary() : setStatus(game, status)
+                }
+                className={`group/status flex h-8 w-8 cursor-pointer items-center justify-center rounded-sm backdrop-blur-md transition-colors duration-100 ${
+                  active
+                    ? "bg-action text-on-action hover:bg-pulse-error"
                     : "text-text-main border border-white/15 bg-black/60 hover:bg-black/80"
                 }`}
               >
-                <Icon className="h-4 w-4" />
+                <Icon
+                  className={`h-4 w-4 ${active ? "group-hover/status:hidden" : ""}`}
+                />
+                {active && (
+                  <X className="hidden h-4 w-4 group-hover/status:block" />
+                )}
               </button>
             );
           })}

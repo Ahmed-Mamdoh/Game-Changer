@@ -79,14 +79,44 @@ export async function updateUserGame({ game_id, user_id, ...formData }) {
   return { data, error };
 }
 
+// Returns what it deleted, so restoreUserGame can put it back for an Undo
 export async function deleteUserGame({ game_id, user_id }) {
+  const [{ data: userGames }, { data: reviews }] = await Promise.all([
+    supabase
+      .from("user_games")
+      .select("*")
+      .eq("game_id", game_id)
+      .eq("user_id", user_id),
+    supabase
+      .from("game_reviews")
+      .select("*")
+      .eq("game_id", game_id)
+      .eq("user_id", user_id),
+  ]);
   const { error } = await supabase
     .from("user_games")
     .delete()
     .eq("game_id", game_id)
     .eq("user_id", user_id);
+  if (error) return { error };
   await deleteReview({ user_id, game_id });
-  return { error };
+  return {
+    error: null,
+    removed: { userGame: userGames?.[0], review: reviews?.[0] },
+  };
+}
+
+// Inserts the rows deleteUserGame returned; their ids are generated again
+export async function restoreUserGame({ userGame, review }) {
+  if (!userGame) return { error: new Error("Nothing to restore") };
+  const { id: _id, ...row } = userGame;
+  const { error } = await supabase.from("user_games").insert([row]);
+  if (error || !review) return { error };
+  const { id: _reviewId, ...reviewRow } = review;
+  const { error: reviewError } = await supabase
+    .from("game_reviews")
+    .insert([reviewRow]);
+  return { error: reviewError };
 }
 
 export async function getUserGame(user_id, game_id) {
