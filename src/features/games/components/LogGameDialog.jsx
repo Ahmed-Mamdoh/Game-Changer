@@ -8,6 +8,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { UserToken } from "@/hooks/useUserToken";
+import { gameToast } from "@/ui/gameToast";
 import { coverUrlOf } from "@/utils/igdbImage";
 import { useQueryClient } from "@tanstack/react-query";
 import { Heart, PenLine, Star, Trash2 } from "lucide-react";
@@ -16,6 +17,7 @@ import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useGetTimeToBeat } from "../hooks/useGetTimeToBeat";
 import { STATUS_ICONS, STATUS_LABELS } from "../hooks/useQuickStatus";
+import { useRemoveGame } from "../hooks/useRemoveGame";
 
 const LOG_STATUSES = ["playing", "finished", "dropped"];
 const REVIEW_MAX = 2000;
@@ -89,10 +91,27 @@ export function StarRating({ value, onChange, size = "md", label = "Rating" }) {
   );
 }
 
+// Marks the two fields a log needs; the other two say they're optional
+function Required() {
+  return (
+    <>
+      <span aria-hidden="true" className="text-text-brand ml-0.5">
+        *
+      </span>
+      <span className="sr-only"> (required)</span>
+    </>
+  );
+}
+
+function Optional() {
+  return <span className="text-text-muted font-normal"> · optional</span>;
+}
+
 // Logs a game: status, rating, hours and review. Works for games already in
 // the library (edit) and for games not in it yet (the log adds them).
 // trigger: the button that opens it; defaultStatus: preselected for a new log;
-// requireRating: a rating is needed to save; onSaved: called after a save.
+// onSaved: called after a save; onRemove: replaces the built-in remove
+// confirm, e.g. on the game page where removing has its own prompt.
 // defaultOpen + onClose: opened from code instead of a trigger, e.g. to ask
 // for a rating right after a status change, with the stars focused first.
 function LogGameDialog({
@@ -102,7 +121,6 @@ function LogGameDialog({
   onRemove,
   trigger,
   defaultStatus = "",
-  requireRating = false,
   onSaved,
   defaultOpen = false,
   onClose,
@@ -111,8 +129,11 @@ function LogGameDialog({
   const user_id = UserToken()?.user?.id;
   const queryClient = useQueryClient();
   const { data: timeToBeat } = useGetTimeToBeat(id);
+  const { removeGame } = useRemoveGame(game);
   const [open, setOpen] = useState(defaultOpen);
   const [isFavorite, setIsFavorite] = useState(Boolean(userGame?.is_favorite));
+  const [isConfirmingRemove, setIsConfirmingRemove] = useState(false);
+  const [isRemoving, setIsRemoving] = useState(false);
 
   const savedValues = () => ({
     status: LOG_STATUSES.includes(userGame?.status)
@@ -141,7 +162,11 @@ function LogGameDialog({
     .join(", ");
 
   function handleOpenChange(next) {
-    if (next) reset(savedValues());
+    if (next) {
+      reset(savedValues());
+      setIsFavorite(Boolean(userGame?.is_favorite));
+    }
+    setIsConfirmingRemove(false);
     setOpen(next);
     if (!next) onClose?.();
   }
@@ -159,18 +184,24 @@ function LogGameDialog({
       status: values.status,
       hours_played:
         values.hours_played === "" ? null : Number(values.hours_played),
-      rating: values.rating || null,
+      rating: values.rating,
       review: values.review.trim(),
     };
     const { error } = userGame
       ? await updateUserGame(log)
-      : await addUserGame({ ...log, rating: log.rating || 0 });
+      : await addUserGame({ ...log, is_favorite: isFavorite });
     if (error) {
       toast.error(`Couldn't save your log. ${error.message}`);
       return;
     }
 
-    toast.success(`Saved your log for ${name}`);
+    const { icon, color } = STATUS_ICONS[values.status];
+    gameToast({
+      game,
+      message: `Log saved · ${STATUS_LABELS[values.status]}, ${values.rating} / 5`,
+      icon,
+      iconClass: color,
+    });
     const gameId = String(id);
     queryClient.invalidateQueries({ queryKey: ["user_games", user_id] });
     queryClient.invalidateQueries({
@@ -188,6 +219,8 @@ function LogGameDialog({
   function toggleFavorite() {
     const next = !isFavorite;
     setIsFavorite(next);
+    // Not in the library yet: the favorite is saved with the log
+    if (!userGame) return;
     // Works off the game page too, so it needs no route data
     updateUserGame({ game_id: id, user_id, is_favorite: next }).then(
       ({ error }) => {
@@ -204,10 +237,20 @@ function LogGameDialog({
     );
   }
 
-  function removeFromLibrary() {
-    // Close first so the confirm prompt doesn't stack on top of this dialog
-    setOpen(false);
-    onRemove();
+  async function removeFromLibrary() {
+    if (onRemove) {
+      // Close first so the parent's prompt doesn't stack on top of this one
+      setOpen(false);
+      onRemove();
+      return;
+    }
+    setIsRemoving(true);
+    const removed = await removeGame();
+    setIsRemoving(false);
+    if (removed) {
+      setOpen(false);
+      onClose?.();
+    }
   }
 
   return (
@@ -234,7 +277,7 @@ function LogGameDialog({
       >
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           {/* Header: the game itself, its art bleeding in behind */}
-          <div className="relative isolate flex items-center gap-4 px-6 pt-6 pb-5">
+          <div className="relative isolate flex items-center gap-4 py-4 pr-12 pl-5">
             <img
               src={coverUrlOf(game, "t_cover_small")}
               alt=""
@@ -245,42 +288,39 @@ function LogGameDialog({
             <img
               src={coverUrlOf(game, "t_cover_big")}
               alt={`${name} cover`}
-              className="aspect-[3/4] w-16 shrink-0 rounded-md object-cover outline-1 -outline-offset-1 outline-white/15"
+              className="aspect-[3/4] w-12 shrink-0 rounded-md object-cover outline-1 -outline-offset-1 outline-white/15"
             />
             <div className="min-w-0 flex-1">
-              <DialogTitle className="text-text-main text-xl leading-tight font-semibold text-balance">
+              <DialogTitle className="text-text-main text-lg leading-tight font-semibold text-balance">
                 {name}
               </DialogTitle>
-              <DialogDescription className="text-text-dim tabular mt-1 text-sm">
+              <DialogDescription className="text-text-dim tabular mt-0.5 text-sm">
                 {year ? `${year} · ` : ""}Your log
               </DialogDescription>
             </div>
-            {/* Favorites live on the library row, so only once it exists */}
-            {userGame && (
-              <button
-                type="button"
-                onClick={toggleFavorite}
-                aria-pressed={isFavorite}
-                aria-label={
-                  isFavorite ? "Remove from favorites" : "Add to favorites"
-                }
-                title={
-                  isFavorite ? "Remove from favorites" : "Add to favorites"
-                }
-                className="hover:bg-bg-raised mt-6 -mr-2 flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-md transition-colors duration-100"
-              >
-                <Heart
-                  className={`h-[18px] w-[18px] ${isFavorite ? "fill-pulse-error text-pulse-error" : "text-text-dim"}`}
-                />
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={toggleFavorite}
+              aria-pressed={isFavorite}
+              className={`inline-flex h-9 shrink-0 cursor-pointer items-center gap-2 rounded-full border px-3.5 text-sm font-semibold transition-colors duration-100 ${
+                isFavorite
+                  ? "border-pulse-error/45 bg-pulse-error/15 text-text-main hover:bg-pulse-error/20"
+                  : "border-stroke-medium text-text-main bg-black/30 hover:bg-white/[0.06]"
+              }`}
+            >
+              <Heart
+                className={`text-pulse-error h-4 w-4 ${isFavorite ? "fill-current" : ""}`}
+              />
+              {isFavorite ? "Favorited" : "Favorite"}
+            </button>
           </div>
 
-          <div className="flex flex-col gap-6 px-6 pt-1 pb-6">
+          <div className="flex flex-col gap-5 px-5 pt-1 pb-5">
             {/* Status */}
             <fieldset className="flex flex-col gap-2">
               <legend className="text-text-main mb-2 text-sm font-semibold">
                 Status
+                <Required />
               </legend>
               <Controller
                 name="status"
@@ -290,6 +330,7 @@ function LogGameDialog({
                   <div
                     role="radiogroup"
                     aria-label="Status"
+                    aria-required="true"
                     className="segmented bg-bg-base w-full backdrop-blur-none sm:w-fit"
                   >
                     {LOG_STATUSES.map((status) => {
@@ -319,24 +360,21 @@ function LogGameDialog({
             </fieldset>
 
             {/* Rating */}
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1">
               <span className="text-text-main text-sm font-semibold">
                 Rating
-                {(requireRating || defaultOpen) && (
-                  <span className="text-text-muted font-normal">
-                    {" "}
-                    · tells your picks what you liked
-                  </span>
-                )}
+                <Required />
+                <span className="text-text-muted font-normal">
+                  {" "}
+                  · tells your picks what you liked
+                </span>
               </span>
               <Controller
                 name="rating"
                 control={control}
-                rules={
-                  requireRating
-                    ? { validate: (v) => v > 0 || "Rate it to save your log." }
-                    : undefined
-                }
+                rules={{
+                  validate: (v) => v > 0 || "Rate it to save your log.",
+                }}
                 render={({ field }) => (
                   <StarRating value={field.value} onChange={field.onChange} />
                 )}
@@ -348,115 +386,149 @@ function LogGameDialog({
               )}
             </div>
 
-            {/* Hours */}
-            <div className="flex flex-col gap-2">
-              <label
-                htmlFor="hours_played"
-                className="text-text-main text-sm font-semibold"
-              >
-                Hours played
-              </label>
-              <div className="relative w-36">
-                <input
-                  id="hours_played"
-                  type="number"
-                  inputMode="numeric"
-                  min={0}
-                  step={1}
-                  placeholder="0"
-                  aria-invalid={Boolean(errors.hours_played)}
-                  aria-describedby={ttbHint ? "hours_hint" : undefined}
-                  className={`${fieldClass} tabular h-10 [appearance:textfield] pr-8 pl-3 [&::-webkit-inner-spin-button]:appearance-none`}
-                  {...register("hours_played", {
-                    validate: (v) =>
-                      v === "" ||
-                      (Number.isInteger(Number(v)) && Number(v) >= 0) ||
-                      "Use whole hours, 0 or more.",
+            <div className="border-stroke-subtle flex flex-col gap-4 border-t pt-5">
+              {/* Hours */}
+              <div className="flex flex-col gap-1.5">
+                <div className="flex items-center justify-between gap-3">
+                  <label
+                    htmlFor="hours_played"
+                    className="text-text-main text-sm font-semibold"
+                  >
+                    Hours played
+                    <Optional />
+                  </label>
+                  <div className="relative w-28">
+                    <input
+                      id="hours_played"
+                      type="number"
+                      inputMode="numeric"
+                      min={0}
+                      step={1}
+                      placeholder="0"
+                      aria-invalid={Boolean(errors.hours_played)}
+                      aria-describedby={ttbHint ? "hours_hint" : undefined}
+                      className={`${fieldClass} tabular h-9 [appearance:textfield] pr-8 pl-3 [&::-webkit-inner-spin-button]:appearance-none`}
+                      {...register("hours_played", {
+                        validate: (v) =>
+                          v === "" ||
+                          (Number.isInteger(Number(v)) && Number(v) >= 0) ||
+                          "Use whole hours, 0 or more.",
+                      })}
+                    />
+                    <span className="text-text-muted pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm">
+                      h
+                    </span>
+                  </div>
+                </div>
+                {errors.hours_played ? (
+                  <p className="text-text-error text-sm">
+                    {errors.hours_played.message}
+                  </p>
+                ) : (
+                  ttbHint && (
+                    <p id="hours_hint" className="text-text-muted text-xs">
+                      Most players: {ttbHint}
+                    </p>
+                  )
+                )}
+              </div>
+
+              {/* Review */}
+              <div className="flex flex-col gap-2">
+                <div className="flex items-baseline justify-between">
+                  <label
+                    htmlFor="review"
+                    className="text-text-main text-sm font-semibold"
+                  >
+                    Review
+                    <Optional />
+                  </label>
+                  <span
+                    className={`tabular text-xs ${reviewLength > REVIEW_MAX ? "text-text-error" : "text-text-muted"}`}
+                  >
+                    {reviewLength.toLocaleString()} /{" "}
+                    {REVIEW_MAX.toLocaleString()}
+                  </span>
+                </div>
+                <textarea
+                  id="review"
+                  rows={3}
+                  placeholder="What did you think?"
+                  aria-invalid={Boolean(errors.review)}
+                  className={`${fieldClass} min-h-20 resize-y px-3 py-2.5 leading-relaxed`}
+                  {...register("review", {
+                    maxLength: {
+                      value: REVIEW_MAX,
+                      message: `Keep it under ${REVIEW_MAX.toLocaleString()} characters.`,
+                    },
                   })}
                 />
-                <span className="text-text-muted pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm">
-                  h
-                </span>
-              </div>
-              {errors.hours_played ? (
-                <p className="text-text-error text-sm">
-                  {errors.hours_played.message}
-                </p>
-              ) : (
-                ttbHint && (
-                  <p id="hours_hint" className="text-text-muted text-xs">
-                    Most players: {ttbHint}
+                {errors.review && (
+                  <p className="text-text-error text-sm">
+                    {errors.review.message}
                   </p>
-                )
-              )}
-            </div>
-
-            {/* Review */}
-            <div className="flex flex-col gap-2">
-              <div className="flex items-baseline justify-between">
-                <label
-                  htmlFor="review"
-                  className="text-text-main text-sm font-semibold"
-                >
-                  Review
-                </label>
-                <span
-                  className={`tabular text-xs ${reviewLength > REVIEW_MAX ? "text-text-error" : "text-text-muted"}`}
-                >
-                  {reviewLength.toLocaleString()} /{" "}
-                  {REVIEW_MAX.toLocaleString()}
-                </span>
+                )}
               </div>
-              <textarea
-                id="review"
-                rows={5}
-                placeholder="What did you think?"
-                aria-invalid={Boolean(errors.review)}
-                className={`${fieldClass} min-h-28 resize-y p-3 leading-relaxed`}
-                {...register("review", {
-                  maxLength: {
-                    value: REVIEW_MAX,
-                    message: `Keep it under ${REVIEW_MAX.toLocaleString()} characters.`,
-                  },
-                  validate: (v, values) =>
-                    !v.trim() ||
-                    values.rating > 0 ||
-                    "Add a rating to post your review.",
-                })}
-              />
-              {errors.review && (
-                <p className="text-text-error text-sm">
-                  {errors.review.message}
-                </p>
-              )}
             </div>
           </div>
 
-          <div className="border-stroke-subtle flex flex-wrap items-center justify-between gap-3 border-t px-6 py-4">
-            {onRemove && (
-              <button
-                type="button"
-                onClick={removeFromLibrary}
-                className="text-text-dim hover:text-text-error -ml-2 inline-flex h-10 cursor-pointer items-center gap-2 rounded-md px-2 text-sm font-semibold transition-colors duration-100"
-              >
-                <Trash2 className="h-4 w-4" />
-                Remove from library
-              </button>
+          <div className="border-stroke-subtle flex flex-wrap items-center justify-between gap-3 border-t px-5 py-3">
+            {isConfirmingRemove ? (
+              <>
+                <p className="text-text-main text-sm" role="alert">
+                  Remove it and its log from your library?
+                </p>
+                <div className="ml-auto flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsConfirmingRemove(false)}
+                    className="btn-quiet"
+                  >
+                    Keep it
+                  </button>
+                  <button
+                    type="button"
+                    onClick={removeFromLibrary}
+                    disabled={isRemoving}
+                    className="btn-danger"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    {isRemoving ? "Removing…" : "Remove"}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                {userGame && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      onRemove
+                        ? removeFromLibrary()
+                        : setIsConfirmingRemove(true)
+                    }
+                    className="text-text-dim hover:text-text-error -ml-2 inline-flex h-10 cursor-pointer items-center gap-2 rounded-md px-2 text-sm font-semibold transition-colors duration-100"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    Remove
+                  </button>
+                )}
+                <div className="ml-auto flex items-center gap-2">
+                  <DialogClose asChild>
+                    <button type="button" className="btn-quiet">
+                      {defaultOpen ? "Skip" : "Cancel"}
+                    </button>
+                  </DialogClose>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting || (Boolean(userGame) && !isDirty)}
+                    className="btn-primary"
+                  >
+                    {isSubmitting ? "Saving…" : "Save"}
+                  </button>
+                </div>
+              </>
             )}
-            <div className="ml-auto flex items-center gap-2">
-              <DialogClose asChild>
-                <button type="button" className="btn-quiet">
-                  {defaultOpen ? "Skip" : "Cancel"}
-                </button>
-              </DialogClose>
-              <button
-                type="submit"
-                disabled={isSubmitting || (Boolean(userGame) && !isDirty)}
-                className="btn-primary"
-              >
-                {isSubmitting ? "Saving…" : "Save"}
-              </button>
-            </div>
           </div>
         </form>
       </DialogContent>

@@ -1,6 +1,7 @@
-import { addUserGame, updateUserGame } from "@/api/supabase";
+import { addUserGame, deleteUserGame, updateUserGame } from "@/api/supabase";
 import { useGetUserGames } from "@/features/User/hooks/useGetUserGames";
 import { UserToken } from "@/hooks/useUserToken";
+import { gameToast } from "@/ui/gameToast";
 import { formatIGDBImage } from "@/utils/igdbImage";
 import { useQueryClient } from "@tanstack/react-query";
 import { Bookmark, Check, Play, Square } from "lucide-react";
@@ -50,6 +51,29 @@ export function useQuickStatus() {
     return { userGame, userGameReview };
   }
 
+  async function refetch(gameId) {
+    await queryClient.invalidateQueries({ queryKey: ["user_games", user_id] });
+    queryClient.invalidateQueries({
+      queryKey: ["user_game", user_id, String(gameId)],
+    });
+    queryClient.invalidateQueries({
+      queryKey: ["game_reviews", String(gameId)],
+    });
+  }
+
+  // Puts the status back, or takes a game that was just added out again
+  async function undoStatus(game, previous) {
+    setRatePrompt(null);
+    const { error } = previous
+      ? await updateUserGame({ game_id: game.id, user_id, status: previous })
+      : await deleteUserGame({ game_id: game.id, user_id });
+    if (error) {
+      toast.error(`Couldn't undo that for ${game.name}. Try again.`);
+      return;
+    }
+    refetch(game.id);
+  }
+
   // Resolves true once the status is saved and the library is refetched
   async function setStatus(game, status) {
     if (!user_id) {
@@ -84,18 +108,17 @@ export function useQuickStatus() {
       return false;
     }
 
-    toast.success(
-      status === "to play"
-        ? `Added ${game.name} to your wishlist`
-        : `${game.name} moved to ${STATUS_LABELS[status]}`,
-    );
-    await queryClient.invalidateQueries({ queryKey: ["user_games", user_id] });
-    queryClient.invalidateQueries({
-      queryKey: ["user_game", user_id, String(game.id)],
+    gameToast({
+      game,
+      message:
+        status === "to play"
+          ? "Added to your wishlist"
+          : `Moved to ${STATUS_LABELS[status]}`,
+      icon: STATUS_ICONS[status].icon,
+      iconClass: STATUS_ICONS[status].color,
+      action: { label: "Undo", onClick: () => undoStatus(game, current) },
     });
-    queryClient.invalidateQueries({
-      queryKey: ["game_reviews", String(game.id)],
-    });
+    await refetch(game.id);
     setPending((p) => {
       const next = { ...p };
       delete next[game.id];

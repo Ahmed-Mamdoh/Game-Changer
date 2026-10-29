@@ -1,6 +1,8 @@
 import { deleteUserGame } from "@/api/supabase";
 import { UserToken } from "@/hooks/useUserToken";
 import { useQueryClient } from "@tanstack/react-query";
+import { gameToast } from "@/ui/gameToast";
+import { Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
 
 // Delete a game, its status, log and review from the signed-in user's library.
@@ -13,10 +15,15 @@ export function useRemoveGame(game) {
     const { error } = await deleteUserGame({ game_id: game.id, user_id });
     if (error) {
       toast.error(`Couldn't remove ${game.name}. Try again.`);
-      return;
+      return false;
     }
 
-    toast.success(`Removed ${game.name} from your ${from}`);
+    gameToast({
+      game,
+      message: `Removed from your ${from}`,
+      icon: Trash2,
+      iconClass: "text-text-muted",
+    });
     const gameId = String(game.id);
     queryClient.invalidateQueries({ queryKey: ["user_games", user_id] });
     queryClient.invalidateQueries({ queryKey: ["user_game", user_id, gameId] });
@@ -24,6 +31,7 @@ export function useRemoveGame(game) {
       queryKey: ["user_game_review", user_id, gameId],
     });
     queryClient.invalidateQueries({ queryKey: ["game_reviews", gameId] });
+    return true;
   }
 
   return { removeGame };

@@ -320,7 +320,6 @@ function PickActions({ game, onDismiss, onLogged }) {
         userGame={userGame}
         userGameReview={userGameReview}
         defaultStatus="finished"
-        requireRating
         onSaved={onLogged}
         trigger={
           <button type="button" className="btn-on-art h-11 px-4">

@@ -71,9 +71,13 @@ function AppLayout() {
             style: {
               background: "var(--color-bg-raised)",
               color: "var(--color-text-main)",
-              border: "1px solid rgba(255, 255, 255, 0.14)",
-              borderRadius: "0.5rem",
+              border: "1px solid var(--color-stroke-medium)",
+              borderRadius: "0.75rem",
+              boxShadow: "var(--shadow-float)",
               fontSize: "0.875rem",
+              lineHeight: 1.35,
+              padding: "8px 10px",
+              maxWidth: "min(26rem, calc(100vw - 2rem))",
             },
             success: {
               iconTheme: { primary: "#7dd3a0", secondary: "#120f18" },

@@ -28,6 +28,7 @@ export async function addUserGame({
   game_id,
   review,
   rating,
+  is_favorite,
 }) {
   await insertGame({
     game_id,
@@ -40,6 +41,7 @@ export async function addUserGame({
         status,
         hours_played,
         game_id,
+        is_favorite,
       },
     ])
     .select();
