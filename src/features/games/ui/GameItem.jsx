@@ -1,7 +1,7 @@
 import { stageOf } from "@/utils/gameStage";
 import { coverUrlOf } from "@/utils/igdbImage";
 import { formatDate, intervalToDuration, formatDistanceToNow } from "date-fns";
-import { Clock, X } from "lucide-react";
+import { Clock, Heart, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { FaSteam } from "react-icons/fa";
 import { SiEpicgames, SiGogdotcom } from "react-icons/si";
@@ -14,6 +14,7 @@ import {
 import FavoriteButton from "@/features/games/components/FavoriteButton";
 import LogGameDialog from "@/features/games/components/LogGameDialog";
 import { useRemoveGame } from "@/features/games/hooks/useRemoveGame";
+import { useFavorites } from "@/features/games/hooks/useFavorites";
 
 const STORE_ICONS = {
   Steam: FaSteam,
@@ -46,6 +47,7 @@ function GameItem({ game, className = "" }) {
   const { statusOf, logOf, setStatus, ratePrompt, closeRatePrompt } =
     useQuickStatus();
   const { removeGame } = useRemoveGame(game);
+  const { isFavorite } = useFavorites();
   const [isRemoving, setIsRemoving] = useState(false);
   const libraryStatus = isRemoving ? null : game.status || statusOf(game.id);
   const isUnreleased =
@@ -104,6 +106,13 @@ function GameItem({ game, className = "" }) {
           </div>
         )}
         <div className="border-stroke-subtle pointer-events-none absolute inset-0 rounded-md border" />
+
+        {isFavorite(game.id) && !isRemoving && (
+          <span className="pointer-events-none absolute top-1.5 left-1.5 flex h-6 w-6 items-center justify-center rounded-sm border border-white/15 bg-black/65 backdrop-blur-md">
+            <Heart className="text-pulse-error h-3.5 w-3.5 fill-current" />
+            <span className="sr-only">Favorite</span>
+          </span>
+        )}
 
         {stage && (
           <span className="text-text-main pointer-events-none absolute bottom-1.5 left-1.5 flex items-center gap-1 rounded-sm border border-white/15 bg-black/65 px-1.5 py-0.5 text-[11px] font-semibold backdrop-blur-md">
