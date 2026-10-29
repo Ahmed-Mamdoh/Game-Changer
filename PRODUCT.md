@@ -28,7 +28,7 @@ A tracker that also tells you what to play next: AI recommendations and a chat a
 
 - Library statuses, hours played, dates, reviews and ratings per game.
 - Genre/theme/game-mode/date filters, search ranked by relevance, pagination.
-- Charts of the user's genres and themes on the account page.
+- Now playing, Favorites and a taste strip (ratings spread, top genres) on the account page.
 - Wishlist alerts when a wishlisted game becomes free.
 - Stack: React 19, Vite, Tailwind v4 with DaisyUI, Radix/shadcn primitives, TanStack Query, deployed on Vercel.
 

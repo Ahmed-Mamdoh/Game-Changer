@@ -30,7 +30,7 @@ function UserHeader({ userGames = [] }) {
   }
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-4">
+    <div className="flex items-start justify-between gap-4 sm:items-center">
       <div className="flex min-w-0 items-center gap-4">
         <span
           aria-hidden="true"
@@ -57,7 +57,10 @@ function UserHeader({ userGames = [] }) {
           </dl>
         </div>
       </div>
-      <button className="btn-quiet h-9" onClick={() => setIsLogoutOpen(true)}>
+      <button
+        className="btn-quiet h-9 shrink-0"
+        onClick={() => setIsLogoutOpen(true)}
+      >
         Log out
       </button>
 

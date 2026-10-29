@@ -46,7 +46,7 @@ function TasteStrip({ userGames = [], genres = [] }) {
   return (
     <section
       aria-label="Your taste"
-      className="border-stroke-subtle bg-bg-surface flex flex-wrap items-center gap-x-8 gap-y-4 rounded-lg border px-4 py-3"
+      className="panel flex flex-wrap items-center gap-x-6 gap-y-4 px-4 py-3"
     >
       {ratings.length > 0 && (
         <div className="flex items-center gap-4">
@@ -59,7 +59,7 @@ function TasteStrip({ userGames = [], genres = [] }) {
               />
             </span>
             <span className="text-text-dim tabular text-xs">
-              avg of {ratings.length} rated
+              {ratings.length} rated
             </span>
           </div>
           <ol aria-label="Ratings by stars" className="flex items-end gap-1.5">
@@ -78,7 +78,7 @@ function TasteStrip({ userGames = [], genres = [] }) {
                     }}
                   />
                 </span>
-                <span className="text-text-muted tabular text-[10px] leading-none">
+                <span className="text-text-muted tabular text-xs leading-none">
                   {i + 1}
                 </span>
               </li>
@@ -87,27 +87,36 @@ function TasteStrip({ userGames = [], genres = [] }) {
         </div>
       )}
 
+      {ratings.length > 0 && topGenres.length > 0 && (
+        <span
+          aria-hidden="true"
+          className="bg-stroke-subtle hidden h-10 w-px sm:block"
+        />
+      )}
+
       {topGenres.length > 0 && (
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <span className="text-text-dim text-sm">You play</span>
-          {topGenres.map((genre) => {
-            const isActive = genreParam === String(genre.id);
-            return (
-              <button
-                key={genre.id}
-                type="button"
-                aria-pressed={isActive}
-                onClick={() => toggleGenre(genre.id)}
-                className={`h-8 cursor-pointer rounded-full px-3 text-sm transition-colors duration-100 ${
-                  isActive
-                    ? "bg-action text-on-action font-semibold"
-                    : "bg-bg-chip text-text-main hover:bg-white/[0.12]"
-                }`}
-              >
-                {shortGenre(genre.name)}
-              </button>
-            );
-          })}
+          <div className="flex flex-wrap gap-2">
+            {topGenres.map((genre) => {
+              const isActive = genreParam === String(genre.id);
+              return (
+                <button
+                  key={genre.id}
+                  type="button"
+                  aria-pressed={isActive}
+                  onClick={() => toggleGenre(genre.id)}
+                  className={`h-8 cursor-pointer rounded-full px-3 text-sm transition-colors duration-100 ${
+                    isActive
+                      ? "bg-action text-on-action font-semibold"
+                      : "bg-bg-chip text-text-main hover:bg-white/[0.12]"
+                  }`}
+                >
+                  {shortGenre(genre.name)}
+                </button>
+              );
+            })}
+          </div>
         </div>
       )}
     </section>

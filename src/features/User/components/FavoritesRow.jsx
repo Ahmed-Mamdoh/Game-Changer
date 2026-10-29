@@ -1,5 +1,5 @@
 import { coverUrlOf } from "@/utils/igdbImage";
-import { Heart } from "lucide-react";
+import { ArrowRight, Heart } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 
 const SLOTS = 5;
@@ -21,7 +21,7 @@ function FavoritesRow({ userGames = [] }) {
   return (
     <section
       aria-labelledby="favorites-title"
-      className="border-stroke-subtle bg-bg-surface flex flex-col gap-3 rounded-lg border p-4"
+      className="panel flex flex-col gap-3 p-4"
     >
       <div className="flex items-baseline justify-between gap-4">
         <h2
@@ -32,12 +32,9 @@ function FavoritesRow({ userGames = [] }) {
           Favorites
         </h2>
         {favorites.length > SLOTS && (
-          <button
-            type="button"
-            onClick={showAll}
-            className="text-text-dim hover:text-text-main cursor-pointer text-sm"
-          >
-            See all {favorites.length}
+          <button type="button" onClick={showAll} className="link-quiet">
+            All {favorites.length}
+            <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </button>
         )}
       </div>
