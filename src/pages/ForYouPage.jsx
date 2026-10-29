@@ -86,7 +86,7 @@ function tieOf(game) {
     return game.studioName
       ? `From ${game.studioName}, like ${source}`
       : `Same studio as ${source}`;
-  return `Because you played ${source}`;
+  return `Because you liked ${source}`;
 }
 
 const platformLabel = (keys) =>
