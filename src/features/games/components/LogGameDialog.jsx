@@ -90,6 +90,8 @@ function StarRating({ value, onChange }) {
 // the library (edit) and for games not in it yet (the log adds them).
 // trigger: the button that opens it; defaultStatus: preselected for a new log;
 // requireRating: a rating is needed to save; onSaved: called after a save.
+// defaultOpen + onClose: opened from code instead of a trigger, e.g. to ask
+// for a rating right after a status change, with the stars focused first.
 function LogGameDialog({
   game,
   userGame,
@@ -99,12 +101,14 @@ function LogGameDialog({
   defaultStatus = "",
   requireRating = false,
   onSaved,
+  defaultOpen = false,
+  onClose,
 }) {
   const { id, name, first_release_date: releaseDate } = game;
   const user_id = UserToken()?.user?.id;
   const queryClient = useQueryClient();
   const { data: timeToBeat } = useGetTimeToBeat(id);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
   const [isFavorite, setIsFavorite] = useState(Boolean(userGame?.is_favorite));
 
   const savedValues = () => ({
@@ -136,6 +140,13 @@ function LogGameDialog({
   function handleOpenChange(next) {
     if (next) reset(savedValues());
     setOpen(next);
+    if (!next) onClose?.();
+  }
+
+  function focusRating(e) {
+    if (!defaultOpen) return;
+    e.preventDefault();
+    e.target.querySelector('[aria-label="Rating"] [tabindex="0"]')?.focus();
   }
 
   async function onSubmit(values) {
@@ -168,6 +179,7 @@ function LogGameDialog({
     queryClient.invalidateQueries({ queryKey: ["game_reviews", gameId] });
     setOpen(false);
     onSaved?.(values);
+    onClose?.();
   }
 
   function toggleFavorite() {
@@ -197,20 +209,23 @@ function LogGameDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        {trigger || (
-          <button type="button" className="btn-on-art">
-            {hasLog ? (
-              <PenLine className="h-4 w-4" />
-            ) : (
-              <Star className="h-4 w-4" />
-            )}
-            {hasLog ? "Edit log" : "Rate & review"}
-          </button>
-        )}
-      </DialogTrigger>
+      {!defaultOpen && (
+        <DialogTrigger asChild>
+          {trigger || (
+            <button type="button" className="btn-on-art">
+              {hasLog ? (
+                <PenLine className="h-4 w-4" />
+              ) : (
+                <Star className="h-4 w-4" />
+              )}
+              {hasLog ? "Edit log" : "Rate & review"}
+            </button>
+          )}
+        </DialogTrigger>
+      )}
 
       <DialogContent
+        onOpenAutoFocus={focusRating}
         overlayClassName="confirm-overlay"
         className="log-panel bg-bg-surface border-stroke-medium gap-0 overflow-hidden rounded-2xl border p-0 shadow-[var(--shadow-float)] max-sm:top-auto max-sm:bottom-0 max-sm:max-h-[92dvh] max-sm:max-w-full max-sm:translate-y-0 max-sm:overflow-y-auto max-sm:rounded-b-none sm:max-w-[34rem]"
       >
@@ -304,7 +319,7 @@ function LogGameDialog({
             <div className="flex flex-col gap-2">
               <span className="text-text-main text-sm font-semibold">
                 Rating
-                {requireRating && (
+                {(requireRating || defaultOpen) && (
                   <span className="text-text-muted font-normal">
                     {" "}
                     · tells your picks what you liked
@@ -428,7 +443,7 @@ function LogGameDialog({
             <div className="ml-auto flex items-center gap-2">
               <DialogClose asChild>
                 <button type="button" className="btn-quiet">
-                  Cancel
+                  {defaultOpen ? "Skip" : "Cancel"}
                 </button>
               </DialogClose>
               <button

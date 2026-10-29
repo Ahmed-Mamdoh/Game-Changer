@@ -11,6 +11,7 @@ import {
   STATUS_LABELS,
   useQuickStatus,
 } from "@/features/games/hooks/useQuickStatus";
+import LogGameDialog from "@/features/games/components/LogGameDialog";
 
 const STORE_ICONS = {
   Steam: FaSteam,
@@ -40,7 +41,8 @@ function hasValidEnd(endDate) {
 
 function GameItem({ game, className = "" }) {
   const imageUrl = coverUrlOf(game);
-  const { statusOf, setStatus } = useQuickStatus();
+  const { statusOf, logOf, setStatus, ratePrompt, closeRatePrompt } =
+    useQuickStatus();
   const libraryStatus = game.status || statusOf(game.id);
   const isUnreleased =
     game?.first_release_date &&
@@ -175,6 +177,16 @@ function GameItem({ game, className = "" }) {
           </p>
         )}
       </div>
+
+      {ratePrompt && (
+        <LogGameDialog
+          defaultOpen
+          game={game}
+          {...logOf(game.id)}
+          defaultStatus={ratePrompt}
+          onClose={closeRatePrompt}
+        />
+      )}
     </article>
   );
 }

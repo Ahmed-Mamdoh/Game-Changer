@@ -22,26 +22,42 @@ export const STATUS_ICONS = {
   dropped: { icon: Square, color: "text-pulse-error" },
 };
 
+// Statuses that mean the player has an opinion, so we ask for a rating
+const RATE_AFTER = ["finished", "dropped"];
+
 // Set a game's library status straight from a card, without opening the game.
+// Finishing or dropping an unrated game sets ratePrompt to that status, so
+// the caller can open the log and ask for the rating For You learns from.
 export function useQuickStatus() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const user_id = UserToken()?.user?.id;
   const { data } = useGetUserGames(user_id);
   const [pending, setPending] = useState({});
+  const [ratePrompt, setRatePrompt] = useState(null);
 
   function statusOf(gameId) {
     if (gameId in pending) return pending[gameId];
     return data?.user_games?.find((g) => g.game_id === gameId)?.status || null;
   }
 
+  // The library row and the user's review, for opening a log on a game
+  function logOf(gameId) {
+    const userGame = data?.user_games?.find((g) => g.game_id === gameId);
+    const userGameReview = userGame?.game?.reviews?.find(
+      (review) => review.user_id === user_id,
+    );
+    return { userGame, userGameReview };
+  }
+
+  // Resolves true once the status is saved and the library is refetched
   async function setStatus(game, status) {
     if (!user_id) {
       navigate("/auth");
-      return;
+      return false;
     }
     const current = statusOf(game.id);
-    if (current === status) return;
+    if (current === status) return false;
 
     setPending((p) => ({ ...p, [game.id]: status }));
     const coverUrl =
@@ -65,7 +81,7 @@ export function useQuickStatus() {
         return next;
       });
       toast.error(`Couldn't update ${game.name}. Try again.`);
-      return;
+      return false;
     }
 
     toast.success(
@@ -85,7 +101,19 @@ export function useQuickStatus() {
       delete next[game.id];
       return next;
     });
+    // logOf still reads the library from before the change; ratings survive it
+    if (RATE_AFTER.includes(status) && !logOf(game.id).userGameReview?.rating) {
+      setRatePrompt(status);
+    }
+    return true;
   }
 
-  return { statusOf, setStatus, isSignedIn: Boolean(user_id) };
+  return {
+    statusOf,
+    logOf,
+    setStatus,
+    ratePrompt,
+    closeRatePrompt: () => setRatePrompt(null),
+    isSignedIn: Boolean(user_id),
+  };
 }

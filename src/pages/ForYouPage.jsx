@@ -287,17 +287,12 @@ function NotForMeMenu({ game, onDismiss }) {
 // Open, wishlist, log as played and "not for me" for the focused pick. Keyed
 // by game so the hooks always point at the game on screen.
 function PickActions({ game, onDismiss, onLogged }) {
-  const user_id = UserToken()?.user?.id;
-  const { data } = useGetUserGames(user_id);
-  const { statusOf, setStatus } = useQuickStatus();
+  const { statusOf, logOf, setStatus } = useQuickStatus();
   const { removeGame } = useRemoveGame(game);
   const status = statusOf(game.id);
   const isWishlisted = status === "to play";
   // A wishlisted pick already has a library row; the log updates it
-  const userGame = data?.user_games?.find((g) => g.game_id === game.id);
-  const userGameReview = userGame?.game?.reviews?.find(
-    (review) => review.user_id === user_id,
-  );
+  const { userGame, userGameReview } = logOf(game.id);
 
   return (
     <div className="flex flex-wrap items-center gap-3">

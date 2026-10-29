@@ -118,7 +118,8 @@ function GameDetailsOverview({ data }) {
     useGetUserGame(user_id);
   const { data: userGameReview, isLoading: isLoadingUserGameReview } =
     useGetUserGameReview({ user_id });
-  const { statusOf, setStatus } = useQuickStatus();
+  const { statusOf, logOf, setStatus, ratePrompt, closeRatePrompt } =
+    useQuickStatus();
   const { removeGame } = useRemoveGame(game);
   const [isRemoveOpen, setIsRemoveOpen] = useState(false);
   const [isStoryOpen, setIsStoryOpen] = useState(false);
@@ -344,6 +345,16 @@ function GameDetailsOverview({ data }) {
                     onRemove={requestRemove}
                   />
                 </div>
+              )}
+
+              {ratePrompt && (
+                <LogGameDialog
+                  defaultOpen
+                  game={game}
+                  {...logOf(id)}
+                  defaultStatus={ratePrompt}
+                  onClose={closeRatePrompt}
+                />
               )}
 
               {storeLinks.length > 0 && (
