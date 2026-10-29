@@ -309,8 +309,9 @@ function PicksStage({
 
       {/* Shelf: hovering or pressing a cover focuses it; pressing the focused
           cover opens the game. On touch the first tap focuses, the next opens. */}
-      <div className="short:pb-5 mx-auto w-full max-w-[1440px] px-4 pb-8 md:px-8">
-        <h2 className="text-text-dim short:mb-2 mb-3 text-sm font-semibold tracking-normal">
+      <div className="short:pb-4 mx-auto w-full max-w-[1440px] px-4 pb-8 md:px-8">
+        {/* The header counter already says how many; short screens drop this line */}
+        <h2 className="text-text-dim short:sr-only mb-3 text-sm font-semibold tracking-normal">
           <span className="tabular">{picks.length}</span> picks for you
         </h2>
         <div
@@ -333,7 +334,7 @@ function PicksStage({
               onClick={() =>
                 i === index ? navigate(`/game/${game.id}`) : setFocusIndex(i)
               }
-              className="group short:md:w-20 flex w-24 shrink-0 cursor-pointer flex-col gap-1.5 text-left md:w-28"
+              className="group flex w-24 shrink-0 cursor-pointer flex-col gap-1.5 text-left md:w-28"
             >
               <span
                 className={`bg-bg-raised block aspect-[3/4] w-full overflow-hidden rounded-md outline-2 outline-offset-[3px] transition-[outline-color] duration-150 ease-out ${
