@@ -1,10 +1,12 @@
 import { useGetGenres } from "@/features/games/hooks/useGetGenres";
 import { useGetThemes } from "@/features/games/hooks/useGetThemes";
 import GamesGallery from "@/features/games/ui/GamesGallery";
-import UserFilterButton from "@/features/User/components/UserFilterButton";
+import FavoritesRow from "@/features/User/components/FavoritesRow";
+import NowPlaying from "@/features/User/components/NowPlaying";
 import RateTheseStrip from "@/features/User/components/RateTheseStrip";
+import TasteStrip from "@/features/User/components/TasteStrip";
+import UserFilterButton from "@/features/User/components/UserFilterButton";
 import UserHeader from "@/features/User/components/UserHeader";
-import UserStats from "@/features/User/components/UserStats";
 import { useGetUserGames } from "@/features/User/hooks/useGetUserGames";
 import { UserToken } from "@/hooks/useUserToken";
 import Spinner from "@/ui/Spinner";
@@ -132,8 +134,12 @@ function Account() {
       </Helmet>
       <div className="min-h-[100dvh] pt-24">
         <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-5 px-4 md:px-8">
-          <UserHeader />
-          <UserStats userGames={userGames} isLoading={isLoading} />
+          <UserHeader userGames={userGames} />
+          <div className="grid gap-3 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+            <NowPlaying userGames={userGames} />
+            <FavoritesRow userGames={userGames} />
+          </div>
+          <TasteStrip userGames={userGames} genres={genres} />
           <RateTheseStrip userGames={userGames} user_id={user_id} />
 
           <div
