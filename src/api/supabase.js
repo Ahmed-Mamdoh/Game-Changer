@@ -41,7 +41,8 @@ export async function addUserGame({
         status,
         hours_played,
         game_id,
-        is_favorite,
+        // The column is NOT NULL; quick status adds pass no favorite
+        is_favorite: Boolean(is_favorite),
       },
     ])
     .select();
