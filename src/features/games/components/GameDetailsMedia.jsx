@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Play } from "lucide-react";
 import RowScrollButtons from "@/ui/RowScrollButtons";
 import { useRowScroll } from "@/hooks/useRowScroll";
@@ -6,10 +6,12 @@ import { formatIGDBImage } from "@/utils/igdbImage";
 import MediaLightbox from "./MediaLightbox";
 
 // Trailers first, then screenshots, in one snapping 16:9 rail. Any slide opens
-// the lightbox at that item.
+// the lightbox at that item, and closing it brings the rail to wherever the
+// viewer was left.
 function GameDetailsMedia({ data }) {
   const { screenshots, videos, name } = data[0];
   const [openIndex, setOpenIndex] = useState(null);
+  const lastIndex = useRef(0);
   const row = useRowScroll((videos?.length || 0) + (screenshots?.length || 0));
   if (!screenshots?.length && !videos?.length) return null;
 
@@ -30,6 +32,20 @@ function GameDetailsMedia({ data }) {
     })),
   ];
 
+  function handleIndexChange(next) {
+    if (next !== null) lastIndex.current = next;
+    setOpenIndex(next);
+  }
+
+  // Focus the last viewed slide without the jump focus() would make, then
+  // glide the rail to it; block "nearest" leaves the page itself still
+  function handleClosed() {
+    const slide = row.ref.current?.children[lastIndex.current];
+    if (!slide) return;
+    slide.focus({ preventScroll: true });
+    slide.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
+  }
+
   return (
     <section
       id="Media"
@@ -48,7 +64,7 @@ function GameDetailsMedia({ data }) {
           <button
             key={`${item.type}-${item.id}`}
             type="button"
-            onClick={() => setOpenIndex(index)}
+            onClick={() => handleIndexChange(index)}
             aria-label={`Open ${item.alt}`}
             className="group bg-bg-surface focus-visible:ring-pulse-primary relative aspect-video w-[85%] shrink-0 cursor-pointer snap-start overflow-hidden rounded-lg outline-none focus-visible:ring-2 sm:w-[60%] lg:w-[44%]"
           >
@@ -71,7 +87,8 @@ function GameDetailsMedia({ data }) {
       <MediaLightbox
         items={items}
         index={openIndex}
-        onIndexChange={setOpenIndex}
+        onIndexChange={handleIndexChange}
+        onClosed={handleClosed}
         title={name}
       />
     </section>

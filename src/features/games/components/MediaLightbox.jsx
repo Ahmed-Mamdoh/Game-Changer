@@ -15,8 +15,9 @@ const arrow =
 // the media on phones where they'd cover the player), ←/→ and swipes step
 // through every item and wrap at the ends; Esc, X or a click on the backdrop
 // closes. A thumbnail strip under the media jumps straight to any item.
-// `index` is null while closed.
-function MediaLightbox({ items, index, onIndexChange, title }) {
+// `index` is null while closed. `onClosed` replaces the default return of
+// focus once the viewer has gone.
+function MediaLightbox({ items, index, onIndexChange, onClosed, title }) {
   const touchX = useRef(null);
   const stripRef = useRef(null);
   const open = index !== null;
@@ -63,6 +64,11 @@ function MediaLightbox({ items, index, onIndexChange, title }) {
         showCloseButton={false}
         aria-describedby={undefined}
         onKeyDown={handleKeyDown}
+        onCloseAutoFocus={(e) => {
+          if (!onClosed) return;
+          e.preventDefault();
+          onClosed();
+        }}
         onTouchStart={(e) => (touchX.current = e.touches[0].clientX)}
         onTouchEnd={handleTouchEnd}
         onClick={(e) => e.target === e.currentTarget && onIndexChange(null)}
