@@ -25,7 +25,8 @@ const fieldClass =
 
 const hoursOf = (seconds) => (seconds ? Math.round(seconds / 3600) : null);
 
-function StarRating({ value, onChange }) {
+// size "sm" drops the readout, for rows that rate many games at once
+export function StarRating({ value, onChange, size = "md", label = "Rating" }) {
   const [hover, setHover] = useState(0);
   const refs = useRef([]);
   const shown = hover || value;
@@ -49,7 +50,7 @@ function StarRating({ value, onChange }) {
     <div className="flex items-center gap-3">
       <div
         role="radiogroup"
-        aria-label="Rating"
+        aria-label={label}
         className="-ml-1 flex"
         onMouseLeave={() => setHover(0)}
         onKeyDown={handleKeyDown}
@@ -66,11 +67,11 @@ function StarRating({ value, onChange }) {
             onMouseEnter={() => setHover(n)}
             // Pressing the current rating again clears it
             onClick={() => onChange(value === n ? 0 : n)}
-            className="cursor-pointer rounded-sm p-1"
+            className={`cursor-pointer rounded-sm ${size === "sm" ? "p-0.5" : "p-1"}`}
           >
             <Star
               strokeWidth={1.5}
-              className={`h-7 w-7 transition-colors duration-100 ${
+              className={`${size === "sm" ? "h-5 w-5" : "h-7 w-7"} transition-colors duration-100 ${
                 n <= shown
                   ? "fill-pulse-primary text-pulse-primary"
                   : "text-text-muted"
@@ -79,9 +80,11 @@ function StarRating({ value, onChange }) {
           </button>
         ))}
       </div>
-      <span className="text-text-dim tabular text-sm">
-        {value ? `${value} / 5` : "Not rated"}
-      </span>
+      {size !== "sm" && (
+        <span className="text-text-dim tabular text-sm">
+          {value ? `${value} / 5` : "Not rated"}
+        </span>
+      )}
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { useGetGenres } from "@/features/games/hooks/useGetGenres";
 import { useGetThemes } from "@/features/games/hooks/useGetThemes";
 import GamesGallery from "@/features/games/ui/GamesGallery";
 import UserFilterButton from "@/features/User/components/UserFilterButton";
+import RateTheseStrip from "@/features/User/components/RateTheseStrip";
 import UserHeader from "@/features/User/components/UserHeader";
 import UserStats from "@/features/User/components/UserStats";
 import { useGetUserGames } from "@/features/User/hooks/useGetUserGames";
@@ -133,6 +134,7 @@ function Account() {
         <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-5 px-4 md:px-8">
           <UserHeader />
           <UserStats userGames={userGames} isLoading={isLoading} />
+          <RateTheseStrip userGames={userGames} user_id={user_id} />
 
           <div
             role="tablist"
