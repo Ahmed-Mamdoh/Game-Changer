@@ -36,6 +36,19 @@ function validMessages(messages) {
   return total <= MAX_TOTAL_CHARS ? cleaned : null;
 }
 
+// Structured output (JSON mode or a JSON schema), passed through to Groq
+function validResponseFormat(format) {
+  if (format === undefined) return { ok: true, value: undefined };
+  if (
+    !format ||
+    typeof format !== "object" ||
+    !["json_object", "json_schema"].includes(format.type) ||
+    JSON.stringify(format).length > 4000
+  )
+    return { ok: false };
+  return { ok: true, value: format };
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
@@ -56,13 +69,17 @@ export default async function handler(req, res) {
   )
     return;
 
-  const { messages, model } = req.body || {};
+  const { messages, model, response_format } = req.body || {};
   if (!ALLOWED_MODELS.has(model)) {
     return res.status(400).json({ error: "Model not allowed" });
   }
   const cleanedMessages = validMessages(messages);
   if (!cleanedMessages) {
     return res.status(400).json({ error: "Invalid messages" });
+  }
+  const format = validResponseFormat(response_format);
+  if (!format.ok) {
+    return res.status(400).json({ error: "Invalid response format" });
   }
 
   try {
@@ -77,6 +94,7 @@ export default async function handler(req, res) {
         body: JSON.stringify({
           model: model,
           messages: cleanedMessages,
+          ...(format.value && { response_format: format.value }),
         }),
       },
     );

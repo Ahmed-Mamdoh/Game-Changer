@@ -1,6 +1,6 @@
 import { supabase } from "@/api/supabase";
 
-export async function chatWithGroq({ messages, model }) {
+export async function chatWithGroq({ messages, model, response_format }) {
   const url = "/api/groqProvider";
 
   try {
@@ -19,6 +19,7 @@ export async function chatWithGroq({ messages, model }) {
       body: JSON.stringify({
         model: model,
         messages,
+        ...(response_format && { response_format }),
       }),
     };
 

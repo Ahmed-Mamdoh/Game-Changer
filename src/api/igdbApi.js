@@ -249,20 +249,6 @@ export async function getUserGamesData(userGamesIds) {
   );
 }
 
-// Ranked IGDB search for one title, used to resolve AI recommendations to real
-// games. Returns several candidates so the caller can pick an exact match.
-export async function searchReleasedGamesByName(name, limit = 10) {
-  const escaped = String(name).replace(/\\/g, "\\\\").replace(/"/g, '\\"');
-  return igdbFetch(
-    "games",
-    `search "${escaped}";
-      fields name,cover.url,first_release_date,genres.name,artworks.url,artworks.artwork_type,artworks.width;
-      where game_type = (0,8,9) & version_parent = null &
-      first_release_date <= ${Math.floor(Date.now() / 1000)};
-      limit ${limit};`,
-  );
-}
-
 export async function getFreeGameData(search) {
   const searchString = search ? `search "${escapeIgdbString(search)}";` : "";
   return igdbFetch(
@@ -337,42 +323,68 @@ export async function getCompany(id) {
   return igdbFetch("companies", `fields name; where id = ${id};`);
 }
 
-export async function getGamesForRecommending({ platform, playedGamesIds }) {
-  const platformString =
-    platform === "all" || !platform
-      ? "& platforms = (6,48,167,49,169,130)"
-      : ` & platforms = (${platform})`;
+// Tag fields the recommender reads (see src/utils/tasteProfile.js)
+const TASTE_FIELDS =
+  "genres.name,themes.name,keywords.name,player_perspectives.name,game_modes.name,involved_companies.company,involved_companies.developer,franchises,collections";
 
-  const fifteenYearsAgo =
-    Math.floor(Date.now() / 1000) - 15 * 365 * 24 * 60 * 60;
-  const playedIdsFilter =
-    playedGamesIds?.length > 0 ? `id != (${playedGamesIds.join(",")}) &` : "";
-
-  // Common query parts
-  const fields =
-    "name,cover.url,total_rating,genres.name,themes.name,keywords.name,first_release_date,game_modes.name,player_perspectives.name,involved_companies.company.name";
-  const whereClause = `
-    ${playedIdsFilter} 
-    version_parent = null & 
-    game_type = (0,8,9) & 
-    themes != (42) & 
-    first_release_date > ${fifteenYearsAgo} &
-    (game_status = null | game_status != (5,6,7,8))
-    ${platformString}
-  `;
-
-  // Fetch 4 batches of 500 games in parallel (Total 2000 games)
-  const batchPromises = [0, 500, 1000, 1500].map((offset) =>
-    igdbFetch(
-      "games",
-      `fields ${fields};
-       limit 500;
-       offset ${offset};
-       sort total_rating_count desc;
-       where ${whereClause};`,
-    ),
+// Library games with their tags and IGDB's similar_games links.
+export async function getTasteDetails(ids) {
+  if (!ids?.length) return [];
+  return igdbFetch(
+    "games",
+    `fields name,${TASTE_FIELDS},similar_games;
+      where id = (${ids.join(",")});
+      limit 500;`,
   );
+}
 
-  const results = await Promise.all(batchPromises);
-  return results.flat();
+// Released, official base games only, with what a pick card needs.
+const CANDIDATE_FIELDS = `name,cover.url,first_release_date,total_rating,total_rating_count,artworks.url,artworks.artwork_type,artworks.width,${TASTE_FIELDS}`;
+const candidateWhere = () => `game_type = (0,8,9) & version_parent = null &
+      themes != (42) & keywords != (${UNOFFICIAL_KEYWORDS.join(",")}) &
+      (game_status = null | game_status != (5,6,7,8)) &
+      first_release_date <= ${Math.floor(Date.now() / 1000)}`;
+
+// Real games to recommend from: the similar_games of liked library games,
+// plus well-rated games sharing the player's top genres/themes and keywords.
+export async function getRecommendationCandidates({
+  similarIds = [],
+  genreIds = [],
+  themeIds = [],
+  keywordIds = [],
+}) {
+  const queries = [];
+  if (similarIds.length)
+    queries.push(
+      igdbFetch(
+        "games",
+        `fields ${CANDIDATE_FIELDS};
+          where id = (${similarIds.join(",")}) & ${candidateWhere()};
+          limit 500;`,
+      ),
+    );
+  if (genreIds.length && themeIds.length)
+    queries.push(
+      igdbFetch(
+        "games",
+        `fields ${CANDIDATE_FIELDS};
+          where genres = (${genreIds.join(",")}) & themes = (${themeIds.join(",")}) &
+            total_rating_count > 40 & ${candidateWhere()};
+          sort total_rating desc;
+          limit 80;`,
+      ),
+    );
+  if (keywordIds.length)
+    queries.push(
+      igdbFetch(
+        "games",
+        `fields ${CANDIDATE_FIELDS};
+          where keywords = (${keywordIds.join(",")}) &
+            total_rating_count > 25 & ${candidateWhere()};
+          sort total_rating_count desc;
+          limit 80;`,
+      ),
+    );
+  const results = await Promise.all(queries);
+  return results.flatMap((result) => (Array.isArray(result) ? result : []));
 }
