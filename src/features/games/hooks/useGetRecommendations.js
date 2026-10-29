@@ -7,11 +7,14 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import {
-  addDismissedGames,
-  deleteDismissedGame,
-  getDismissedGames,
-  setDismissReason,
-} from "@/api/supabase";
+  DISMISSED_PREFIX,
+  addDismissed,
+  loadDismissed,
+  readStorage,
+  removeDismissed,
+  setReason,
+  writeStorage,
+} from "@/features/games/dismissedGames";
 import { UserToken } from "@/hooks/useUserToken";
 import { getRecommendationCandidates, getTasteDetails } from "@/api/igdbApi";
 import {
@@ -37,11 +40,6 @@ import {
 
 const CACHE_PREFIX = "recommendations:v7:";
 const SEEN_PREFIX = "recommendations:seen:";
-const DISMISSED_PREFIX = "recommendations:dismissed:";
-// Why each game was dismissed, by id. Starts with DISMISSED_PREFIX so the
-// old-format cleanup below keeps it.
-const REASONS_PREFIX = DISMISSED_PREFIX + "reasons:";
-const DISMISSED_LIMIT = 300;
 // How hard a "Not my style" game pulls against its tags; a dropped game with
 // no rating weighs -0.8
 const STYLE_DISMISS_WEIGHT = -0.5;
@@ -65,22 +63,6 @@ function hashString(str) {
   return (hash >>> 0).toString(36);
 }
 
-function readStorage(key) {
-  try {
-    return JSON.parse(localStorage.getItem(key));
-  } catch {
-    return null;
-  }
-}
-
-function writeStorage(key, value) {
-  try {
-    localStorage.setItem(key, JSON.stringify(value));
-  } catch {
-    // Storage full or blocked, picks still show for this visit
-  }
-}
-
 function readCache(user_id, libraryHash, platformKey) {
   const cached = readStorage(CACHE_PREFIX + user_id);
   if (
@@ -101,39 +83,12 @@ function clearCache(user_id) {
   }
 }
 
-// "Not for me" games live in Supabase so they follow the player across
-// devices. This browser keeps a copy, which also covers the time before the
-// dismissed_games table exists; anything only stored here is uploaded once
-// the table answers. Reasons work the same way.
-async function loadDismissed(user_id) {
-  const local = readStorage(DISMISSED_PREFIX + user_id) || [];
-  const localReasons = readStorage(REASONS_PREFIX + user_id) || {};
-  const { data: rows, error } = await getDismissedGames(user_id);
-  if (error || !rows) return toDismissed(local, localReasons);
-  const remote = rows.map((row) => row.game_id);
-  const reasons = { ...localReasons };
-  for (const row of rows) if (row.reason) reasons[row.game_id] = row.reason;
-  const remoteSet = new Set(remote);
-  const missing = local.filter((id) => !remoteSet.has(id));
-  if (missing.length) {
-    const { error: uploadError } = await addDismissedGames({
-      user_id,
-      game_ids: missing,
-    });
-    if (uploadError) return toDismissed([...remote, ...local], reasons);
-  }
-  const all = [...new Set([...remote, ...local])];
-  writeStorage(DISMISSED_PREFIX + user_id, all.slice(0, DISMISSED_LIMIT));
-  writeStorage(REASONS_PREFIX + user_id, reasons);
-  return toDismissed(all, reasons);
+// After the hidden games change outside For You (Show again, Reset), the
+// next visit builds a fresh set instead of the saved one
+export function forgetPicks(queryClient, user_id) {
+  clearCache(user_id);
+  queryClient.removeQueries({ queryKey: ["recommendations", user_id] });
 }
-
-const toDismissed = (ids, reasons) => ({
-  hiddenIds: new Set(ids),
-  reasons: new Map(
-    Object.entries(reasons).map(([id, reason]) => [Number(id), reason]),
-  ),
-});
 
 // Earlier cache formats held AI-guessed titles and match scores.
 try {
@@ -582,32 +537,19 @@ export function useGetRecommendations({ platformIds = [] } = {}) {
     });
   }
 
+  const refreshHidden = () =>
+    queryClient.invalidateQueries({ queryKey: ["dismissed_games", user_id] });
+
   // "Not for me": hidden from every future set, and gone from this one now
   function dismiss(game) {
-    const dismissed = readStorage(DISMISSED_PREFIX + user_id) || [];
-    writeStorage(
-      DISMISSED_PREFIX + user_id,
-      [game.id, ...dismissed.filter((id) => id !== game.id)].slice(
-        0,
-        DISMISSED_LIMIT,
-      ),
-    );
-    addDismissedGames({ user_id, game_ids: [game.id] });
+    addDismissed(user_id, game.id).then(refreshHidden);
     const index = data?.picks?.findIndex((pick) => pick.id === game.id) ?? -1;
     updatePicks((picks) => picks.filter((pick) => pick.id !== game.id));
     return index;
   }
 
   function undoDismiss(game, index) {
-    const dismissed = readStorage(DISMISSED_PREFIX + user_id) || [];
-    writeStorage(
-      DISMISSED_PREFIX + user_id,
-      dismissed.filter((id) => id !== game.id),
-    );
-    const reasons = readStorage(REASONS_PREFIX + user_id) || {};
-    delete reasons[game.id];
-    writeStorage(REASONS_PREFIX + user_id, reasons);
-    deleteDismissedGame({ user_id, game_id: game.id });
+    removeDismissed(user_id, game.id).then(refreshHidden);
     updatePicks((picks) => {
       if (picks.some((pick) => pick.id === game.id)) return picks;
       const next = [...picks];
@@ -619,11 +561,7 @@ export function useGetRecommendations({ platformIds = [] } = {}) {
   // "old", "style" or "this". The current set stays put; the next built set
   // (Refresh picks, or the next visit) learns from it.
   function explainDismiss(game, reason) {
-    writeStorage(REASONS_PREFIX + user_id, {
-      ...(readStorage(REASONS_PREFIX + user_id) || {}),
-      [game.id]: reason,
-    });
-    setDismissReason({ user_id, game_id: game.id, reason });
+    setReason(user_id, game.id, reason).then(refreshHidden);
     clearCache(user_id);
   }
 

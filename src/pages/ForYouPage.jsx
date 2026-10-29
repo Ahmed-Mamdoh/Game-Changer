@@ -1,4 +1,5 @@
 import { useGetRecommendations } from "@/features/games/hooks/useGetRecommendations";
+import { useDismissedGames } from "@/features/games/hooks/useDismissedGames";
 import {
   STATUS_LABELS,
   useQuickStatus,
@@ -25,6 +26,7 @@ import {
   Bookmark,
   Check,
   ChevronDown,
+  EyeOff,
   Gamepad2,
   RefreshCw,
   ThumbsDown,
@@ -191,6 +193,7 @@ function PageHeader({
   disabled,
   position,
   platforms,
+  hiddenCount,
 }) {
   return (
     <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
@@ -205,6 +208,16 @@ function PageHeader({
         )}
       </div>
       <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
+        {hiddenCount > 0 && (
+          <Link
+            to="/games/forYou/hidden"
+            className="btn-on-art h-9 gap-1.5 px-3"
+          >
+            <EyeOff className="h-4 w-4 opacity-80" aria-hidden="true" />
+            Hidden
+            <span className="text-text-dim tabular">{hiddenCount}</span>
+          </Link>
+        )}
         {platforms && (
           <PlatformPicker
             selected={platforms.selected}
@@ -659,6 +672,7 @@ function ForYouPage() {
   } = useGetUserGames(user_id);
   const libraryCount = userGamesResponse?.user_games?.length || 0;
   const platforms = useMyPlatforms();
+  const { count: hiddenCount } = useDismissedGames(user_id);
   const {
     recommendations,
     tasteTags,
@@ -745,6 +759,7 @@ function ForYouPage() {
           : null
       }
       platforms={platforms}
+      hiddenCount={hiddenCount}
     />
   );
 

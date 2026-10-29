@@ -12,6 +12,7 @@ const Home = lazy(() => import("./pages/Home"));
 const Auth = lazy(() => import("./pages/Auth"));
 const Account = lazy(() => import("./pages/Account"));
 const ForYouPage = lazy(() => import("./pages/ForYouPage"));
+const HiddenGamesPage = lazy(() => import("./pages/HiddenGamesPage"));
 import RouteErrorFallback from "./pages/RouteErrorFallback";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
@@ -58,6 +59,10 @@ function App() {
           // Full-bleed stage, so it sits outside the browse layout
           path: "/games/forYou",
           element: <ForYouPage />,
+        },
+        {
+          path: "/games/forYou/hidden",
+          element: <HiddenGamesPage />,
         },
         {
           path: "/game/:gameId",

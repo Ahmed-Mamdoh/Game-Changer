@@ -237,7 +237,11 @@ export async function insertGame({ game_id }) {
 // dismissed games ("Not for me" on For You)
 export async function getDismissedGames(user_id) {
   const select = (columns) =>
-    supabase.from("dismissed_games").select(columns).eq("user_id", user_id);
+    supabase
+      .from("dismissed_games")
+      .select(columns)
+      .eq("user_id", user_id)
+      .order("created_at", { ascending: false });
   const result = await select("game_id, reason");
   // 42703: the reason column isn't migrated yet, so read the games alone
   if (result.error?.code === "42703") return select("game_id");
@@ -266,6 +270,15 @@ export async function deleteDismissedGame({ user_id, game_id }) {
     .delete()
     .eq("user_id", user_id)
     .eq("game_id", game_id);
+  return { error };
+}
+
+// Reset For You: every dismissed game and what it taught
+export async function deleteAllDismissedGames(user_id) {
+  const { error } = await supabase
+    .from("dismissed_games")
+    .delete()
+    .eq("user_id", user_id);
   return { error };
 }
 
