@@ -44,5 +44,6 @@ Every page sits on the same backdrop (`.ambient` in `src/index.css`): deep brand
 
 - **Home:** the console stage. The focused game's art fills the viewport, and the cover shelf below changes the focus (mouse, keyboard focus or arrow keys). Signed-in users see their Playing games first. Under the stage are rows of covers: Free to keep, Coming soon, Most played.
 - **Game page:** a full-bleed backdrop with the cover, title, a strip of facts (rating and time to beat), the status control, log/edit buttons, store links and tags. Below it: the summary (65ch), media rail, related shelves, language table and reviews list.
+- **For you:** a console stage for picks. The focused pick's art fills the screen with its title, match, the library game it comes from (a small cover and "From FromSoftware, like Elden Ring"), the reason, and Open game, Wishlist, Played it and Not for me. A shelf of picks below changes the focus; pressing a cover focuses it and never navigates. Under the stage, the tags the picks lean on.
 - **Browse pages:** page title with a result count, a filter bar (segmented sort plus dropdown filters), and a dense cover grid.
 - **Library (`/account`):** title, a stats strip with hours leading, genre and theme charts, status tabs with counts, and the grid.

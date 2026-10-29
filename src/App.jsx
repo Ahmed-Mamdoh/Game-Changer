@@ -52,11 +52,12 @@ function App() {
               path: "freeGames",
               element: <FreeGames />,
             },
-            {
-              path: "forYou",
-              element: <ForYouPage />,
-            },
           ],
+        },
+        {
+          // Full-bleed stage, so it sits outside the browse layout
+          path: "/games/forYou",
+          element: <ForYouPage />,
         },
         {
           path: "/game/:gameId",

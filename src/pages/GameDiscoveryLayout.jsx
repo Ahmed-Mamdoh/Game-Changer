@@ -17,10 +17,6 @@ const PAGES = {
     title: "Free to keep",
     note: "Free on Steam, Epic and GOG for a limited time. Claim them before the timer ends.",
   },
-  "/games/forYou": {
-    title: "For you",
-    note: "Picks based on the games in your library.",
-  },
 };
 
 function ResultCount({ path, noun }) {
@@ -52,9 +48,7 @@ function GameDiscoveryLayout() {
     observer.observe(el);
     return () => observer.disconnect();
   }, [page.filters]);
-  const paged =
-    location.pathname !== "/games/freeGames" &&
-    location.pathname !== "/games/forYou";
+  const paged = location.pathname !== "/games/freeGames";
 
   return (
     <div className="min-h-[100dvh] pt-24">
