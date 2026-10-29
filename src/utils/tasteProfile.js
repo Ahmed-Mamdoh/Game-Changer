@@ -41,6 +41,11 @@ export function libraryGameWeight({
   return weight;
 }
 
+// IGDB keywords about awards, stores, hardware and features rather than the
+// game itself. Left in, "Game Awards nominee" becomes a taste.
+const META_KEYWORD =
+  /award|nominee|winner|controller|achievement|steam|cloud save|digital distribution|trading card|dlc|playstation|xbox|nintendo|\bpc\b|ps\d|exclusive|crowdfund|kickstarter|early access|game pass|epic games|gog|bestseller|voice acting|subtitles|languages?\b/i;
+
 // Tag keys like "genre:12" for one IGDB game, plus readable names for the
 // tags people would recognise.
 export function gameFeatures(game) {
@@ -54,7 +59,12 @@ export function gameFeatures(game) {
   };
   add("genre", game.genres);
   add("theme", game.themes);
-  add("keyword", game.keywords);
+  add(
+    "keyword",
+    (game.keywords || []).filter(
+      (keyword) => !keyword?.name || !META_KEYWORD.test(keyword.name),
+    ),
+  );
   add("perspective", game.player_perspectives);
   add("mode", game.game_modes);
   add(
@@ -88,8 +98,12 @@ export function buildTasteProfile(entries) {
   }
   for (const type in norms) norms[type] = Math.sqrt(norms[type]);
 
-  // The tags that define this player, for prompts and the page
-  const topTags = [...taste]
+  return { taste, norms, names, topTags: topTagsOf(taste, names) };
+}
+
+// The tags that define this player, for prompts and the page
+function topTagsOf(taste, names) {
+  return [...taste]
     .filter(
       ([key, value]) =>
         value > 0 && names.has(key) && FEATURE_WEIGHTS[typeOf(key)] >= 0.5,
@@ -97,8 +111,36 @@ export function buildTasteProfile(entries) {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 8)
     .map(([key]) => ({ key, type: typeOf(key), name: names.get(key) }));
+}
 
-  return { taste, norms, topTags };
+// Tags that nearly every candidate has (single player, action) say little
+// about fit; rare ones (souls-like, roguelite) say a lot. Returns a profile
+// whose tags are weighted by how rare they are across the candidate pool.
+export function withRarity(profile, pool) {
+  const counts = new Map();
+  for (const game of pool)
+    for (const key of gameFeatures(game).keys())
+      counts.set(key, (counts.get(key) || 0) + 1);
+  const rarity = new Map();
+  for (const [key, count] of counts)
+    rarity.set(key, Math.log((pool.length + 1) / (count + 1)) + 1);
+
+  const taste = new Map();
+  const norms = {};
+  for (const [key, value] of profile.taste) {
+    const weighted = value * (rarity.get(key) || 1);
+    taste.set(key, weighted);
+    const type = typeOf(key);
+    norms[type] = (norms[type] || 0) + weighted * weighted;
+  }
+  for (const type in norms) norms[type] = Math.sqrt(norms[type]);
+  return {
+    ...profile,
+    taste,
+    norms,
+    rarity,
+    topTags: topTagsOf(taste, profile.names),
+  };
 }
 
 export function topIdsOfType(profile, type, count) {
@@ -110,14 +152,16 @@ export function topIdsOfType(profile, type, count) {
 }
 
 // 0-1: how well a candidate's tags line up with the profile. Cosine per tag
-// type, averaged by type weight over the types both sides have.
+// type, averaged by type weight over the types both sides have. With a
+// rarity-weighted profile, the candidate's tags are weighted the same way.
 export function tasteSimilarity(profile, candidate) {
   const perType = {};
   for (const key of gameFeatures(candidate).keys()) {
     const type = typeOf(key);
+    const rarity = profile.rarity?.get(key) || 1;
     perType[type] ??= { dot: 0, count: 0 };
-    perType[type].dot += profile.taste.get(key) || 0;
-    perType[type].count += 1;
+    perType[type].dot += (profile.taste.get(key) || 0) * rarity;
+    perType[type].count += rarity * rarity;
   }
   let total = 0;
   let weightSum = 0;
@@ -149,12 +193,14 @@ export function scoreCandidate(profile, candidate, similarTo) {
   const sources = similarTo.get(candidate.id) || [];
   const liked = sources.filter((s) => s.weight > 0);
   const disliked = sources.filter((s) => s.weight < 0);
+  // IGDB's similar_games links from liked games are the strongest hint; a
+  // game listed by several of them gets the most
   const linkBoost =
     Math.min(
       liked.reduce((sum, s) => sum + s.weight, 0),
-      3,
+      4,
     ) *
-      0.04 -
+      0.05 -
     disliked.length * 0.08;
 
   const fit = Math.min(Math.max(similarity + linkBoost, 0), 1);
@@ -166,12 +212,12 @@ export function scoreCandidate(profile, candidate, similarTo) {
   return { score, match: Math.min(match, 99), becauseOf };
 }
 
-// Greedy pick that keeps the list varied: at most one game per series, two per
-// lead genre, and two per "because of" game.
+// Greedy pick that keeps the list varied: at most one game per series and two
+// per "because of" game. No genre cap: IGDB lists genres by id, so the first
+// genre is arbitrary, and a player who loves RPGs should get RPGs.
 export function pickVaried(scored, count) {
   const picked = [];
   const seriesUsed = new Set();
-  const genreCount = new Map();
   const sourceCount = new Map();
   for (const item of [...scored].sort((a, b) => b.score - a.score)) {
     if (picked.length >= count) break;
@@ -180,14 +226,11 @@ export function pickVaried(scored, count) {
       ...(item.game.collections || []),
     ].map((s) => s.id ?? s);
     if (series.some((id) => seriesUsed.has(id))) continue;
-    const genre = item.game.genres?.[0]?.id;
-    if (genre != null && (genreCount.get(genre) || 0) >= 2) continue;
     const source = item.becauseOf?.id;
     if (source != null && (sourceCount.get(source) || 0) >= 2) continue;
 
     picked.push(item);
     series.forEach((id) => seriesUsed.add(id));
-    if (genre != null) genreCount.set(genre, (genreCount.get(genre) || 0) + 1);
     if (source != null)
       sourceCount.set(source, (sourceCount.get(source) || 0) + 1);
   }

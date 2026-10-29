@@ -69,7 +69,13 @@ export default async function handler(req, res) {
   )
     return;
 
-  const { messages, model, response_format } = req.body || {};
+  const {
+    messages,
+    model,
+    response_format,
+    reasoning_effort,
+    max_completion_tokens,
+  } = req.body || {};
   if (!ALLOWED_MODELS.has(model)) {
     return res.status(400).json({ error: "Model not allowed" });
   }
@@ -81,6 +87,16 @@ export default async function handler(req, res) {
   if (!format.ok) {
     return res.status(400).json({ error: "Invalid response format" });
   }
+  // Optional limits on how much the model thinks and writes
+  const extras = {};
+  if (["low", "medium", "high"].includes(reasoning_effort))
+    extras.reasoning_effort = reasoning_effort;
+  if (
+    Number.isInteger(max_completion_tokens) &&
+    max_completion_tokens > 0 &&
+    max_completion_tokens <= 4000
+  )
+    extras.max_completion_tokens = max_completion_tokens;
 
   try {
     const response = await fetch(
@@ -95,6 +111,7 @@ export default async function handler(req, res) {
           model: model,
           messages: cleanedMessages,
           ...(format.value && { response_format: format.value }),
+          ...extras,
         }),
       },
     );

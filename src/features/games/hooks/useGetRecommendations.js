@@ -11,6 +11,7 @@ import {
   pickVaried,
   scoreCandidate,
   topIdsOfType,
+  withRarity,
 } from "@/utils/tasteProfile";
 
 // Picks come from a pipeline, not from the model's memory:
@@ -22,13 +23,17 @@ import {
 // 4. the model only chooses from that shortlist by id and writes the reasons.
 // If the model fails, the scored shortlist still gives picks.
 
-const CACHE_PREFIX = "recommendations:v2:";
+const CACHE_PREFIX = "recommendations:v3:";
 const SEEN_PREFIX = "recommendations:seen:";
 const CACHE_MAX_AGE = 24 * 60 * 60 * 1000; // 1 day
 const PICKS_TO_SHOW = 6;
-const SHORTLIST_SIZE = 30;
-const SEEN_LIMIT = 60;
-const MODEL = "openai/gpt-oss-120b";
+const SHORTLIST_SIZE = 20;
+// Picks built without the model's reasons are kept only briefly, so the next
+// visit tries the model again
+const FALLBACK_MAX_AGE = 10 * 60 * 1000;
+// Groq limits tokens per minute per model, so a rate-limited call moves on to
+// a model with its own budget
+const MODELS = ["openai/gpt-oss-120b", "openai/gpt-oss-20b"];
 
 // Cheap string hash so the cache can tell when the library changed.
 function hashString(str) {
@@ -59,7 +64,7 @@ function readCache(user_id, libraryHash) {
   const cached = readStorage(CACHE_PREFIX + user_id);
   if (
     cached?.libraryHash === libraryHash &&
-    Date.now() - cached.createdAt < CACHE_MAX_AGE &&
+    Date.now() - cached.createdAt < (cached.maxAge || CACHE_MAX_AGE) &&
     Array.isArray(cached.picks)
   )
     return cached;
@@ -158,7 +163,7 @@ async function rerankWithModel({ library, profile, shortlist }) {
     ...(entry.rating > 0 && { stars: entry.rating }),
     ...(entry.hours_played > 0 && { hours: entry.hours_played }),
     ...(entry.is_favorite && { favorite: true }),
-    ...(entry.review && { review: entry.review.slice(0, 240) }),
+    ...(entry.review && { review: entry.review.slice(0, 200) }),
   });
 
   const data = {
@@ -167,39 +172,53 @@ async function rerankWithModel({ library, profile, shortlist }) {
       dropped: dropped.map(describe),
       top_tags: profile.topTags.map((tag) => tag.name),
     },
-    candidates: shortlist.map(({ game, becauseOf }) => ({
+    candidates: shortlist.map(({ game, becauseOf, features }) => ({
       id: game.id,
       name: game.name,
       year: yearOf(game),
       genres: namesOf(game.genres, 3),
       themes: namesOf(game.themes, 4),
-      keywords: namesOf(game.keywords, 6),
+      keywords: namesOf(
+        (game.keywords || []).filter((keyword) =>
+          features.has(`keyword:${keyword.id}`),
+        ),
+        4,
+      ),
       ...(becauseOf && { listed_similar_to: becauseOf.name }),
     })),
   };
 
-  const response = await chatWithGroq({
-    model: MODEL,
-    messages: [
-      { role: "system", content: SYSTEM_PROMPT },
-      { role: "user", content: JSON.stringify(data) },
-    ],
-    response_format: RESPONSE_FORMAT,
-  });
-  if (typeof response === "string" || !response?.content) return null;
-
-  try {
-    const parsed = JSON.parse(
-      response.content
-        .replace(/```json/g, "")
-        .replace(/```/g, "")
-        .trim(),
-    );
-    return Array.isArray(parsed?.picks) ? parsed.picks : null;
-  } catch {
-    return null;
+  const messages = [
+    { role: "system", content: SYSTEM_PROMPT },
+    { role: "user", content: JSON.stringify(data) },
+  ];
+  for (const model of MODELS) {
+    const response = await chatWithGroq({
+      model,
+      messages,
+      response_format: RESPONSE_FORMAT,
+      reasoning_effort: "low",
+      max_completion_tokens: 2500,
+    });
+    if (response === "unauthenticated") return null;
+    if (typeof response === "string" || !response?.content) continue;
+    try {
+      const parsed = JSON.parse(
+        response.content
+          .replace(/```json/g, "")
+          .replace(/```/g, "")
+          .trim(),
+      );
+      if (Array.isArray(parsed?.picks)) return parsed.picks;
+    } catch {
+      // Unparseable answer, try the next model
+    }
   }
+  return null;
 }
+
+const sentenceCase = (text) =>
+  text ? text.charAt(0).toUpperCase() + text.slice(1) : text;
 
 function fallbackReason(item, profile) {
   const shared = profile.topTags
@@ -212,7 +231,7 @@ function fallbackReason(item, profile) {
     : `Leans into ${tags}, which runs through your library.`;
 }
 
-async function buildPicks({ library, excludeIds }) {
+export async function buildPicks({ library, excludeIds }) {
   const details = await getTasteDetails(library.map((entry) => entry.id));
   const detailsById = new Map(
     (Array.isArray(details) ? details : []).map((game) => [game.id, game]),
@@ -220,7 +239,7 @@ async function buildPicks({ library, excludeIds }) {
   const withDetails = library.filter((entry) => detailsById.has(entry.id));
   if (!withDetails.length) throw new Error("Library details didn't load");
 
-  const profile = buildTasteProfile(
+  const baseProfile = buildTasteProfile(
     withDetails.map((entry) => ({
       game: detailsById.get(entry.id),
       weight: entry.weight,
@@ -245,20 +264,32 @@ async function buildPicks({ library, excludeIds }) {
 
   const candidates = await getRecommendationCandidates({
     similarIds: [...new Set(similarIds)].slice(0, 200),
-    genreIds: topIdsOfType(profile, "genre", 2),
-    themeIds: topIdsOfType(profile, "theme", 3),
-    keywordIds: topIdsOfType(profile, "keyword", 6),
+    genreIds: topIdsOfType(baseProfile, "genre", 2),
+    themeIds: topIdsOfType(baseProfile, "theme", 3),
+    keywordIds: topIdsOfType(baseProfile, "keyword", 6),
   });
 
+  // Owned games plus their remakes, remasters and originals: owning Dark
+  // Souls: Remastered means Dark Souls is not a new game
   const owned = new Set(library.map((entry) => entry.id));
+  for (const game of detailsById.values())
+    [...(game.remakes || []), ...(game.remasters || []), game.version_parent]
+      .filter(Boolean)
+      .forEach((id) => owned.add(id));
+  const isOwned = (game) =>
+    owned.has(game.id) ||
+    [...(game.remakes || []), ...(game.remasters || [])].some((id) =>
+      owned.has(id),
+    );
   const unique = new Map();
   for (const game of candidates)
-    if (!owned.has(game.id) && !unique.has(game.id)) unique.set(game.id, game);
+    if (!isOwned(game) && !unique.has(game.id)) unique.set(game.id, game);
   let pool = [...unique.values()];
   const fresh = pool.filter((game) => !excludeIds.has(game.id));
   // Only skip earlier picks while enough new ones are left
   if (fresh.length >= PICKS_TO_SHOW * 2) pool = fresh;
-  if (!pool.length) return { picks: [], tasteTags: profile.topTags };
+  if (!pool.length) return { picks: [], tasteTags: baseProfile.topTags };
+  const profile = withRarity(baseProfile, pool);
 
   const scored = pool.map((game) => ({
     game,
@@ -296,7 +327,10 @@ async function buildPicks({ library, excludeIds }) {
           source && source.weight > 0
             ? { id: source.id, name: source.name, weight: source.weight }
             : item.becauseOf,
-        reason: typeof pick.reason === "string" ? pick.reason.trim() : "",
+        reason:
+          typeof pick.reason === "string"
+            ? sentenceCase(pick.reason.trim())
+            : "",
       });
     }
   }
@@ -323,7 +357,11 @@ async function buildPicks({ library, excludeIds }) {
     }))
     .sort((a, b) => b.matchScore - a.matchScore);
 
-  return { picks, tasteTags: profile.topTags };
+  return {
+    picks,
+    tasteTags: profile.topTags,
+    fromModel: chosen.some((item) => item.reason),
+  };
 }
 
 export function useGetRecommendations() {
@@ -384,14 +422,14 @@ export function useGetRecommendations() {
       writeStorage(CACHE_PREFIX + user_id, {
         libraryHash,
         createdAt: Date.now(),
+        ...(!result.fromModel && { maxAge: FALLBACK_MAX_AGE }),
         ...result,
       });
+      // Only the batch on screen: New picks shows the next best games, and
+      // pressing it again brings the first ones back instead of running dry
       writeStorage(
         SEEN_PREFIX + user_id,
-        [...new Set([...result.picks.map((game) => game.id), ...seen])].slice(
-          0,
-          SEEN_LIMIT,
-        ),
+        result.picks.map((game) => game.id),
       );
       return result;
     },

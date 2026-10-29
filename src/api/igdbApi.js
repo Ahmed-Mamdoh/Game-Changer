@@ -332,14 +332,14 @@ export async function getTasteDetails(ids) {
   if (!ids?.length) return [];
   return igdbFetch(
     "games",
-    `fields name,${TASTE_FIELDS},similar_games;
+    `fields name,${TASTE_FIELDS},similar_games,remakes,remasters,version_parent;
       where id = (${ids.join(",")});
       limit 500;`,
   );
 }
 
 // Released, official base games only, with what a pick card needs.
-const CANDIDATE_FIELDS = `name,cover.url,first_release_date,total_rating,total_rating_count,artworks.url,artworks.artwork_type,artworks.width,${TASTE_FIELDS}`;
+const CANDIDATE_FIELDS = `name,cover.url,first_release_date,total_rating,total_rating_count,artworks.url,artworks.artwork_type,artworks.width,remakes,remasters,${TASTE_FIELDS}`;
 const candidateWhere = () => `game_type = (0,8,9) & version_parent = null &
       themes != (42) & keywords != (${UNOFFICIAL_KEYWORDS.join(",")}) &
       (game_status = null | game_status != (5,6,7,8)) &
