@@ -340,10 +340,13 @@ export async function getTasteDetails(ids) {
 
 // Released, official base games only, with what a pick card needs.
 const CANDIDATE_FIELDS = `name,cover.url,first_release_date,total_rating,total_rating_count,artworks.url,artworks.artwork_type,artworks.width,remakes,remasters,${TASTE_FIELDS}`;
-const candidateWhere = () => `game_type = (0,8,9) & version_parent = null &
+// Empty platformIds means any platform
+const candidateWhere = (platformIds = []) => `game_type = (0,8,9) & version_parent = null &
       themes != (42) & keywords != (${UNOFFICIAL_KEYWORDS.join(",")}) &
       (game_status = null | game_status != (5,6,7,8)) &
-      first_release_date <= ${Math.floor(Date.now() / 1000)}`;
+      first_release_date <= ${Math.floor(Date.now() / 1000)}${
+        platformIds.length ? ` & platforms = (${platformIds.join(",")})` : ""
+      }`;
 
 // Real games to recommend from: the similar_games of liked library games,
 // plus well-rated games sharing the player's top genres/themes and keywords.
@@ -354,6 +357,7 @@ export async function getRecommendationCandidates({
   keywordIds = [],
   studioIds = [],
   seriesKeys = [],
+  platformIds = [],
 }) {
   const queries = [];
   if (similarIds.length)
@@ -361,7 +365,7 @@ export async function getRecommendationCandidates({
       igdbFetch(
         "games",
         `fields ${CANDIDATE_FIELDS};
-          where id = (${similarIds.join(",")}) & ${candidateWhere()};
+          where id = (${similarIds.join(",")}) & ${candidateWhere(platformIds)};
           limit 500;`,
       ),
     );
@@ -371,7 +375,7 @@ export async function getRecommendationCandidates({
         "games",
         `fields ${CANDIDATE_FIELDS};
           where genres = (${genreIds.join(",")}) & themes = (${themeIds.join(",")}) &
-            total_rating_count > 40 & ${candidateWhere()};
+            total_rating_count > 40 & ${candidateWhere(platformIds)};
           sort total_rating desc;
           limit 80;`,
       ),
@@ -382,7 +386,7 @@ export async function getRecommendationCandidates({
         "games",
         `fields ${CANDIDATE_FIELDS};
           where keywords = (${keywordIds.join(",")}) &
-            total_rating_count > 25 & ${candidateWhere()};
+            total_rating_count > 25 & ${candidateWhere(platformIds)};
           sort total_rating_count desc;
           limit 80;`,
       ),
@@ -394,7 +398,7 @@ export async function getRecommendationCandidates({
         "games",
         `fields ${CANDIDATE_FIELDS};
           where involved_companies.company = (${studioIds.join(",")}) &
-            involved_companies.developer = true & ${candidateWhere()};
+            involved_companies.developer = true & ${candidateWhere(platformIds)};
           sort total_rating_count desc;
           limit 60;`,
       ),
@@ -418,7 +422,7 @@ export async function getRecommendationCandidates({
         "games",
         `fields ${CANDIDATE_FIELDS};
           where (${seriesWhere}) &
-            ${candidateWhere()};
+            ${candidateWhere(platformIds)};
           sort total_rating_count desc;
           limit 60;`,
       ),

@@ -5,6 +5,11 @@ import {
 } from "@/features/games/hooks/useQuickStatus";
 import { useRemoveGame } from "@/features/games/hooks/useRemoveGame";
 import LogGameDialog from "@/features/games/components/LogGameDialog";
+import {
+  PLATFORM_FAMILIES,
+  useMyPlatforms,
+} from "@/features/games/hooks/useMyPlatforms";
+import { PLATFORM_ICONS } from "@/features/games/ui/filterIcons";
 import { useGetUserGames } from "@/features/User/hooks/useGetUserGames";
 import { UserToken } from "@/hooks/useUserToken";
 import BackdropImage from "@/ui/BackdropImage";
@@ -57,9 +62,49 @@ function tieOf(game) {
   return `Because you played ${source}`;
 }
 
-function PageHeader({ onRefresh, isRefreshing, disabled, position }) {
+// Toggles for the platforms the player owns; none on means every platform
+function PlatformPicker({ selected, onToggle }) {
   return (
-    <div className="flex items-center justify-between gap-4">
+    <div className="flex items-center gap-3">
+      <span id="plays-on" className="text-text-dim text-sm font-semibold">
+        Plays on
+      </span>
+      <div role="group" aria-labelledby="plays-on" className="flex gap-1.5">
+        {PLATFORM_FAMILIES.map((family) => {
+          const Icon = PLATFORM_ICONS[family.ids[0]];
+          const on = selected.includes(family.key);
+          return (
+            <button
+              key={family.key}
+              type="button"
+              aria-pressed={on}
+              title={family.name}
+              onClick={() => onToggle(family.key)}
+              className={`btn-on-art h-9 px-3 transition-[background-color,border-color,color] ${
+                on
+                  ? "border-pulse-accent text-text-main"
+                  : "text-text-dim hover:text-text-main"
+              }`}
+            >
+              <Icon aria-hidden="true" className="h-4 w-4 shrink-0" />
+              <span className="max-sm:sr-only">{family.name}</span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function PageHeader({
+  onRefresh,
+  isRefreshing,
+  disabled,
+  position,
+  platforms,
+}) {
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
       <div className="flex items-baseline gap-3">
         <h1 className="text-[length:var(--font-size-title)] leading-tight font-semibold tracking-tight">
           For you
@@ -70,19 +115,27 @@ function PageHeader({ onRefresh, isRefreshing, disabled, position }) {
           </span>
         )}
       </div>
-      {onRefresh && (
-        <button
-          type="button"
-          onClick={onRefresh}
-          disabled={disabled}
-          className="btn-on-art h-9 px-4 disabled:cursor-wait disabled:opacity-60"
-        >
-          <RefreshCw
-            className={`h-4 w-4 ${isRefreshing ? "animate-spin motion-reduce:animate-none" : ""}`}
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
+        {platforms && (
+          <PlatformPicker
+            selected={platforms.selected}
+            onToggle={platforms.toggle}
           />
-          {isRefreshing ? "Refreshing" : "Refresh picks"}
-        </button>
-      )}
+        )}
+        {onRefresh && (
+          <button
+            type="button"
+            onClick={onRefresh}
+            disabled={disabled}
+            className="btn-on-art h-9 px-4 disabled:cursor-wait disabled:opacity-60"
+          >
+            <RefreshCw
+              className={`h-4 w-4 ${isRefreshing ? "animate-spin motion-reduce:animate-none" : ""}`}
+            />
+            {isRefreshing ? "Refreshing" : "Refresh picks"}
+          </button>
+        )}
+      </div>
     </div>
   );
 }
@@ -400,7 +453,7 @@ function TasteStrip({ tags, libraryCount }) {
   );
 }
 
-function StageSkeleton({ header }) {
+function StageSkeleton({ header, note }) {
   return (
     <section
       aria-label="Loading your picks"
@@ -417,7 +470,7 @@ function StageSkeleton({ header }) {
           <div className="bg-bg-chip mb-2.5 h-5 w-full animate-pulse rounded-sm motion-reduce:animate-none" />
           <div className="bg-bg-chip mb-8 h-5 w-4/5 animate-pulse rounded-sm motion-reduce:animate-none" />
           <p className="text-text-dim text-sm">
-            Reading your library and lining up games that fit it.
+            {note || "Reading your library and lining up games that fit it."}
           </p>
         </div>
       </div>
@@ -435,10 +488,11 @@ function StageSkeleton({ header }) {
   );
 }
 
-function Message({ title, children, action }) {
+function Message({ title, children, action, header }) {
   return (
-    <div className="mx-auto flex min-h-[70dvh] w-full max-w-[1440px] flex-col justify-center px-4 pt-22 md:px-8">
-      <div className="max-w-xl">
+    <div className="mx-auto flex min-h-[70dvh] w-full max-w-[1440px] flex-col px-4 pt-22 md:px-8">
+      {header}
+      <div className="my-auto max-w-xl py-10">
         <h2 className="mb-2">{title}</h2>
         <p className="mb-6 max-w-[50ch]">{children}</p>
         {action}
@@ -456,6 +510,7 @@ function ForYouPage() {
     error: userGamesError,
   } = useGetUserGames(user_id);
   const libraryCount = userGamesResponse?.user_games?.length || 0;
+  const platforms = useMyPlatforms();
   const {
     recommendations,
     tasteTags,
@@ -466,7 +521,9 @@ function ForYouPage() {
     refresh,
     dismiss,
     undoDismiss,
-  } = useGetRecommendations();
+  } = useGetRecommendations({ platformIds: platforms.platformIds });
+  // A new set is on its way: Refresh picks, a platform change, or a log
+  const isRebuilding = isRefreshing || platforms.isApplying;
 
   const [focusIndex, setFocusIndex] = useState(0);
   const index = Math.min(
@@ -477,10 +534,10 @@ function ForYouPage() {
   // A fresh set (Refresh picks, or picks recalculated after a log) starts at
   // its best pick, back at the top
   useEffect(() => {
-    if (isRefreshing) return;
+    if (isRebuilding) return;
     setFocusIndex(0);
     window.scrollTo({ top: 0 });
-  }, [isRefreshing]);
+  }, [isRebuilding]);
 
   if (!user_id) return <Navigate to="/auth" replace />;
 
@@ -512,14 +569,15 @@ function ForYouPage() {
 
   const header = (
     <PageHeader
-      onRefresh={recommendations?.length ? refresh : undefined}
-      isRefreshing={isRefreshing}
-      disabled={isLoading || isRefreshing}
+      onRefresh={recommendations?.length || isRebuilding ? refresh : undefined}
+      isRefreshing={isRebuilding}
+      disabled={isLoading || isRebuilding}
       position={
-        recommendations?.length
+        recommendations?.length && !isRebuilding
           ? { index, total: recommendations.length }
           : null
       }
+      platforms={platforms}
     />
   );
 
@@ -527,7 +585,19 @@ function ForYouPage() {
     return (
       <>
         {SEO}
-        <StageSkeleton header={<PageHeader />} />
+        <StageSkeleton header={<PageHeader platforms={platforms} />} />
+      </>
+    );
+
+  // The old set gives way at once, so the press clearly did something
+  if (isRebuilding && libraryCount > 0)
+    return (
+      <>
+        {SEO}
+        <StageSkeleton
+          header={header}
+          note="Recalculating your picks from your library."
+        />
       </>
     );
 
@@ -598,6 +668,7 @@ function ForYouPage() {
       <>
         {SEO}
         <Message
+          header={header}
           title="No picks this time"
           action={
             <button onClick={refresh} className="btn-primary">
@@ -605,8 +676,9 @@ function ForYouPage() {
             </button>
           }
         >
-          Nothing new fit your library well enough. Log or rate a few more
-          games, or refresh to recalculate.
+          {platforms.selected.length
+            ? "Nothing new on your platforms fit your library well enough. Turn on another platform, log or rate a few more games, or refresh to recalculate."
+            : "Nothing new fit your library well enough. Log or rate a few more games, or refresh to recalculate."}
         </Message>
       </>
     );

@@ -71,10 +71,11 @@ function writeStorage(key, value) {
   }
 }
 
-function readCache(user_id, libraryHash) {
+function readCache(user_id, libraryHash, platformKey) {
   const cached = readStorage(CACHE_PREFIX + user_id);
   if (
     cached?.libraryHash === libraryHash &&
+    (cached.platformKey || "") === platformKey &&
     Date.now() - cached.createdAt < (cached.maxAge || CACHE_MAX_AGE) &&
     Array.isArray(cached.picks)
   )
@@ -274,7 +275,11 @@ function fallbackReason(item, profile) {
     : `Leans into ${tags}, which runs through your library.`;
 }
 
-export async function buildPicks({ library, hiddenIds = new Set() }) {
+export async function buildPicks({
+  library,
+  hiddenIds = new Set(),
+  platformIds = [],
+}) {
   const details = await getTasteDetails(library.map((entry) => entry.id));
   const detailsById = new Map(
     (Array.isArray(details) ? details : []).map((game) => [game.id, game]),
@@ -316,6 +321,7 @@ export async function buildPicks({ library, hiddenIds = new Set() }) {
     keywordIds: topIdsOfType(baseProfile, "keyword", 6),
     studioIds: likedKeys(links.byStudio, 3),
     seriesKeys: likedKeys(links.bySeries, 1),
+    platformIds,
   });
 
   // Owned games plus their remakes, remasters and originals: owning Dark
@@ -398,7 +404,8 @@ export async function buildPicks({ library, hiddenIds = new Set() }) {
   return { picks, tasteTags: profile.topTags, explain };
 }
 
-export function useGetRecommendations() {
+// platformIds limits picks to games on the player's platforms; empty means any
+export function useGetRecommendations({ platformIds = [] } = {}) {
   const user_id = UserToken()?.user?.id;
   const userGames = useGetUserGames(user_id);
   const libraryGames = userGames?.data?.user_games || [];
@@ -447,17 +454,25 @@ export function useGetRecommendations() {
   );
 
   const queryClient = useQueryClient();
-  const queryKey = ["recommendations", user_id, libraryHash, refreshedAt];
+  const platformKey = platformIds.join(",");
+  const queryKey = [
+    "recommendations",
+    user_id,
+    libraryHash,
+    platformKey,
+    refreshedAt,
+  ];
 
   const { data, isLoading, isFetching, error } = useQuery({
     queryKey,
     queryFn: async ({ queryKey: key }) => {
-      const cached = readCache(user_id, libraryHash);
+      const cached = readCache(user_id, libraryHash, platformKey);
       if (cached && cached.createdAt > refreshedAt) return cached;
 
       const { picks, tasteTags, explain } = await buildPicks({
         library,
         hiddenIds: await loadDismissed(user_id),
+        platformIds,
       });
       // The set on screen, so wishlisting one of its games doesn't rebuild it
       writeStorage(
@@ -482,6 +497,7 @@ export function useGetRecommendations() {
             };
             writeStorage(CACHE_PREFIX + user_id, {
               libraryHash,
+              platformKey,
               createdAt: Date.now(),
               ...(!reasons && { maxAge: FALLBACK_MAX_AGE }),
               picks: next.picks,

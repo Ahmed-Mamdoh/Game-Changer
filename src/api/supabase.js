@@ -259,3 +259,15 @@ export async function deleteDismissedGame({ user_id, game_id }) {
     .eq("game_id", game_id);
   return { error };
 }
+
+// Platforms the player owns (For You), kept on the account so they follow
+// the player across devices
+export async function saveMyPlatforms(platforms) {
+  const { error } = await supabase.auth.updateUser({ data: { platforms } });
+  return { error };
+}
+
+export async function getMyPlatforms() {
+  const { data, error } = await supabase.auth.getUser();
+  return { data: data?.user?.user_metadata?.platforms ?? null, error };
+}
