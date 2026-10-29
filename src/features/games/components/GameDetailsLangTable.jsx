@@ -66,10 +66,10 @@ function GameDetailsLangTable({ data }) {
       className="mx-auto w-full max-w-[1440px] px-4 pt-14 md:px-8"
     >
       <h2 className="mb-4">Language support</h2>
-      <div className="border-stroke-subtle max-w-2xl overflow-x-auto rounded-lg border">
+      <div className="border-stroke-subtle bg-bg-surface max-w-2xl overflow-x-auto rounded-lg border">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-stroke-subtle bg-bg-surface border-b">
+            <tr className="border-stroke-subtle bg-bg-raised border-b">
               <th className="text-text-dim h-9 px-4 text-left font-semibold">
                 Language
               </th>
@@ -85,8 +85,8 @@ function GameDetailsLangTable({ data }) {
           </thead>
           <tbody className="divide-stroke-subtle divide-y">
             {LANGUAGES.map((language) => (
-              <tr key={language.id} className="hover:bg-bg-surface">
-                <td className="text-text-main h-9 px-4" dir="auto">
+              <tr key={language.id} className="hover:bg-bg-raised">
+                <td className="text-text-main h-9 px-4 text-left" dir="auto">
                   {language.native_name}
                 </td>
                 {LANGUAGES_TYPES.map((type) => (
