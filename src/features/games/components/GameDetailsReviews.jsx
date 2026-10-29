@@ -36,18 +36,64 @@ function ReviewPlaytime({ play, hoursAtReview }) {
   );
 }
 
+// Store-style summary: big average on the left, a bar per star on the right
+function RatingBreakdown({ ratings }) {
+  const average = ratings.reduce((sum, r) => sum + r, 0) / ratings.length;
+  const counts = [5, 4, 3, 2, 1].map((star) => ({
+    star,
+    count: ratings.filter((r) => Math.round(r) === star).length,
+  }));
+  const most = Math.max(...counts.map((c) => c.count));
+
+  return (
+    <div className="border-stroke-subtle bg-bg-surface mb-3 grid max-w-4xl gap-6 rounded-lg border p-5 sm:grid-cols-[auto_1fr] sm:items-center sm:gap-10">
+      <div className="flex flex-col items-start gap-1.5">
+        <span className="text-text-main tabular font-heading text-5xl leading-none font-bold">
+          {average.toFixed(1)}
+        </span>
+        <RatingReadOnly
+          rating={Math.round(average)}
+          bgColor="bg-pulse-primary"
+          maxRating={5}
+        />
+        <span className="text-text-dim tabular text-xs">
+          {ratings.length} {ratings.length === 1 ? "rating" : "ratings"}
+        </span>
+      </div>
+      <ul
+        className="flex w-full max-w-md flex-col gap-1.5"
+        aria-label="Ratings by star"
+      >
+        {counts.map(({ star, count }) => (
+          <li
+            key={star}
+            className="grid grid-cols-[1.25rem_1fr_2rem] items-center gap-3 text-xs"
+            aria-label={`${star} stars: ${count}`}
+          >
+            <span className="text-text-dim tabular text-right">{star}</span>
+            <span className="bg-bg-chip h-1.5 overflow-hidden rounded-full">
+              <span
+                className="bg-pulse-primary block h-full rounded-full"
+                style={{ width: most ? `${(count / most) * 100}%` : 0 }}
+              />
+            </span>
+            <span className="text-text-muted tabular">{count}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 function GameDetailsReviews({ reviewsData }) {
+  const ratings =
+    reviewsData?.data
+      ?.map((review) => Number(review.rating))
+      .filter((rating) => rating > 0) || [];
   const reviews =
     reviewsData?.data?.filter(
       (review) => review.review !== null && review.review !== "",
     ) || [];
-  const averageRating =
-    reviews.length > 0
-      ? (
-          reviews.reduce((acc, review) => acc + review.rating, 0) /
-          reviews.length
-        ).toFixed(1)
-      : 0;
 
   return (
     <section
@@ -55,29 +101,16 @@ function GameDetailsReviews({ reviewsData }) {
       aria-label="Reviews"
       className="mx-auto w-full max-w-[1440px] px-4 pt-14 md:px-8"
     >
-      <div className="mb-4 flex max-w-4xl flex-wrap items-baseline justify-between gap-3">
-        <h2>
-          Reviews{" "}
-          {reviews.length > 0 && (
-            <span className="text-text-muted tabular font-normal">
-              {reviews.length}
-            </span>
-          )}
-        </h2>
+      <h2 className="mb-4">
+        Reviews{" "}
         {reviews.length > 0 && (
-          <div className="flex items-center gap-2">
-            <RatingReadOnly
-              rating={parseFloat(averageRating)}
-              bgColor="bg-pulse-primary"
-              maxRating={5}
-            />
-            <span className="text-text-main tabular text-sm font-semibold">
-              {averageRating}
-            </span>
-            <span className="text-text-dim text-sm">average</span>
-          </div>
+          <span className="text-text-muted tabular font-normal">
+            {reviews.length}
+          </span>
         )}
-      </div>
+      </h2>
+
+      {ratings.length > 0 && <RatingBreakdown ratings={ratings} />}
 
       {reviews.length > 0 ? (
         <ul className="border-stroke-subtle bg-bg-surface divide-stroke-subtle max-w-4xl divide-y rounded-lg border">
@@ -151,7 +184,9 @@ function GameDetailsReviews({ reviewsData }) {
       ) : (
         <div className="border-stroke-subtle flex max-w-4xl flex-col items-center gap-2 rounded-xl border border-dashed px-6 py-12 text-center">
           <MessageSquareText className="text-text-muted h-6 w-6" />
-          <h3 className="text-base">No reviews yet</h3>
+          <h3 className="text-base">
+            {ratings.length ? "No written reviews yet" : "No reviews yet"}
+          </h3>
           <p className="text-sm">Log this game and write the first review.</p>
         </div>
       )}
