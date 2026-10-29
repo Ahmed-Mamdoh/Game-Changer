@@ -291,11 +291,17 @@ function FocusedPick({ game, onDismiss, onLogged, reasonsPending }) {
   ].filter(Boolean);
 
   return (
-    <div className="max-w-2xl">
+    <div className="@container max-w-2xl">
       {/* Two lines reserved and the name sits at the bottom of them, so long
-          names don't push the page around and short ones hug the facts */}
+          names don't push the page around and short ones hug the facts. Short
+          screens have no room for a second line: the name stays on one and
+          its size follows its length, from 3rem down to 2rem. */}
       <div className="h1 short:mb-3 short:min-h-0 mb-4 flex min-h-[2lh] items-end">
-        <h2 className="h1 short:text-5xl line-clamp-2 text-balance">
+        <h2
+          title={game.name}
+          style={{ "--chars": game.name.length }}
+          className="h1 short:truncate short:text-[clamp(2rem,calc(100cqw/(var(--chars)*0.56)),3rem)] line-clamp-2 min-w-0 text-balance"
+        >
           {game.name}
         </h2>
       </div>
@@ -444,7 +450,9 @@ function PicksStage({
         {header}
       </div>
 
-      <div className="short:py-3 mx-auto flex w-full max-w-[1440px] flex-1 flex-col justify-center px-4 py-10 md:px-8">
+      {/* Short screens can't spare the title's second line, so the pick sits
+          on the shelf instead: a long name grows upward and nothing moves */}
+      <div className="short:py-3 short:justify-end mx-auto flex w-full max-w-[1440px] flex-1 flex-col justify-center px-4 py-10 md:px-8">
         {focused && (
           <FocusedPick
             game={focused}
