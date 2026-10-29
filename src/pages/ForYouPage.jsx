@@ -10,6 +10,11 @@ import {
   useMyPlatforms,
 } from "@/features/games/hooks/useMyPlatforms";
 import { PLATFORM_ICONS } from "@/features/games/ui/filterIcons";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { useGetUserGames } from "@/features/User/hooks/useGetUserGames";
 import { UserToken } from "@/hooks/useUserToken";
 import BackdropImage from "@/ui/BackdropImage";
@@ -18,6 +23,8 @@ import {
   ArrowRight,
   Bookmark,
   Check,
+  ChevronDown,
+  Gamepad2,
   RefreshCw,
   ThumbsDown,
 } from "lucide-react";
@@ -62,37 +69,101 @@ function tieOf(game) {
   return `Because you played ${source}`;
 }
 
-// Toggles for the platforms the player owns; none on means every platform
-function PlatformPicker({ selected, onToggle }) {
+const platformLabel = (keys) =>
+  keys.length === 0
+    ? "All platforms"
+    : keys.length === 1
+      ? PLATFORM_FAMILIES.find((family) => family.key === keys[0]).name
+      : `Platforms · ${keys.length}`;
+
+// The platforms the player owns, checked in a menu; none checked means every
+// platform. Checks apply when the menu closes, so picks rebuild once.
+function PlatformPicker({ selected, onChange }) {
+  const [open, setOpen] = useState(false);
+  const [draft, setDraft] = useState(selected);
+  const shown = open ? draft : selected;
+
+  function onOpenChange(next) {
+    setOpen(next);
+    if (next) setDraft(selected);
+    else if (draft.join() !== selected.join()) onChange(draft);
+  }
+
+  function toggle(key) {
+    setDraft((keys) =>
+      keys.includes(key) ? keys.filter((k) => k !== key) : [...keys, key],
+    );
+  }
+
   return (
-    <div className="flex items-center gap-3">
-      <span id="plays-on" className="text-text-dim text-sm font-semibold">
-        Plays on
-      </span>
-      <div role="group" aria-labelledby="plays-on" className="flex gap-1.5">
-        {PLATFORM_FAMILIES.map((family) => {
-          const Icon = PLATFORM_ICONS[family.ids[0]];
-          const on = selected.includes(family.key);
-          return (
+    <Popover open={open} onOpenChange={onOpenChange}>
+      <PopoverTrigger
+        className={`btn-on-art h-9 gap-1.5 px-3 ${
+          selected.length ? "border-stroke-brand" : ""
+        }`}
+      >
+        <Gamepad2 className="h-4 w-4 opacity-80" aria-hidden="true" />
+        {platformLabel(shown)}
+        <ChevronDown
+          className={`h-4 w-4 opacity-70 transition-transform duration-150 ${open ? "rotate-180" : ""}`}
+          aria-hidden="true"
+        />
+      </PopoverTrigger>
+      <PopoverContent
+        align="end"
+        className="dropdown-pop bg-bg-raised border-stroke-medium text-text-main w-60 rounded-lg p-1 shadow-[var(--shadow-float)]"
+      >
+        <p className="text-text-dim px-2.5 pt-1.5 pb-1 text-xs font-semibold">
+          Platforms you play on
+        </p>
+        <div role="group" aria-label="Platforms you play on">
+          {PLATFORM_FAMILIES.map((family) => {
+            const Icon = PLATFORM_ICONS[family.ids[0]];
+            const on = draft.includes(family.key);
+            return (
+              <button
+                key={family.key}
+                type="button"
+                role="checkbox"
+                aria-checked={on}
+                onClick={() => toggle(family.key)}
+                className="hover:bg-bg-chip focus-visible:bg-bg-chip flex min-h-9 w-full cursor-pointer items-center gap-2.5 rounded-sm px-2.5 py-1.5 text-left text-sm outline-none max-sm:min-h-11"
+              >
+                <span
+                  className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-[4px] border ${
+                    on
+                      ? "bg-action border-action text-on-action"
+                      : "border-stroke-medium"
+                  }`}
+                >
+                  {on && <Check className="h-3 w-3" strokeWidth={3} />}
+                </span>
+                <Icon
+                  className="text-text-dim h-[18px] w-[18px] shrink-0"
+                  aria-hidden="true"
+                />
+                {family.name}
+              </button>
+            );
+          })}
+        </div>
+        <div className="border-stroke-subtle mt-1 border-t px-1 pt-1">
+          {draft.length ? (
             <button
-              key={family.key}
               type="button"
-              aria-pressed={on}
-              title={family.name}
-              onClick={() => onToggle(family.key)}
-              className={`btn-on-art h-9 px-3 transition-[background-color,border-color,color] ${
-                on
-                  ? "border-pulse-accent text-text-main"
-                  : "text-text-dim hover:text-text-main"
-              }`}
+              onClick={() => setDraft([])}
+              className="text-text-brand h-8 w-full cursor-pointer rounded-sm px-1.5 text-left text-sm font-semibold hover:bg-white/[0.04]"
             >
-              <Icon aria-hidden="true" className="h-4 w-4 shrink-0" />
-              <span className="max-sm:sr-only">{family.name}</span>
+              Show every platform
             </button>
-          );
-        })}
-      </div>
-    </div>
+          ) : (
+            <p className="text-text-muted px-1.5 py-1.5 text-xs">
+              None checked shows games on every platform.
+            </p>
+          )}
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 }
 
@@ -119,7 +190,7 @@ function PageHeader({
         {platforms && (
           <PlatformPicker
             selected={platforms.selected}
-            onToggle={platforms.toggle}
+            onChange={platforms.setPlatforms}
           />
         )}
         {onRefresh && (
@@ -523,7 +594,7 @@ function ForYouPage() {
     undoDismiss,
   } = useGetRecommendations({ platformIds: platforms.platformIds });
   // A new set is on its way: Refresh picks, a platform change, or a log
-  const isRebuilding = isRefreshing || platforms.isApplying;
+  const isRebuilding = isRefreshing;
 
   const [focusIndex, setFocusIndex] = useState(0);
   const index = Math.min(

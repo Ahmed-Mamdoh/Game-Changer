@@ -11,8 +11,6 @@ export const PLATFORM_FAMILIES = [
 ];
 const KNOWN = new Set(PLATFORM_FAMILIES.map((family) => family.key));
 const STORAGE_PREFIX = "myPlatforms:";
-// Toggling a few chips in a row builds the picks once
-const APPLY_DELAY = 600;
 
 const clean = (keys) =>
   Array.isArray(keys) ? keys.filter((key) => KNOWN.has(key)) : null;
@@ -40,7 +38,6 @@ export function useMyPlatforms() {
   const [selected, setSelected] = useState(
     () => readLocal(user_id) ?? clean(user?.user_metadata?.platforms) ?? [],
   );
-  const [applied, setApplied] = useState(selected);
 
   // Another device may have changed them since this session started
   useEffect(() => {
@@ -51,25 +48,17 @@ export function useMyPlatforms() {
       if (!active || !remote) return;
       writeLocal(user_id, remote);
       setSelected(remote);
-      setApplied(remote);
     });
     return () => {
       active = false;
     };
   }, [user_id]);
 
-  useEffect(() => {
-    if (selected === applied) return;
-    const timer = setTimeout(() => setApplied(selected), APPLY_DELAY);
-    return () => clearTimeout(timer);
-  }, [selected, applied]);
-
-  function toggle(key) {
-    const next = selected.includes(key)
-      ? selected.filter((k) => k !== key)
-      : PLATFORM_FAMILIES.map((f) => f.key).filter(
-          (k) => k === key || selected.includes(k),
-        );
+  // Takes the whole set at once, so a menu applies its checks in one go
+  function setPlatforms(keys) {
+    const next = PLATFORM_FAMILIES.map((f) => f.key).filter((k) =>
+      keys.includes(k),
+    );
     setSelected(next);
     writeLocal(user_id, next);
     saveMyPlatforms(next);
@@ -77,17 +66,11 @@ export function useMyPlatforms() {
 
   const platformIds = useMemo(
     () =>
-      PLATFORM_FAMILIES.filter((family) => applied.includes(family.key))
+      PLATFORM_FAMILIES.filter((family) => selected.includes(family.key))
         .flatMap((family) => family.ids)
         .sort((a, b) => a - b),
-    [applied],
+    [selected],
   );
 
-  return {
-    selected,
-    toggle,
-    platformIds,
-    // Waiting out the delay before the new choice applies
-    isApplying: selected !== applied,
-  };
+  return { selected, setPlatforms, platformIds };
 }
