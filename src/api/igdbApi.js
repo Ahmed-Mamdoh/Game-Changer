@@ -339,7 +339,7 @@ export async function getTasteDetails(ids) {
 }
 
 // Released, official base games only, with what a pick card needs.
-const CANDIDATE_FIELDS = `name,cover.url,first_release_date,total_rating,total_rating_count,artworks.url,artworks.artwork_type,artworks.width,remakes,remasters,${TASTE_FIELDS}`;
+const CANDIDATE_FIELDS = `name,cover.url,platforms,first_release_date,total_rating,total_rating_count,artworks.url,artworks.artwork_type,artworks.width,remakes,remasters,${TASTE_FIELDS}`;
 // Empty platformIds means any platform
 const candidateWhere = (platformIds = []) => `game_type = (0,8,9) & version_parent = null &
       themes != (42) & keywords != (${UNOFFICIAL_KEYWORDS.join(",")}) &

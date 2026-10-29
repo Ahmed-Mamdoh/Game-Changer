@@ -33,7 +33,7 @@ import {
 // 4. the model only chooses from that shortlist by id and writes the reasons.
 // If the model fails, the scored shortlist still gives picks.
 
-const CACHE_PREFIX = "recommendations:v6:";
+const CACHE_PREFIX = "recommendations:v7:";
 const SEEN_PREFIX = "recommendations:seen:";
 const DISMISSED_PREFIX = "recommendations:dismissed:";
 const DISMISSED_LIMIT = 300;

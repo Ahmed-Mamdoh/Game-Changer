@@ -9,6 +9,11 @@ export const PLATFORM_FAMILIES = [
   { key: "xbox", name: "Xbox", ids: [169, 49] },
   { key: "switch", name: "Switch", ids: [130] },
 ];
+// The families a game is on, from its IGDB platform ids
+export const familiesOf = (platformIds = []) =>
+  PLATFORM_FAMILIES.filter((family) =>
+    family.ids.some((id) => platformIds.includes(id)),
+  );
 const KNOWN = new Set(PLATFORM_FAMILIES.map((family) => family.key));
 const STORAGE_PREFIX = "myPlatforms:";
 

@@ -7,6 +7,7 @@ import { useRemoveGame } from "@/features/games/hooks/useRemoveGame";
 import LogGameDialog from "@/features/games/components/LogGameDialog";
 import {
   PLATFORM_FAMILIES,
+  familiesOf,
   useMyPlatforms,
 } from "@/features/games/hooks/useMyPlatforms";
 import { PLATFORM_ICONS } from "@/features/games/ui/filterIcons";
@@ -280,6 +281,7 @@ function FocusedPick({ game, onDismiss, onLogged, reasonsPending }) {
   const { statusOf } = useQuickStatus();
   const status = statusOf(game.id);
   const tie = tieOf(game);
+  const families = familiesOf(game.platforms);
   const facts = [
     yearOf(game),
     (game.genres || [])
@@ -313,6 +315,28 @@ function FocusedPick({ game, onDismiss, onLogged, reasonsPending }) {
               {fact}
             </span>
           ))}
+          {families.length > 0 && (
+            <span className="flex items-center gap-2">
+              <span aria-hidden="true">·</span>
+              <span
+                role="img"
+                aria-label={`On ${families.map((f) => f.name).join(", ")}`}
+                className="flex items-center gap-2"
+              >
+                {families.map((family) => {
+                  const Icon = PLATFORM_ICONS[family.ids[0]];
+                  return (
+                    <Icon
+                      key={family.key}
+                      title={family.name}
+                      aria-hidden="true"
+                      className="h-4 w-4"
+                    />
+                  );
+                })}
+              </span>
+            </span>
+          )}
           {status && (
             <span className="text-text-main flex items-center gap-2 font-semibold">
               <span aria-hidden="true" className="text-text-dim font-normal">
