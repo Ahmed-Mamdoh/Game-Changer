@@ -210,7 +210,10 @@ function LogGameDialog({
         )}
       </DialogTrigger>
 
-      <DialogContent className="bg-bg-surface border-stroke-medium gap-0 overflow-hidden rounded-2xl border p-0 shadow-[var(--shadow-float)] max-sm:top-auto max-sm:bottom-0 max-sm:max-h-[92dvh] max-sm:max-w-full max-sm:translate-y-0 max-sm:overflow-y-auto max-sm:rounded-b-none sm:max-w-[34rem]">
+      <DialogContent
+        overlayClassName="confirm-overlay"
+        className="log-panel bg-bg-surface border-stroke-medium gap-0 overflow-hidden rounded-2xl border p-0 shadow-[var(--shadow-float)] max-sm:top-auto max-sm:bottom-0 max-sm:max-h-[92dvh] max-sm:max-w-full max-sm:translate-y-0 max-sm:overflow-y-auto max-sm:rounded-b-none sm:max-w-[34rem]"
+      >
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           {/* Header: the game itself, its art bleeding in behind */}
           <div className="relative isolate flex items-center gap-4 px-6 pt-6 pb-5">

@@ -168,11 +168,13 @@ function FocusedPick({ game, onDismiss, onLogged, reasonsPending }) {
     <div className="max-w-2xl">
       {/* Two lines reserved and the name sits at the bottom of them, so long
           names don't push the page around and short ones hug the facts */}
-      <div className="h1 mb-4 flex min-h-[2lh] items-end">
-        <h2 className="h1 line-clamp-2 text-balance">{game.name}</h2>
+      <div className="h1 short:mb-3 short:min-h-0 mb-4 flex min-h-[2lh] items-end">
+        <h2 className="h1 short:text-5xl line-clamp-2 text-balance">
+          {game.name}
+        </h2>
       </div>
 
-      <div className="mb-4 flex flex-wrap items-baseline gap-x-4 gap-y-1">
+      <div className="short:mb-3 mb-4 flex flex-wrap items-baseline gap-x-4 gap-y-1">
         {/* The match is this page's own signature: the home stage has none */}
         <p className="text-text-brand tabular flex items-baseline gap-1.5 font-semibold">
           <span className="text-4xl leading-none font-extrabold tracking-tight">
@@ -199,7 +201,7 @@ function FocusedPick({ game, onDismiss, onLogged, reasonsPending }) {
       </div>
 
       {tie && (
-        <p className="text-text-main mb-4 flex items-center gap-3 text-sm font-semibold">
+        <p className="text-text-main short:mb-3 mb-4 flex items-center gap-3 text-sm font-semibold">
           {game.becauseOf.cover && (
             <img
               src={coverUrlOf({ cover: game.becauseOf.cover }, "t_cover_small")}
@@ -213,7 +215,7 @@ function FocusedPick({ game, onDismiss, onLogged, reasonsPending }) {
 
       {/* Fixed height for three lines, so moving across the shelf doesn't
           make the actions jump */}
-      <div className="mb-7 min-h-[calc(1.55em*4)] text-lg leading-[1.55] sm:min-h-[calc(1.55em*3)]">
+      <div className="short:mb-5 short:sm:min-h-[calc(1.55em*2)] mb-7 min-h-[calc(1.55em*4)] text-lg leading-[1.55] sm:min-h-[calc(1.55em*3)]">
         {reasonsPending ? (
           <div aria-live="polite" className="max-w-[58ch]">
             <div aria-hidden="true">
@@ -266,6 +268,7 @@ function PicksStage({
   return (
     <section
       aria-label="Your picks"
+      // One screen tall, like the other stages; short screens tighten below
       className="relative isolate flex min-h-dvh w-full flex-col overflow-hidden"
     >
       {/* Backdrops: all mounted, only the focused one visible, so swaps are instant */}
@@ -289,11 +292,11 @@ function PicksStage({
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/35 to-transparent" />
       </div>
 
-      <div className="mx-auto w-full max-w-[1440px] px-4 pt-22 md:px-8">
+      <div className="short:pt-[4.5rem] mx-auto w-full max-w-[1440px] px-4 pt-22 md:px-8">
         {header}
       </div>
 
-      <div className="mx-auto flex w-full max-w-[1440px] flex-1 flex-col justify-center px-4 py-10 md:px-8">
+      <div className="short:py-3 mx-auto flex w-full max-w-[1440px] flex-1 flex-col justify-center px-4 py-10 md:px-8">
         {focused && (
           <FocusedPick
             game={focused}
@@ -306,8 +309,8 @@ function PicksStage({
 
       {/* Shelf: hovering or pressing a cover focuses it; pressing the focused
           cover opens the game. On touch the first tap focuses, the next opens. */}
-      <div className="mx-auto w-full max-w-[1440px] px-4 pb-8 md:px-8">
-        <h2 className="text-text-dim mb-3 text-sm font-semibold tracking-normal">
+      <div className="short:pb-5 mx-auto w-full max-w-[1440px] px-4 pb-8 md:px-8">
+        <h2 className="text-text-dim short:mb-2 mb-3 text-sm font-semibold tracking-normal">
           <span className="tabular">{picks.length}</span> picks for you
         </h2>
         <div
@@ -330,7 +333,7 @@ function PicksStage({
               onClick={() =>
                 i === index ? navigate(`/game/${game.id}`) : setFocusIndex(i)
               }
-              className="group flex w-24 shrink-0 cursor-pointer flex-col gap-1.5 text-left md:w-28"
+              className="group short:md:w-20 flex w-24 shrink-0 cursor-pointer flex-col gap-1.5 text-left md:w-28"
             >
               <span
                 className={`bg-bg-raised block aspect-[3/4] w-full overflow-hidden rounded-md outline-2 outline-offset-[3px] transition-[outline-color] duration-150 ease-out ${
