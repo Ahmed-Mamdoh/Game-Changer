@@ -476,7 +476,13 @@ function PicksStage({
               ref={(el) => (tileRefs.current[i] = el)}
               type="button"
               aria-pressed={i === index}
-              aria-label={`${game.name}, ${game.matchScore}% match${i === index ? ", press to open" : ""}`}
+              aria-label={`${game.name}, ${game.matchScore}% match${
+                familiesOf(game.platforms).length
+                  ? `, on ${familiesOf(game.platforms)
+                      .map((f) => f.name)
+                      .join(", ")}`
+                  : ""
+              }${i === index ? ", press to open" : ""}`}
               onMouseEnter={() => setFocusIndex(i)}
               onFocus={() => setFocusIndex(i)}
               onClick={() =>
@@ -500,12 +506,23 @@ function PicksStage({
                   />
                 )}
               </span>
-              <span
-                className={`tabular text-xs font-semibold ${
-                  i === index ? "text-text-brand" : "text-text-dim"
-                }`}
-              >
-                {game.matchScore}%
+              <span className="flex items-center justify-between gap-1.5">
+                <span
+                  className={`tabular text-xs font-semibold ${
+                    i === index ? "text-text-brand" : "text-text-dim"
+                  }`}
+                >
+                  {game.matchScore}%
+                </span>
+                <span
+                  aria-hidden="true"
+                  className="text-text-dim flex items-center gap-1"
+                >
+                  {familiesOf(game.platforms).map((family) => {
+                    const Icon = PLATFORM_ICONS[family.ids[0]];
+                    return <Icon key={family.key} className="h-3 w-3" />;
+                  })}
+                </span>
               </span>
             </button>
           ))}
