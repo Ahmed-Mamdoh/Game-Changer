@@ -451,9 +451,9 @@ function PicksStage({
         {header}
       </div>
 
-      {/* Short screens can't spare the title's second line, so the pick sits
-          on the shelf instead: a long name grows upward and nothing moves */}
-      <div className="short:py-3 short:justify-end mx-auto flex w-full max-w-[1440px] flex-1 flex-col justify-center px-4 py-10 md:px-8">
+      {/* The pick sits a fixed step under the header; spare height on tall
+          screens opens above the shelf, where the art shows through */}
+      <div className="short:pt-4 short:pb-3 mx-auto flex w-full max-w-[1440px] flex-1 flex-col px-4 pt-10 pb-10 md:px-8">
         {focused && (
           <FocusedPick
             game={focused}
