@@ -5,6 +5,7 @@ import {
 import RatingReadOnly from "@/ui/RatingReadOnly";
 import { formatDate } from "date-fns";
 import { MessageSquareText } from "lucide-react";
+import { useState } from "react";
 
 const formatHours = (hours) =>
   `${Number(hours).toLocaleString("en", { maximumFractionDigits: 1 })} h`;
@@ -85,15 +86,28 @@ function RatingBreakdown({ ratings }) {
   );
 }
 
+const SORTS = {
+  newest: {
+    label: "Newest",
+    compare: (a, b) => new Date(b.created_at) - new Date(a.created_at),
+  },
+  highest: { label: "Highest", compare: (a, b) => b.rating - a.rating },
+  lowest: { label: "Lowest", compare: (a, b) => a.rating - b.rating },
+};
+
 function GameDetailsReviews({ reviewsData }) {
+  const [sort, setSort] = useState("newest");
   const ratings =
     reviewsData?.data
       ?.map((review) => Number(review.rating))
       .filter((rating) => rating > 0) || [];
   const reviews =
-    reviewsData?.data?.filter(
-      (review) => review.review !== null && review.review !== "",
-    ) || [];
+    reviewsData?.data
+      ?.filter((review) => review.review !== null && review.review !== "")
+      // Ties keep newest first
+      .sort(
+        (a, b) => SORTS[sort].compare(a, b) || SORTS.newest.compare(a, b),
+      ) || [];
 
   return (
     <section
@@ -101,14 +115,35 @@ function GameDetailsReviews({ reviewsData }) {
       aria-label="Reviews"
       className="mx-auto w-full max-w-[1440px] px-4 pt-14 md:px-8"
     >
-      <h2 className="mb-4">
-        Reviews{" "}
-        {reviews.length > 0 && (
-          <span className="text-text-muted tabular font-normal">
-            {reviews.length}
-          </span>
+      <div className="mb-4 flex max-w-4xl flex-wrap items-center justify-between gap-3">
+        <h2>
+          Reviews{" "}
+          {reviews.length > 0 && (
+            <span className="text-text-muted tabular font-normal">
+              {reviews.length}
+            </span>
+          )}
+        </h2>
+        {reviews.length > 1 && (
+          <div
+            role="radiogroup"
+            aria-label="Sort reviews"
+            className="segmented bg-bg-surface backdrop-blur-none"
+          >
+            {Object.entries(SORTS).map(([id, { label }]) => (
+              <button
+                key={id}
+                type="button"
+                role="radio"
+                aria-checked={sort === id}
+                onClick={() => setSort(id)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
         )}
-      </h2>
+      </div>
 
       {ratings.length > 0 && <RatingBreakdown ratings={ratings} />}
 
