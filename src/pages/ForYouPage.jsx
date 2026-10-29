@@ -37,21 +37,21 @@ import { Helmet } from "react-helmet-async";
 import toast from "react-hot-toast";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 
-// "Not for me" follow-up: what the engine should take from it
+// "Not for me" menu: what the engine should take from it
 const DISMISS_REASONS = [
   {
     reason: "old",
     label: "Too old",
-    learned: (game) =>
-      `Games as old as ${game.name} will rank lower after you refresh.`,
+    hint: "Older games rank lower",
+    learned: (game) => `Games as old as ${game.name} will rank lower.`,
   },
   {
     reason: "style",
     label: "Not my style",
-    learned: (game) =>
-      `Games like ${game.name} will rank lower after you refresh.`,
+    hint: "Games like it rank lower",
+    learned: (game) => `Games like ${game.name} will rank lower.`,
   },
-  { reason: "this", label: "Just this one" },
+  { reason: "this", label: "Just this one", hint: "Only hide this game" },
 ];
 
 const SEO = (
@@ -242,6 +242,48 @@ function PageHeader({
   );
 }
 
+// Asks why before hiding, so the engine knows what to learn from it
+function NotForMeMenu({ game, onDismiss }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger className="btn-on-art h-11 px-4">
+        <ThumbsDown className="h-4 w-4" />
+        Not for me
+        <ChevronDown
+          className={`h-4 w-4 opacity-70 transition-transform duration-150 ${open ? "rotate-180" : ""}`}
+          aria-hidden="true"
+        />
+      </PopoverTrigger>
+      <PopoverContent
+        align="start"
+        className="dropdown-pop bg-bg-raised border-stroke-medium text-text-main w-60 rounded-lg p-1 shadow-[var(--shadow-float)]"
+      >
+        <p className="text-text-dim px-2.5 pt-1.5 pb-1 text-xs font-semibold">
+          Why not this one?
+        </p>
+        <div role="menu" aria-label="Why not this one?">
+          {DISMISS_REASONS.map(({ reason, label, hint }) => (
+            <button
+              key={reason}
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                setOpen(false);
+                onDismiss(game, reason);
+              }}
+              className="hover:bg-bg-chip focus-visible:bg-bg-chip flex w-full cursor-pointer flex-col rounded-sm px-2.5 py-2 text-left outline-none"
+            >
+              <span className="text-sm font-semibold">{label}</span>
+              <span className="text-text-dim text-xs">{hint}</span>
+            </button>
+          ))}
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 // Open, wishlist, log as played and "not for me" for the focused pick. Keyed
 // by game so the hooks always point at the game on screen.
 function PickActions({ game, onDismiss, onLogged }) {
@@ -293,16 +335,7 @@ function PickActions({ game, onDismiss, onLogged }) {
         }
       />
 
-      {!status && (
-        <button
-          type="button"
-          onClick={() => onDismiss(game)}
-          className="btn-on-art h-11 px-4"
-        >
-          <ThumbsDown className="h-4 w-4" />
-          Not for me
-        </button>
-      )}
+      {!status && <NotForMeMenu game={game} onDismiss={onDismiss} />}
     </div>
   );
 }
@@ -683,7 +716,6 @@ function ForYouPage() {
     refresh,
     dismiss,
     undoDismiss,
-    explainDismiss,
   } = useGetRecommendations({ platformIds: platforms.platformIds });
   // A new set is on its way: Refresh picks, a platform change, or a log
   const isRebuilding = isRefreshing;
@@ -708,43 +740,35 @@ function ForYouPage() {
     toast.success("Logged. Your picks are updating with it.");
   }
 
-  function onDismiss(game) {
-    const index = dismiss(game);
+  function onDismiss(game, reason) {
+    const index = dismiss(game, reason);
+    const learned = DISMISS_REASONS.find(
+      (option) => option.reason === reason,
+    )?.learned;
     toast(
       (t) => (
-        <div className="flex flex-col gap-2.5">
-          <span className="flex items-center justify-between gap-3">
-            <span>{game.name} won't come up again. Why?</span>
-            <button
-              type="button"
-              className="text-text-brand cursor-pointer font-semibold hover:underline hover:underline-offset-4"
-              onClick={() => {
-                undoDismiss(game, index);
-                toast.dismiss(t.id);
-              }}
-            >
-              Undo
-            </button>
+        <span className="flex items-center gap-3">
+          <span>
+            {game.name} won't come up again.
+            {learned && (
+              <span className="text-text-dim block text-xs">
+                {learned(game)} Applies on your next refresh.
+              </span>
+            )}
           </span>
-          <span className="flex flex-wrap gap-2">
-            {DISMISS_REASONS.map(({ reason, label, learned }) => (
-              <button
-                key={reason}
-                type="button"
-                className="text-text-main h-8 cursor-pointer rounded-full border border-white/15 px-3 text-xs font-semibold hover:bg-white/10"
-                onClick={() => {
-                  explainDismiss(game, reason);
-                  toast.dismiss(t.id);
-                  if (learned) toast.success(learned(game));
-                }}
-              >
-                {label}
-              </button>
-            ))}
-          </span>
-        </div>
+          <button
+            type="button"
+            className="text-text-brand cursor-pointer font-semibold hover:underline hover:underline-offset-4"
+            onClick={() => {
+              undoDismiss(game, index);
+              toast.dismiss(t.id);
+            }}
+          >
+            Undo
+          </button>
+        </span>
       ),
-      { duration: 10000 },
+      { duration: 6000 },
     );
   }
 

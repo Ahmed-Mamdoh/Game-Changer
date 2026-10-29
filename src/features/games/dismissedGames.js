@@ -62,7 +62,15 @@ export async function loadDismissed(user_id) {
   const { data: rows, error } = await getDismissedGames(user_id);
   if (error || !rows) return toDismissed(local, reasons);
   const remote = rows.map((row) => row.game_id);
-  for (const row of rows) if (row.reason) reasons[row.game_id] = row.reason;
+  // Reasons saved here before the reason column existed go up once
+  for (const row of rows)
+    if (row.reason) reasons[row.game_id] = row.reason;
+    else if (reasons[row.game_id] && "reason" in row)
+      setDismissReason({
+        user_id,
+        game_id: row.game_id,
+        reason: reasons[row.game_id],
+      });
   const remoteSet = new Set(remote);
   const missing = local.filter((id) => !remoteSet.has(id));
   if (missing.length) {
@@ -86,8 +94,12 @@ export function addDismissed(user_id, game_id, reason) {
       DISMISSED_LIMIT,
     ),
   );
-  if (reason) return setReason(user_id, game_id, reason);
-  return addDismissedGames({ user_id, game_ids: [game_id] });
+  if (!reason) return addDismissedGames({ user_id, game_ids: [game_id] });
+  // One request, so an Undo right after can't be overtaken by a late reason
+  // write. Before the reason column is migrated, the game alone is saved.
+  return setReason(user_id, game_id, reason).then((result) =>
+    result.error ? addDismissedGames({ user_id, game_ids: [game_id] }) : result,
+  );
 }
 
 export function setReason(user_id, game_id, reason) {

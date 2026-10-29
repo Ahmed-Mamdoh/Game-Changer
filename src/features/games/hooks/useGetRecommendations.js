@@ -12,7 +12,6 @@ import {
   loadDismissed,
   readStorage,
   removeDismissed,
-  setReason,
   writeStorage,
 } from "@/features/games/dismissedGames";
 import { UserToken } from "@/hooks/useUserToken";
@@ -540,11 +539,14 @@ export function useGetRecommendations({ platformIds = [] } = {}) {
   const refreshHidden = () =>
     queryClient.invalidateQueries({ queryKey: ["dismissed_games", user_id] });
 
-  // "Not for me": hidden from every future set, and gone from this one now
-  function dismiss(game) {
-    addDismissed(user_id, game.id).then(refreshHidden);
+  // "Not for me": hidden from every future set, and gone from this one now.
+  // A reason that teaches ("old", "style") also drops the saved set, so the
+  // next one built (Refresh picks, or the next visit) learns from it.
+  function dismiss(game, reason) {
+    addDismissed(user_id, game.id, reason).then(refreshHidden);
     const index = data?.picks?.findIndex((pick) => pick.id === game.id) ?? -1;
     updatePicks((picks) => picks.filter((pick) => pick.id !== game.id));
+    if (reason === "old" || reason === "style") clearCache(user_id);
     return index;
   }
 
@@ -556,13 +558,6 @@ export function useGetRecommendations({ platformIds = [] } = {}) {
       next.splice(index < 0 ? next.length : index, 0, game);
       return next;
     });
-  }
-
-  // "old", "style" or "this". The current set stays put; the next built set
-  // (Refresh picks, or the next visit) learns from it.
-  function explainDismiss(game, reason) {
-    setReason(user_id, game.id, reason).then(refreshHidden);
-    clearCache(user_id);
   }
 
   // Recalculate from scratch: reload the library so new ratings, hours and
@@ -587,6 +582,5 @@ export function useGetRecommendations({ platformIds = [] } = {}) {
     refresh,
     dismiss,
     undoDismiss,
-    explainDismiss,
   };
 }
