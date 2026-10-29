@@ -77,6 +77,9 @@ export function useQuickStatus() {
     queryClient.invalidateQueries({
       queryKey: ["user_game", user_id, String(game.id)],
     });
+    queryClient.invalidateQueries({
+      queryKey: ["game_reviews", String(game.id)],
+    });
     setPending((p) => {
       const next = { ...p };
       delete next[game.id];

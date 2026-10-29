@@ -191,7 +191,22 @@ export async function getGameReviews({ game_id }) {
     .from("game_reviews")
     .select("*,user:profiles(*),stats:user_stats(games_count, reviews_count)")
     .eq("game_id", game_id);
+  if (error || !data?.length) return { data, error };
 
+  // Each reviewer's current hours and status for this game, shown beside the
+  // hours they had when they wrote the review
+  const { data: players } = await supabase
+    .from("user_games")
+    .select("user_id,hours_played,status")
+    .eq("game_id", game_id)
+    .in(
+      "user_id",
+      data.map((review) => review.user_id),
+    );
+  data = data.map((review) => ({
+    ...review,
+    play: players?.find((p) => p.user_id === review.user_id) ?? null,
+  }));
   return { data, error };
 }
 

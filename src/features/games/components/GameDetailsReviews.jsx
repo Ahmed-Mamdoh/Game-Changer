@@ -1,6 +1,40 @@
+import {
+  STATUS_ICONS,
+  STATUS_LABELS,
+} from "@/features/games/hooks/useQuickStatus";
 import RatingReadOnly from "@/ui/RatingReadOnly";
 import { formatDate } from "date-fns";
 import { MessageSquareText } from "lucide-react";
+
+const formatHours = (hours) =>
+  `${Number(hours).toLocaleString("en", { maximumFractionDigits: 1 })} h`;
+
+// Steam-style playtime: hours now, and hours when the review was written
+function ReviewPlaytime({ play, hoursAtReview }) {
+  const hasHours = play?.hours_played != null;
+  const status = STATUS_ICONS[play?.status];
+  if (!status && !hasHours) return null;
+  const StatusIcon = status?.icon;
+
+  return (
+    <p className="text-text-dim tabular flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:pl-[52px]">
+      {status && (
+        <span className="text-text-main inline-flex items-center gap-1 font-semibold">
+          <StatusIcon className={`h-3.5 w-3.5 ${status.color}`} aria-hidden />
+          {STATUS_LABELS[play.status]}
+        </span>
+      )}
+      {status && hasHours && <span aria-hidden>·</span>}
+      {hasHours && <span>{formatHours(play.hours_played)} on record</span>}
+      {hoursAtReview != null && (
+        <>
+          <span aria-hidden>·</span>
+          <span>{formatHours(hoursAtReview)} at review time</span>
+        </>
+      )}
+    </p>
+  );
+}
 
 function GameDetailsReviews({ reviewsData }) {
   const reviews =
@@ -106,6 +140,10 @@ function GameDetailsReviews({ reviewsData }) {
                 >
                   {review.review}
                 </p>
+                <ReviewPlaytime
+                  play={review.play}
+                  hoursAtReview={review.hours_at_review}
+                />
               </li>
             );
           })}
