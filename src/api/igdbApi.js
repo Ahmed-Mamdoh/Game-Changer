@@ -325,7 +325,7 @@ export async function getCompany(id) {
 
 // Tag fields the recommender reads (see src/utils/tasteProfile.js)
 const TASTE_FIELDS =
-  "genres.name,themes.name,keywords.name,player_perspectives.name,game_modes.name,involved_companies.company,involved_companies.developer,franchises,collections";
+  "genres.name,themes.name,keywords.name,player_perspectives.name,game_modes.name,involved_companies.company.name,involved_companies.developer,franchises,collections";
 
 // Library games with their tags and IGDB's similar_games links.
 export async function getTasteDetails(ids) {
@@ -352,6 +352,8 @@ export async function getRecommendationCandidates({
   genreIds = [],
   themeIds = [],
   keywordIds = [],
+  studioIds = [],
+  seriesKeys = [],
 }) {
   const queries = [];
   if (similarIds.length)
@@ -383,6 +385,42 @@ export async function getRecommendationCandidates({
             total_rating_count > 25 & ${candidateWhere()};
           sort total_rating_count desc;
           limit 80;`,
+      ),
+    );
+  // More from the studios and series the player keeps coming back to
+  if (studioIds.length)
+    queries.push(
+      igdbFetch(
+        "games",
+        `fields ${CANDIDATE_FIELDS};
+          where involved_companies.company = (${studioIds.join(",")}) &
+            involved_companies.developer = true & ${candidateWhere()};
+          sort total_rating_count desc;
+          limit 60;`,
+      ),
+    );
+  // seriesKeys look like "franchise:12" or "collection:34"
+  const idsOf = (type) =>
+    seriesKeys
+      .filter((key) => key.startsWith(`${type}:`))
+      .map((key) => key.slice(type.length + 1));
+  const seriesWhere = [
+    idsOf("collection").length &&
+      `collections = (${idsOf("collection").join(",")})`,
+    idsOf("franchise").length &&
+      `franchises = (${idsOf("franchise").join(",")})`,
+  ]
+    .filter(Boolean)
+    .join(" | ");
+  if (seriesWhere)
+    queries.push(
+      igdbFetch(
+        "games",
+        `fields ${CANDIDATE_FIELDS};
+          where (${seriesWhere}) &
+            ${candidateWhere()};
+          sort total_rating_count desc;
+          limit 60;`,
       ),
     );
   const results = await Promise.all(queries);

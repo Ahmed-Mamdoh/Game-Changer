@@ -186,38 +186,120 @@ export function qualityScore(game) {
   );
 }
 
-// similarTo: Map candidateId -> [{ id, name, weight }] of library games that
-// list the candidate in IGDB's similar_games.
-export function scoreCandidate(profile, candidate, similarTo) {
-  const similarity = tasteSimilarity(profile, candidate);
-  const sources = similarTo.get(candidate.id) || [];
-  const liked = sources.filter((s) => s.weight > 0);
-  const disliked = sources.filter((s) => s.weight < 0);
-  // IGDB's similar_games links from liked games are the strongest hint; a
-  // game listed by several of them gets the most
-  const linkBoost =
-    Math.min(
-      liked.reduce((sum, s) => sum + s.weight, 0),
-      4,
-    ) *
-      0.05 -
-    disliked.length * 0.08;
+const developersOf = (game) =>
+  (game.involved_companies || [])
+    .filter((ic) => ic.developer)
+    .map((ic) => ic.company?.id ?? ic.company);
+// Franchise and collection ids are separate id spaces, so keep them apart
+const seriesOf = (game) => [
+  ...(game.franchises || []).map((s) => `franchise:${s.id ?? s}`),
+  ...(game.collections || []).map((s) => `collection:${s.id ?? s}`),
+];
 
-  const fit = Math.min(Math.max(similarity + linkBoost, 0), 1);
-  const score = fit * 0.75 + qualityScore(candidate) * 0.25;
-  // Raw cosines bunch between 0.2 and 0.6; the square root spreads them into
-  // a readable range without changing the order.
-  const match = Math.round(Math.sqrt(fit) * 100);
-  const becauseOf = [...liked].sort((a, b) => b.weight - a.weight)[0] || null;
-  return { score, match: Math.min(match, 99), becauseOf };
+// What ties each candidate back to the library. entries: [{ id, name, weight,
+// game }] with IGDB details. Each map goes from an id (candidate, studio or
+// series) to the library games behind it.
+export function buildLibraryLinks(entries) {
+  const similarTo = new Map();
+  const byStudio = new Map();
+  const bySeries = new Map();
+  const push = (map, key, entry) => {
+    if (key == null) return;
+    if (!map.has(key)) map.set(key, []);
+    map.get(key).push({ id: entry.id, name: entry.name, weight: entry.weight });
+  };
+  for (const entry of entries) {
+    for (const id of entry.game.similar_games || []) push(similarTo, id, entry);
+    for (const id of new Set(developersOf(entry.game)))
+      push(byStudio, id, entry);
+    for (const id of new Set(seriesOf(entry.game))) push(bySeries, id, entry);
+  }
+  return { similarTo, byStudio, bySeries };
 }
 
-// Greedy pick that keeps the list varied: at most one game per series and two
-// per "because of" game. No genre cap: IGDB lists genres by id, so the first
+const strongest = (sources) =>
+  [...sources].sort((a, b) => b.weight - a.weight)[0] || null;
+const sumWeights = (sources) => sources.reduce((sum, s) => sum + s.weight, 0);
+
+// 0-1: how well known a game is. Players trust picks they have heard of; a
+// game with 3000+ ratings on IGDB counts as fully known.
+export function familiarity(game) {
+  return Math.min(
+    Math.log10((game.total_rating_count || 0) + 1) / Math.log10(3000),
+    1,
+  );
+}
+
+// Fit is tag overlap plus three direct ties to the library, strongest first:
+// the same series as a liked game (a sequel), the same studio as several liked
+// games, and IGDB listing it as similar to liked games.
+export function scoreCandidate(profile, candidate, links) {
+  const similarity = tasteSimilarity(profile, candidate);
+  const collect = (map, ids) => {
+    const seen = new Set();
+    return ids
+      .flatMap((id) => map.get(id) || [])
+      .filter((s) => !seen.has(s.id) && seen.add(s.id));
+  };
+  const similar = links.similarTo.get(candidate.id) || [];
+  const studio = collect(links.byStudio, developersOf(candidate));
+  const series = collect(links.bySeries, seriesOf(candidate));
+  const liked = (sources) => sources.filter((s) => s.weight > 0);
+  const disliked = (sources) => sources.filter((s) => s.weight < 0);
+
+  // One liked game in a series is enough for a sequel to matter
+  const seriesBoost =
+    Math.min(sumWeights(liked(series)) / 2, 1) * 0.3 -
+    Math.min(-sumWeights(disliked(series)) / 2, 1) * 0.2;
+  // A studio counts once the player liked two or more of its games
+  const studioBoost =
+    (liked(studio).length >= 2
+      ? Math.min(sumWeights(liked(studio)) / 4, 1) * 0.25
+      : 0) -
+    Math.min(-sumWeights(disliked(studio)) / 2, 1) * 0.15;
+  const similarBoost =
+    Math.min(sumWeights(liked(similar)), 4) * 0.04 -
+    disliked(similar).length * 0.08;
+
+  const fit = Math.min(
+    Math.max(similarity * 0.7 + seriesBoost + studioBoost + similarBoost, 0),
+    1,
+  );
+  const score =
+    fit * 0.7 + qualityScore(candidate) * 0.15 + familiarity(candidate) * 0.15;
+  // Raw fits bunch between 0.2 and 0.7; the square root spreads them into a
+  // readable range without changing the order.
+  const match = Math.min(Math.round(Math.sqrt(fit) * 100), 99);
+
+  let link = null;
+  let becauseOf = null;
+  if (seriesBoost > 0) {
+    link = "series";
+    becauseOf = strongest(liked(series));
+  } else if (studioBoost > 0) {
+    link = "studio";
+    becauseOf = strongest(liked(studio));
+  } else if (liked(similar).length) {
+    link = "similar";
+    becauseOf = strongest(liked(similar));
+  }
+  // Name of the shared studio, for reasons written without the model
+  const studioName =
+    link === "studio"
+      ? (candidate.involved_companies || []).find(
+          (ic) =>
+            ic.developer && links.byStudio.has(ic.company?.id ?? ic.company),
+        )?.company?.name || null
+      : null;
+  return { score, match, becauseOf, link, studioName };
+}
+
+// Greedy pick that keeps the list varied: at most two games per series and
+// two per "because of" game. No genre cap: IGDB lists genres by id, so the first
 // genre is arbitrary, and a player who loves RPGs should get RPGs.
 export function pickVaried(scored, count) {
   const picked = [];
-  const seriesUsed = new Set();
+  const seriesUsed = new Map();
   const sourceCount = new Map();
   for (const item of [...scored].sort((a, b) => b.score - a.score)) {
     if (picked.length >= count) break;
@@ -225,12 +307,12 @@ export function pickVaried(scored, count) {
       ...(item.game.franchises || []),
       ...(item.game.collections || []),
     ].map((s) => s.id ?? s);
-    if (series.some((id) => seriesUsed.has(id))) continue;
+    if (series.some((id) => (seriesUsed.get(id) || 0) >= 2)) continue;
     const source = item.becauseOf?.id;
     if (source != null && (sourceCount.get(source) || 0) >= 2) continue;
 
     picked.push(item);
-    series.forEach((id) => seriesUsed.add(id));
+    series.forEach((id) => seriesUsed.set(id, (seriesUsed.get(id) || 0) + 1));
     if (source != null)
       sourceCount.set(source, (sourceCount.get(source) || 0) + 1);
   }
