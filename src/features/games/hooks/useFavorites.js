@@ -21,6 +21,8 @@ export function useFavorites() {
   const { data } = useGetUserGames(user_id);
   const [pending, setPending] = useState({});
   const [swapFor, setSwapFor] = useState(null);
+  // Game ids in the order just dragged, shown until the refetch lands
+  const [order, setOrder] = useState(null);
 
   const library = data?.user_games ?? [];
   const entryOf = (gameId) => library.find((g) => g.game_id === gameId);
@@ -36,23 +38,36 @@ export function useFavorites() {
     return Boolean(status) && status !== "to play";
   }
 
-  const favorites = library.filter((g) => isFavorite(g.game_id));
+  // Dragged order first, then most played for favorites from before ranks
+  const favorites = library
+    .filter((g) => isFavorite(g.game_id))
+    .sort((a, b) =>
+      order
+        ? order.indexOf(a.game_id) - order.indexOf(b.game_id)
+        : (a.favorite_rank ?? Infinity) - (b.favorite_rank ?? Infinity) ||
+          (b.hours_played || 0) - (a.hours_played || 0),
+    );
 
-  async function save(gameId, value) {
+  function refetch(gameId) {
+    const library = queryClient.invalidateQueries({
+      queryKey: ["user_games", user_id],
+    });
+    if (gameId)
+      queryClient.invalidateQueries({
+        queryKey: ["user_game", user_id, String(gameId)],
+      });
+    return library;
+  }
+
+  async function save(gameId, value, extra = {}) {
     setPending((p) => ({ ...p, [gameId]: value }));
     const { error } = await updateUserGame({
       game_id: gameId,
       user_id,
       is_favorite: value,
+      ...extra,
     });
-    if (!error) {
-      await queryClient.invalidateQueries({
-        queryKey: ["user_games", user_id],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["user_game", user_id, String(gameId)],
-      });
-    }
+    if (!error) await refetch(gameId);
     setPending((p) => {
       const next = { ...p };
       delete next[gameId];
@@ -61,8 +76,10 @@ export function useFavorites() {
     return !error;
   }
 
-  async function setFavorite(game, value, { undo = true } = {}) {
-    if (!(await save(game.id, value))) {
+  // `rank` puts an unhearted game back in its old slot on Undo
+  async function setFavorite(game, value, { undo = true, rank } = {}) {
+    const oldRank = entryOf(game.id)?.favorite_rank;
+    if (!(await save(game.id, value, rank ? { favorite_rank: rank } : {}))) {
       toast.error(`Couldn't update favorites for ${game.name}. Try again.`);
       return false;
     }
@@ -76,7 +93,8 @@ export function useFavorites() {
       iconClass: value ? "text-pulse-error" : "text-text-muted",
       action: undo && {
         label: "Undo",
-        onClick: () => setFavorite(game, !value, { undo: false }),
+        onClick: () =>
+          setFavorite(game, !value, { undo: false, rank: oldRank }),
       },
     });
     return true;
@@ -91,11 +109,14 @@ export function useFavorites() {
     return setFavorite(game, true);
   }
 
-  // Unhearts `out` first so the cap holds at every step
+  // Unhearts `out` first so the cap holds at every step. The new game takes
+  // its slot; the database puts it last when there are no ranks yet.
   async function swapFavorite(out, incoming, { undo = true } = {}) {
     setSwapFor(null);
+    const rank = entryOf(out.id)?.favorite_rank;
     const saved =
-      (await save(out.id, false)) && (await save(incoming.id, true));
+      (await save(out.id, false)) &&
+      (await save(incoming.id, true, rank ? { favorite_rank: rank } : {}));
     if (!saved) {
       toast.error("Couldn't swap your favorites. Try again.");
       return false;
@@ -113,8 +134,23 @@ export function useFavorites() {
     return true;
   }
 
+  // `gameIds` is every favorite in its new order, first slot first
+  async function reorderFavorites(gameIds) {
+    setOrder(gameIds);
+    const results = await Promise.all(
+      gameIds.map((game_id, i) =>
+        updateUserGame({ game_id, user_id, favorite_rank: i + 1 }),
+      ),
+    );
+    if (results.some(({ error }) => error))
+      toast.error("Couldn't save the new order. Try again.");
+    await refetch();
+    setOrder(null);
+  }
+
   return {
     favorites,
+    reorderFavorites,
     isFavorite,
     canFavorite,
     toggleFavorite,

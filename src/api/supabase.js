@@ -59,6 +59,8 @@ export async function updateUserGame({ game_id, user_id, ...formData }) {
     updateData.hours_played = formData.hours_played;
   if (formData.is_favorite !== undefined)
     updateData.is_favorite = formData.is_favorite;
+  if (formData.favorite_rank !== undefined)
+    updateData.favorite_rank = formData.favorite_rank;
 
   const { data, error } = await supabase
     .from("user_games")
