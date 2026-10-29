@@ -19,6 +19,7 @@ import {
   useQuickStatus,
 } from "../hooks/useQuickStatus";
 import { useRemoveGame } from "../hooks/useRemoveGame";
+import FavoriteButton from "./FavoriteButton";
 import LogGameDialog from "./LogGameDialog";
 
 const STORES = [
@@ -328,6 +329,7 @@ function GameDetailsOverview({ data }) {
 
               {isReleased && isLogged && (
                 <div className="flex items-center gap-2">
+                  <FavoriteButton game={game} />
                   <button
                     type="button"
                     onClick={requestRemove}

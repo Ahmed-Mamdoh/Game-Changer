@@ -11,6 +11,7 @@ import {
   STATUS_LABELS,
   useQuickStatus,
 } from "@/features/games/hooks/useQuickStatus";
+import FavoriteButton from "@/features/games/components/FavoriteButton";
 import LogGameDialog from "@/features/games/components/LogGameDialog";
 import { useRemoveGame } from "@/features/games/hooks/useRemoveGame";
 
@@ -149,6 +150,7 @@ function GameItem({ game, className = "" }) {
               </button>
             );
           })}
+          {!isRemoving && <FavoriteButton game={game} variant="poster" />}
         </div>
       </div>
 

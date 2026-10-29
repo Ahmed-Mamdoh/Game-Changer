@@ -16,6 +16,8 @@ import { useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useGetTimeToBeat } from "../hooks/useGetTimeToBeat";
+import { MAX_FAVORITES, useFavorites } from "../hooks/useFavorites";
+import FavoriteButton from "./FavoriteButton";
 import { STATUS_ICONS, STATUS_LABELS } from "../hooks/useQuickStatus";
 import { useRemoveGame } from "../hooks/useRemoveGame";
 
@@ -132,6 +134,7 @@ function LogGameDialog({
   const { removeGame } = useRemoveGame(game);
   const [open, setOpen] = useState(defaultOpen);
   const [isFavorite, setIsFavorite] = useState(Boolean(userGame?.is_favorite));
+  const favoriteCount = useFavorites().favorites.length;
   const [isConfirmingRemove, setIsConfirmingRemove] = useState(false);
   const [isRemoving, setIsRemoving] = useState(false);
 
@@ -216,25 +219,16 @@ function LogGameDialog({
     onClose?.();
   }
 
+  // Not in the library yet: the favorite is saved with the log. Library games
+  // use FavoriteButton, which saves at once and keeps the cap.
   function toggleFavorite() {
-    const next = !isFavorite;
-    setIsFavorite(next);
-    // Not in the library yet: the favorite is saved with the log
-    if (!userGame) return;
-    // Works off the game page too, so it needs no route data
-    updateUserGame({ game_id: id, user_id, is_favorite: next }).then(
-      ({ error }) => {
-        if (error) {
-          setIsFavorite(!next);
-          toast.error("Couldn't update favorites. Try again.");
-          return;
-        }
-        queryClient.invalidateQueries({ queryKey: ["user_games", user_id] });
-        queryClient.invalidateQueries({
-          queryKey: ["user_game", user_id, String(id)],
-        });
-      },
-    );
+    if (!isFavorite && favoriteCount >= MAX_FAVORITES) {
+      toast.error(
+        `You have ${MAX_FAVORITES} favorites. Save the log, then swap one out.`,
+      );
+      return;
+    }
+    setIsFavorite(!isFavorite);
   }
 
   async function removeFromLibrary() {
@@ -298,21 +292,25 @@ function LogGameDialog({
                 {year ? `${year} · ` : ""}Your log
               </DialogDescription>
             </div>
-            <button
-              type="button"
-              onClick={toggleFavorite}
-              aria-pressed={isFavorite}
-              className={`inline-flex h-9 shrink-0 cursor-pointer items-center gap-2 rounded-full border px-3.5 text-sm font-semibold transition-colors duration-100 ${
-                isFavorite
-                  ? "border-pulse-error/45 bg-pulse-error/15 text-text-main hover:bg-pulse-error/20"
-                  : "border-stroke-medium text-text-main bg-black/30 hover:bg-white/[0.06]"
-              }`}
-            >
-              <Heart
-                className={`text-pulse-error h-4 w-4 ${isFavorite ? "fill-current" : ""}`}
-              />
-              {isFavorite ? "Favorited" : "Favorite"}
-            </button>
+            {userGame ? (
+              <FavoriteButton game={game} variant="pill" />
+            ) : (
+              <button
+                type="button"
+                onClick={toggleFavorite}
+                aria-pressed={isFavorite}
+                className={`inline-flex h-9 shrink-0 cursor-pointer items-center gap-2 rounded-full border px-3.5 text-sm font-semibold transition-colors duration-100 ${
+                  isFavorite
+                    ? "border-pulse-error/45 bg-pulse-error/15 text-text-main hover:bg-pulse-error/20"
+                    : "border-stroke-medium text-text-main bg-black/30 hover:bg-white/[0.06]"
+                }`}
+              >
+                <Heart
+                  className={`text-pulse-error h-4 w-4 ${isFavorite ? "fill-current" : ""}`}
+                />
+                {isFavorite ? "Favorited" : "Favorite"}
+              </button>
+            )}
           </div>
 
           <div className="flex flex-col gap-5 px-5 pt-1 pb-5">

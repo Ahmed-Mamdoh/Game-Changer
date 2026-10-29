@@ -137,7 +137,7 @@ function Account() {
           <UserHeader userGames={userGames} />
           <div className="grid gap-3 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
             <NowPlaying userGames={userGames} />
-            <FavoritesRow userGames={userGames} />
+            <FavoritesRow />
           </div>
           <TasteStrip userGames={userGames} genres={genres} />
           <RateTheseStrip userGames={userGames} user_id={user_id} />
