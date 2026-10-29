@@ -1,4 +1,4 @@
-import { updateUserGame } from "@/api/supabase";
+import { addUserGame, updateUserGame } from "@/api/supabase";
 import {
   Dialog,
   DialogClose,
@@ -16,7 +16,6 @@ import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useGetTimeToBeat } from "../hooks/useGetTimeToBeat";
 import { STATUS_ICONS, STATUS_LABELS } from "../hooks/useQuickStatus";
-import { useUserGameActions } from "../hooks/useUserGameActions";
 
 const LOG_STATUSES = ["playing", "finished", "dropped"];
 const REVIEW_MAX = 2000;
@@ -87,24 +86,39 @@ function StarRating({ value, onChange }) {
   );
 }
 
-function LogGameDialog({ game, userGame, userGameReview, onRemove }) {
+// Logs a game: status, rating, hours and review. Works for games already in
+// the library (edit) and for games not in it yet (the log adds them).
+// trigger: the button that opens it; defaultStatus: preselected for a new log;
+// requireRating: a rating is needed to save; onSaved: called after a save.
+function LogGameDialog({
+  game,
+  userGame,
+  userGameReview,
+  onRemove,
+  trigger,
+  defaultStatus = "",
+  requireRating = false,
+  onSaved,
+}) {
   const { id, name, first_release_date: releaseDate } = game;
   const user_id = UserToken()?.user?.id;
   const queryClient = useQueryClient();
-  const { data: timeToBeat } = useGetTimeToBeat();
-  const { handleFavoriteChange } = useUserGameActions(id);
+  const { data: timeToBeat } = useGetTimeToBeat(id);
   const [open, setOpen] = useState(false);
   const [isFavorite, setIsFavorite] = useState(Boolean(userGame?.is_favorite));
 
   const savedValues = () => ({
-    status: LOG_STATUSES.includes(userGame?.status) ? userGame.status : "",
+    status: LOG_STATUSES.includes(userGame?.status)
+      ? userGame.status
+      : defaultStatus,
     rating: userGameReview?.rating || 0,
     hours_played: userGame?.hours_played ?? "",
     review: userGameReview?.review || "",
   });
 
-  const { register, handleSubmit, control, watch, reset, formState } =
-    useForm({ defaultValues: savedValues() });
+  const { register, handleSubmit, control, watch, reset, formState } = useForm({
+    defaultValues: savedValues(),
+  });
   const { errors, isSubmitting, isDirty } = formState;
   const reviewLength = watch("review")?.length || 0;
 
@@ -125,7 +139,7 @@ function LogGameDialog({ game, userGame, userGameReview, onRemove }) {
   }
 
   async function onSubmit(values) {
-    const { error } = await updateUserGame({
+    const log = {
       game_id: id,
       user_id,
       status: values.status,
@@ -133,7 +147,10 @@ function LogGameDialog({ game, userGame, userGameReview, onRemove }) {
         values.hours_played === "" ? null : Number(values.hours_played),
       rating: values.rating || null,
       review: values.review.trim(),
-    });
+    };
+    const { error } = userGame
+      ? await updateUserGame(log)
+      : await addUserGame({ ...log, rating: log.rating || 0 });
     if (error) {
       toast.error(`Couldn't save your log. ${error.message}`);
       return;
@@ -150,15 +167,26 @@ function LogGameDialog({ game, userGame, userGameReview, onRemove }) {
     });
     queryClient.invalidateQueries({ queryKey: ["game_reviews", gameId] });
     setOpen(false);
+    onSaved?.(values);
   }
 
   function toggleFavorite() {
     const next = !isFavorite;
     setIsFavorite(next);
-    handleFavoriteChange(next).catch(() => {
-      setIsFavorite(!next);
-      toast.error("Couldn't update favorites. Try again.");
-    });
+    // Works off the game page too, so it needs no route data
+    updateUserGame({ game_id: id, user_id, is_favorite: next }).then(
+      ({ error }) => {
+        if (error) {
+          setIsFavorite(!next);
+          toast.error("Couldn't update favorites. Try again.");
+          return;
+        }
+        queryClient.invalidateQueries({ queryKey: ["user_games", user_id] });
+        queryClient.invalidateQueries({
+          queryKey: ["user_game", user_id, String(id)],
+        });
+      },
+    );
   }
 
   function removeFromLibrary() {
@@ -170,14 +198,16 @@ function LogGameDialog({ game, userGame, userGameReview, onRemove }) {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <button type="button" className="btn-on-art">
-          {hasLog ? (
-            <PenLine className="h-4 w-4" />
-          ) : (
-            <Star className="h-4 w-4" />
-          )}
-          {hasLog ? "Edit log" : "Rate & review"}
-        </button>
+        {trigger || (
+          <button type="button" className="btn-on-art">
+            {hasLog ? (
+              <PenLine className="h-4 w-4" />
+            ) : (
+              <Star className="h-4 w-4" />
+            )}
+            {hasLog ? "Edit log" : "Rate & review"}
+          </button>
+        )}
       </DialogTrigger>
 
       <DialogContent className="bg-bg-surface border-stroke-medium gap-0 overflow-hidden rounded-2xl border p-0 shadow-[var(--shadow-float)] max-sm:top-auto max-sm:bottom-0 max-sm:max-h-[92dvh] max-sm:max-w-full max-sm:translate-y-0 max-sm:overflow-y-auto max-sm:rounded-b-none sm:max-w-[34rem]">
@@ -204,20 +234,25 @@ function LogGameDialog({ game, userGame, userGameReview, onRemove }) {
                 {year ? `${year} · ` : ""}Your log
               </DialogDescription>
             </div>
-            <button
-              type="button"
-              onClick={toggleFavorite}
-              aria-pressed={isFavorite}
-              aria-label={
-                isFavorite ? "Remove from favorites" : "Add to favorites"
-              }
-              title={isFavorite ? "Remove from favorites" : "Add to favorites"}
-              className="hover:bg-bg-raised mt-6 -mr-2 flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-md transition-colors duration-100"
-            >
-              <Heart
-                className={`h-[18px] w-[18px] ${isFavorite ? "fill-pulse-error text-pulse-error" : "text-text-dim"}`}
-              />
-            </button>
+            {/* Favorites live on the library row, so only once it exists */}
+            {userGame && (
+              <button
+                type="button"
+                onClick={toggleFavorite}
+                aria-pressed={isFavorite}
+                aria-label={
+                  isFavorite ? "Remove from favorites" : "Add to favorites"
+                }
+                title={
+                  isFavorite ? "Remove from favorites" : "Add to favorites"
+                }
+                className="hover:bg-bg-raised mt-6 -mr-2 flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-md transition-colors duration-100"
+              >
+                <Heart
+                  className={`h-[18px] w-[18px] ${isFavorite ? "fill-pulse-error text-pulse-error" : "text-text-dim"}`}
+                />
+              </button>
+            )}
           </div>
 
           <div className="flex flex-col gap-6 px-6 pt-1 pb-6">
@@ -266,14 +301,30 @@ function LogGameDialog({ game, userGame, userGameReview, onRemove }) {
             <div className="flex flex-col gap-2">
               <span className="text-text-main text-sm font-semibold">
                 Rating
+                {requireRating && (
+                  <span className="text-text-muted font-normal">
+                    {" "}
+                    · tells your picks what you liked
+                  </span>
+                )}
               </span>
               <Controller
                 name="rating"
                 control={control}
+                rules={
+                  requireRating
+                    ? { validate: (v) => v > 0 || "Rate it to save your log." }
+                    : undefined
+                }
                 render={({ field }) => (
                   <StarRating value={field.value} onChange={field.onChange} />
                 )}
               />
+              {errors.rating && (
+                <p className="text-text-error text-sm">
+                  {errors.rating.message}
+                </p>
+              )}
             </div>
 
             {/* Hours */}
@@ -294,7 +345,7 @@ function LogGameDialog({ game, userGame, userGameReview, onRemove }) {
                   placeholder="0"
                   aria-invalid={Boolean(errors.hours_played)}
                   aria-describedby={ttbHint ? "hours_hint" : undefined}
-                  className={`${fieldClass} tabular h-10 pr-8 pl-3 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none`}
+                  className={`${fieldClass} tabular h-10 [appearance:textfield] pr-8 pl-3 [&::-webkit-inner-spin-button]:appearance-none`}
                   {...register("hours_played", {
                     validate: (v) =>
                       v === "" ||
@@ -331,7 +382,8 @@ function LogGameDialog({ game, userGame, userGameReview, onRemove }) {
                 <span
                   className={`tabular text-xs ${reviewLength > REVIEW_MAX ? "text-text-error" : "text-text-muted"}`}
                 >
-                  {reviewLength.toLocaleString()} / {REVIEW_MAX.toLocaleString()}
+                  {reviewLength.toLocaleString()} /{" "}
+                  {REVIEW_MAX.toLocaleString()}
                 </span>
               </div>
               <textarea
@@ -360,14 +412,16 @@ function LogGameDialog({ game, userGame, userGameReview, onRemove }) {
           </div>
 
           <div className="border-stroke-subtle flex flex-wrap items-center justify-between gap-3 border-t px-6 py-4">
-            <button
-              type="button"
-              onClick={removeFromLibrary}
-              className="text-text-dim hover:text-text-error -ml-2 inline-flex h-10 cursor-pointer items-center gap-2 rounded-md px-2 text-sm font-semibold transition-colors duration-100"
-            >
-              <Trash2 className="h-4 w-4" />
-              Remove from library
-            </button>
+            {onRemove && (
+              <button
+                type="button"
+                onClick={removeFromLibrary}
+                className="text-text-dim hover:text-text-error -ml-2 inline-flex h-10 cursor-pointer items-center gap-2 rounded-md px-2 text-sm font-semibold transition-colors duration-100"
+              >
+                <Trash2 className="h-4 w-4" />
+                Remove from library
+              </button>
+            )}
             <div className="ml-auto flex items-center gap-2">
               <DialogClose asChild>
                 <button type="button" className="btn-quiet">
@@ -376,7 +430,7 @@ function LogGameDialog({ game, userGame, userGameReview, onRemove }) {
               </DialogClose>
               <button
                 type="submit"
-                disabled={isSubmitting || !isDirty}
+                disabled={isSubmitting || (Boolean(userGame) && !isDirty)}
                 className="btn-primary"
               >
                 {isSubmitting ? "Saving…" : "Save"}

@@ -4,6 +4,7 @@ import {
   useQuickStatus,
 } from "@/features/games/hooks/useQuickStatus";
 import { useRemoveGame } from "@/features/games/hooks/useRemoveGame";
+import LogGameDialog from "@/features/games/components/LogGameDialog";
 import { useGetUserGames } from "@/features/User/hooks/useGetUserGames";
 import { UserToken } from "@/hooks/useUserToken";
 import BackdropImage from "@/ui/BackdropImage";
@@ -13,13 +14,13 @@ import {
   Bookmark,
   Check,
   RefreshCw,
-  Star,
   ThumbsDown,
 } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import toast from "react-hot-toast";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 
 const SEO = (
   <Helmet>
@@ -56,12 +57,19 @@ function tieOf(game) {
   return `Because you played ${source}`;
 }
 
-function PageHeader({ onRefresh, isRefreshing, disabled }) {
+function PageHeader({ onRefresh, isRefreshing, disabled, position }) {
   return (
     <div className="flex items-center justify-between gap-4">
-      <h1 className="text-[length:var(--font-size-title)] leading-tight font-semibold tracking-tight">
-        For you
-      </h1>
+      <div className="flex items-baseline gap-3">
+        <h1 className="text-[length:var(--font-size-title)] leading-tight font-semibold tracking-tight">
+          For you
+        </h1>
+        {position && (
+          <span className="text-text-dim tabular text-sm font-semibold">
+            {position.index + 1} of {position.total}
+          </span>
+        )}
+      </div>
       {onRefresh && (
         <button
           type="button"
@@ -79,14 +87,20 @@ function PageHeader({ onRefresh, isRefreshing, disabled }) {
   );
 }
 
-// Wishlist, played and "not for me" for the focused pick. Keyed by game so
-// the remove hook always points at the game on screen.
-function PickActions({ game, onDismiss }) {
+// Open, wishlist, log as played and "not for me" for the focused pick. Keyed
+// by game so the hooks always point at the game on screen.
+function PickActions({ game, onDismiss, onLogged }) {
+  const user_id = UserToken()?.user?.id;
+  const { data } = useGetUserGames(user_id);
   const { statusOf, setStatus } = useQuickStatus();
   const { removeGame } = useRemoveGame(game);
   const status = statusOf(game.id);
   const isWishlisted = status === "to play";
-  const isPlayed = status === "playing" || status === "finished";
+  // A wishlisted pick already has a library row; the log updates it
+  const userGame = data?.user_games?.find((g) => g.game_id === game.id);
+  const userGameReview = userGame?.game?.reviews?.find(
+    (review) => review.user_id === user_id,
+  );
 
   return (
     <div className="flex flex-wrap items-center gap-3">
@@ -94,36 +108,35 @@ function PickActions({ game, onDismiss }) {
         Open game
       </Link>
 
-      {isPlayed ? (
-        <Link to={`/game/${game.id}`} className="btn-on-art h-11 px-4">
-          <Star className="h-4 w-4" />
-          Rate it
-        </Link>
-      ) : (
-        <>
-          <button
-            type="button"
-            aria-pressed={isWishlisted}
-            onClick={() =>
-              isWishlisted ? removeGame("wishlist") : setStatus(game, "to play")
-            }
-            className="btn-on-art h-11 px-4"
-          >
-            <Bookmark
-              className={`text-pulse-warning h-4 w-4 ${isWishlisted ? "fill-current" : ""}`}
-            />
-            {isWishlisted ? "Wishlisted" : "Wishlist"}
-          </button>
-          <button
-            type="button"
-            onClick={() => setStatus(game, "finished")}
-            className="btn-on-art h-11 px-4"
-          >
+      <button
+        type="button"
+        aria-pressed={isWishlisted}
+        onClick={() =>
+          isWishlisted ? removeGame("wishlist") : setStatus(game, "to play")
+        }
+        className="btn-on-art h-11 px-4"
+      >
+        <Bookmark
+          className={`text-pulse-warning h-4 w-4 ${isWishlisted ? "fill-current" : ""}`}
+        />
+        {isWishlisted ? "Wishlisted" : "Wishlist"}
+      </button>
+
+      {/* Played it asks how it went: a played game can be a hated one */}
+      <LogGameDialog
+        game={game}
+        userGame={userGame}
+        userGameReview={userGameReview}
+        defaultStatus="finished"
+        requireRating
+        onSaved={onLogged}
+        trigger={
+          <button type="button" className="btn-on-art h-11 px-4">
             <Check className="text-pulse-success h-4 w-4" />
             Played it
           </button>
-        </>
-      )}
+        }
+      />
 
       {!status && (
         <button
@@ -139,7 +152,7 @@ function PickActions({ game, onDismiss }) {
   );
 }
 
-function FocusedPick({ game, onDismiss }) {
+function FocusedPick({ game, onDismiss, onLogged, reasonsPending }) {
   const { statusOf } = useQuickStatus();
   const status = statusOf(game.id);
   const tie = tieOf(game);
@@ -159,25 +172,31 @@ function FocusedPick({ game, onDismiss }) {
         <h2 className="h1 line-clamp-2 text-balance">{game.name}</h2>
       </div>
 
-      <p className="text-text-dim tabular mb-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
-        <span className="text-text-brand font-semibold">
-          {game.matchScore}% match
-        </span>
-        {facts.map((fact) => (
-          <span key={fact} className="flex items-center gap-2">
-            <span aria-hidden="true">·</span>
-            {fact}
+      <div className="mb-4 flex flex-wrap items-baseline gap-x-4 gap-y-1">
+        {/* The match is this page's own signature: the home stage has none */}
+        <p className="text-text-brand tabular flex items-baseline gap-1.5 font-semibold">
+          <span className="text-4xl leading-none font-extrabold tracking-tight">
+            {game.matchScore}%
           </span>
-        ))}
-        {status && (
-          <span className="text-text-main flex items-center gap-2 font-semibold">
-            <span aria-hidden="true" className="text-text-dim font-normal">
-              ·
+          <span className="text-sm">match</span>
+        </p>
+        <p className="text-text-dim tabular flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+          {facts.map((fact, i) => (
+            <span key={fact} className="flex items-center gap-2">
+              {i > 0 && <span aria-hidden="true">·</span>}
+              {fact}
             </span>
-            {STATUS_LABELS[status]}
-          </span>
-        )}
-      </p>
+          ))}
+          {status && (
+            <span className="text-text-main flex items-center gap-2 font-semibold">
+              <span aria-hidden="true" className="text-text-dim font-normal">
+                ·
+              </span>
+              {STATUS_LABELS[status]}
+            </span>
+          )}
+        </p>
+      </div>
 
       {tie && (
         <p className="text-text-main mb-4 flex items-center gap-3 text-sm font-semibold">
@@ -194,21 +213,43 @@ function FocusedPick({ game, onDismiss }) {
 
       {/* Fixed height for three lines, so moving across the shelf doesn't
           make the actions jump */}
-      <div className="mb-7 min-h-[calc(1.55em*3)] text-lg leading-[1.55]">
-        <p className="text-text-main line-clamp-3 max-w-[58ch]">
-          {game.recommendationReason}
-        </p>
+      <div className="mb-7 min-h-[calc(1.55em*4)] text-lg leading-[1.55] sm:min-h-[calc(1.55em*3)]">
+        {reasonsPending ? (
+          <div aria-live="polite" className="max-w-[58ch]">
+            <div aria-hidden="true">
+              <div className="bg-bg-chip/80 mt-1.5 mb-3 h-4 w-full animate-pulse rounded-sm motion-reduce:animate-none" />
+              <div className="bg-bg-chip/80 mb-3 h-4 w-3/4 animate-pulse rounded-sm motion-reduce:animate-none" />
+            </div>
+            <p className="text-text-dim text-sm">Writing why this fits you</p>
+          </div>
+        ) : (
+          <p className="text-text-main line-clamp-4 max-w-[58ch] sm:line-clamp-3">
+            {game.recommendationReason}
+          </p>
+        )}
       </div>
 
-      <PickActions key={game.id} game={game} onDismiss={onDismiss} />
+      <PickActions
+        key={game.id}
+        game={game}
+        onDismiss={onDismiss}
+        onLogged={onLogged}
+      />
     </div>
   );
 }
 
-function PicksStage({ picks, onDismiss, header }) {
-  const [focusIndex, setFocusIndex] = useState(0);
+function PicksStage({
+  picks,
+  index,
+  setFocusIndex,
+  onDismiss,
+  onLogged,
+  reasonsPending,
+  header,
+}) {
+  const navigate = useNavigate();
   const tileRefs = useRef([]);
-  const index = Math.min(focusIndex, Math.max(picks.length - 1, 0));
   const focused = picks[index];
 
   function onShelfKey(e) {
@@ -253,10 +294,18 @@ function PicksStage({ picks, onDismiss, header }) {
       </div>
 
       <div className="mx-auto flex w-full max-w-[1440px] flex-1 flex-col justify-center px-4 py-10 md:px-8">
-        {focused && <FocusedPick game={focused} onDismiss={onDismiss} />}
+        {focused && (
+          <FocusedPick
+            game={focused}
+            onDismiss={onDismiss}
+            onLogged={onLogged}
+            reasonsPending={reasonsPending}
+          />
+        )}
       </div>
 
-      {/* Shelf: pressing a cover focuses it; "Open game" opens it */}
+      {/* Shelf: hovering or pressing a cover focuses it; pressing the focused
+          cover opens the game. On touch the first tap focuses, the next opens. */}
       <div className="mx-auto w-full max-w-[1440px] px-4 pb-8 md:px-8">
         <h2 className="text-text-dim mb-3 text-sm font-semibold tracking-normal">
           <span className="tabular">{picks.length}</span> picks for you
@@ -275,10 +324,12 @@ function PicksStage({ picks, onDismiss, header }) {
               ref={(el) => (tileRefs.current[i] = el)}
               type="button"
               aria-pressed={i === index}
-              aria-label={`${game.name}, ${game.matchScore}% match`}
+              aria-label={`${game.name}, ${game.matchScore}% match${i === index ? ", press to open" : ""}`}
               onMouseEnter={() => setFocusIndex(i)}
               onFocus={() => setFocusIndex(i)}
-              onClick={() => setFocusIndex(i)}
+              onClick={() =>
+                i === index ? navigate(`/game/${game.id}`) : setFocusIndex(i)
+              }
               className="group flex w-24 shrink-0 cursor-pointer flex-col gap-1.5 text-left md:w-28"
             >
               <span
@@ -394,12 +445,17 @@ function Message({ title, children, action }) {
 
 function ForYouPage() {
   const user_id = UserToken()?.user?.id;
-  const { data: userGamesResponse, isLoading: isLoadingUserGames } =
-    useGetUserGames(user_id);
+  const queryClient = useQueryClient();
+  const {
+    data: userGamesResponse,
+    isLoading: isLoadingUserGames,
+    error: userGamesError,
+  } = useGetUserGames(user_id);
   const libraryCount = userGamesResponse?.user_games?.length || 0;
   const {
     recommendations,
     tasteTags,
+    reasonsPending,
     isLoading,
     isRefreshing,
     error,
@@ -408,12 +464,25 @@ function ForYouPage() {
     undoDismiss,
   } = useGetRecommendations();
 
-  // Back to the top when a fresh set arrives
+  const [focusIndex, setFocusIndex] = useState(0);
+  const index = Math.min(
+    focusIndex,
+    Math.max((recommendations?.length || 1) - 1, 0),
+  );
+
+  // A fresh set (Refresh picks, or picks recalculated after a log) starts at
+  // its best pick, back at the top
   useEffect(() => {
-    if (!isRefreshing) window.scrollTo({ top: 0 });
+    if (isRefreshing) return;
+    setFocusIndex(0);
+    window.scrollTo({ top: 0 });
   }, [isRefreshing]);
 
   if (!user_id) return <Navigate to="/auth" replace />;
+
+  function onLogged() {
+    toast.success("Logged. Your picks are updating with it.");
+  }
 
   function onDismiss(game) {
     const index = dismiss(game);
@@ -442,6 +511,11 @@ function ForYouPage() {
       onRefresh={recommendations?.length ? refresh : undefined}
       isRefreshing={isRefreshing}
       disabled={isLoading || isRefreshing}
+      position={
+        recommendations?.length
+          ? { index, total: recommendations.length }
+          : null
+      }
     />
   );
 
@@ -450,6 +524,32 @@ function ForYouPage() {
       <>
         {SEO}
         <StageSkeleton header={<PageHeader />} />
+      </>
+    );
+
+  // A failed library load is not an empty library
+  if (userGamesError && !userGamesResponse)
+    return (
+      <>
+        {SEO}
+        <Message
+          title="Your library didn't load"
+          action={
+            <button
+              onClick={() =>
+                queryClient.invalidateQueries({
+                  queryKey: ["user_games", user_id],
+                })
+              }
+              className="btn-primary"
+            >
+              Try again
+            </button>
+          }
+        >
+          Game data didn't come back in time, so your picks can't be built yet.
+          Your library is fine; try again in a moment.
+        </Message>
       </>
     );
 
@@ -512,7 +612,11 @@ function ForYouPage() {
       {SEO}
       <PicksStage
         picks={recommendations}
+        index={index}
+        setFocusIndex={setFocusIndex}
         onDismiss={onDismiss}
+        onLogged={onLogged}
+        reasonsPending={reasonsPending}
         header={header}
       />
       <TasteStrip tags={tasteTags} libraryCount={libraryCount} />
