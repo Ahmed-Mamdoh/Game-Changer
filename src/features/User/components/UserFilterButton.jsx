@@ -26,7 +26,7 @@ function UserFilterButton({
         newParams.delete("status");
         newParams.delete("isFavorite");
         if (paramsValue !== "") newParams.set(paramKey, paramsValue);
-        setSearchParams(newParams);
+        setSearchParams(newParams, { state: { keepScroll: true } });
       }}
       className={`flex h-9 shrink-0 cursor-pointer items-center gap-2 rounded-md px-3 text-sm whitespace-nowrap transition-colors duration-100 ${
         isActive

@@ -40,7 +40,7 @@ function TasteStrip({ userGames = [], genres = [] }) {
     const next = new URLSearchParams(searchParams);
     if (genreParam === String(id)) next.delete("genre");
     else next.set("genre", id);
-    setSearchParams(next);
+    setSearchParams(next, { state: { keepScroll: true } });
   }
 
   return (

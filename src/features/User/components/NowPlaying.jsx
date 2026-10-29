@@ -1,3 +1,4 @@
+import { scrollToLibrary } from "@/features/User/scrollToLibrary";
 import { coverUrlOf } from "@/utils/igdbImage";
 import { ArrowRight, Gamepad2 } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
@@ -15,7 +16,8 @@ function NowPlaying({ userGames = [] }) {
     const next = new URLSearchParams(searchParams);
     next.delete("isFavorite");
     next.set("status", "playing");
-    setSearchParams(next);
+    setSearchParams(next, { state: { keepScroll: true } });
+    scrollToLibrary();
   }
 
   return (

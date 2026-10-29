@@ -1,3 +1,4 @@
+import { scrollToLibrary } from "@/features/User/scrollToLibrary";
 import { coverUrlOf } from "@/utils/igdbImage";
 import { ArrowRight, Heart } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
@@ -15,7 +16,8 @@ function FavoritesRow({ userGames = [] }) {
     const next = new URLSearchParams(searchParams);
     next.delete("status");
     next.set("isFavorite", "true");
-    setSearchParams(next);
+    setSearchParams(next, { state: { keepScroll: true } });
+    scrollToLibrary();
   }
 
   return (

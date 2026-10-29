@@ -143,9 +143,10 @@ function Account() {
           <RateTheseStrip userGames={userGames} user_id={user_id} />
 
           <div
+            id="library"
             role="tablist"
             aria-label="Library status"
-            className="no-scrollbar border-stroke-subtle -mx-4 flex gap-1 overflow-x-auto border-b px-4 pb-3 md:mx-0 md:px-0"
+            className="no-scrollbar border-stroke-subtle -mx-4 flex scroll-mt-24 gap-1 overflow-x-auto border-b px-4 pb-3 md:mx-0 md:px-0"
           >
             <UserFilterButton
               paramsValue=""
