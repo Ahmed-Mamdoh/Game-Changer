@@ -291,16 +291,17 @@ function FocusedPick({ game, onDismiss, onLogged, reasonsPending }) {
   ].filter(Boolean);
 
   return (
-    <div className="@container max-w-2xl">
-      {/* Two lines reserved and the name sits at the bottom of them, so long
-          names don't push the page around and short ones hug the facts. Short
-          screens have no room for a second line: the name stays on one and
-          its size follows its length, from 3rem down to 2rem. */}
-      <div className="h1 short:mb-3 short:min-h-0 mb-4 flex min-h-[2lh] items-end">
+    // The name gets more room than the text below it, so long names stay big
+    <div className="@container max-w-4xl">
+      {/* One line, sized by its length: short names run at full hero size,
+          long ones shrink to fit (down to 2rem, then truncate). The line box
+          stays at full size with the name on its baseline, so moving across
+          the shelf never changes the stage's height. */}
+      <div className="short:mb-3 short:h-[calc(3rem*1.05)] mb-4 flex h-[calc(var(--font-size-hero)*1.05)] items-end">
         <h2
           title={game.name}
           style={{ "--chars": game.name.length }}
-          className="h1 short:truncate short:text-[clamp(2rem,calc(100cqw/(var(--chars)*0.56)),3rem)] line-clamp-2 min-w-0 text-balance"
+          className="h1 short:text-[clamp(2rem,calc(100cqw/(var(--chars)*0.56)),3rem)] min-w-0 truncate text-[clamp(2rem,calc(100cqw/(var(--chars)*0.56)),var(--font-size-hero))]"
         >
           {game.name}
         </h2>
