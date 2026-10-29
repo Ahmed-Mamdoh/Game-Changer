@@ -233,3 +233,29 @@ export async function insertGame({ game_id }) {
     .select();
   return { data, error };
 }
+
+// dismissed games ("Not for me" on For You)
+export async function getDismissedGames(user_id) {
+  const { data, error } = await supabase
+    .from("dismissed_games")
+    .select("game_id")
+    .eq("user_id", user_id);
+  return { data: data?.map((row) => row.game_id) ?? null, error };
+}
+
+export async function addDismissedGames({ user_id, game_ids }) {
+  const { error } = await supabase.from("dismissed_games").upsert(
+    game_ids.map((game_id) => ({ user_id, game_id })),
+    { onConflict: "user_id,game_id", ignoreDuplicates: true },
+  );
+  return { error };
+}
+
+export async function deleteDismissedGame({ user_id, game_id }) {
+  const { error } = await supabase
+    .from("dismissed_games")
+    .delete()
+    .eq("user_id", user_id)
+    .eq("game_id", game_id);
+  return { error };
+}

@@ -72,7 +72,7 @@ function PageHeader({ onRefresh, isRefreshing, disabled }) {
           <RefreshCw
             className={`h-4 w-4 ${isRefreshing ? "animate-spin motion-reduce:animate-none" : ""}`}
           />
-          {isRefreshing ? "Finding picks" : "New picks"}
+          {isRefreshing ? "Refreshing" : "Refresh picks"}
         </button>
       )}
     </div>
@@ -497,12 +497,12 @@ function ForYouPage() {
           title="No picks this time"
           action={
             <button onClick={refresh} className="btn-primary">
-              New picks
+              Refresh picks
             </button>
           }
         >
           Nothing new fit your library well enough. Log or rate a few more
-          games, or try a new set.
+          games, or refresh to recalculate.
         </Message>
       </>
     );

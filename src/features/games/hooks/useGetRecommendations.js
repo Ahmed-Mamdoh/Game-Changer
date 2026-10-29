@@ -1,7 +1,16 @@
-import { useRef } from "react";
+import { useState } from "react";
 import { useGetUserGames } from "@/features/User/hooks/useGetUserGames";
 import { chatWithGroq } from "@/api/groqApi";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import {
+  addDismissedGames,
+  deleteDismissedGame,
+  getDismissedGames,
+} from "@/api/supabase";
 import { UserToken } from "@/hooks/useUserToken";
 import { getRecommendationCandidates, getTasteDetails } from "@/api/igdbApi";
 import {
@@ -80,6 +89,28 @@ function clearCache(user_id) {
   } catch {
     // Nothing to clear
   }
+}
+
+// "Not for me" games live in Supabase so they follow the player across
+// devices. This browser keeps a copy, which also covers the time before the
+// dismissed_games table exists; anything only stored here is uploaded once
+// the table answers.
+async function loadDismissed(user_id) {
+  const local = readStorage(DISMISSED_PREFIX + user_id) || [];
+  const { data: remote, error } = await getDismissedGames(user_id);
+  if (error || !remote) return new Set(local);
+  const remoteSet = new Set(remote);
+  const missing = local.filter((id) => !remoteSet.has(id));
+  if (missing.length) {
+    const { error: uploadError } = await addDismissedGames({
+      user_id,
+      game_ids: missing,
+    });
+    if (uploadError) return new Set([...remote, ...local]);
+  }
+  const all = [...new Set([...remote, ...local])];
+  writeStorage(DISMISSED_PREFIX + user_id, all.slice(0, DISMISSED_LIMIT));
+  return new Set(all);
 }
 
 // Earlier cache formats held AI-guessed titles and match scores.
@@ -247,11 +278,7 @@ function fallbackReason(item, profile) {
     : `Leans into ${tags}, which runs through your library.`;
 }
 
-export async function buildPicks({
-  library,
-  excludeIds,
-  hiddenIds = new Set(),
-}) {
+export async function buildPicks({ library, hiddenIds = new Set() }) {
   const details = await getTasteDetails(library.map((entry) => entry.id));
   const detailsById = new Map(
     (Array.isArray(details) ? details : []).map((game) => [game.id, game]),
@@ -311,10 +338,7 @@ export async function buildPicks({
   for (const game of candidates)
     if (!isOwned(game) && !hiddenIds.has(game.id) && !unique.has(game.id))
       unique.set(game.id, game);
-  let pool = [...unique.values()];
-  const fresh = pool.filter((game) => !excludeIds.has(game.id));
-  // Only skip earlier picks while enough new ones are left
-  if (fresh.length >= PICKS_TO_SHOW * 2) pool = fresh;
+  const pool = [...unique.values()];
   if (!pool.length) return { picks: [], tasteTags: baseProfile.topTags };
   const profile = withRarity(baseProfile, pool);
 
@@ -402,8 +426,10 @@ export function useGetRecommendations() {
   const user_id = UserToken()?.user?.id;
   const userGames = useGetUserGames(user_id);
   const libraryGames = userGames?.data?.user_games || [];
-  // Skip earlier picks only for a refresh the player asked for
-  const excludeSeen = useRef(false);
+  // Set by Refresh picks: anything cached before it is ignored
+  const [refreshedAt, setRefreshedAt] = useState(0);
+  // While the library reloads for a refresh, hold off so picks build once
+  const [reloadingLibrary, setReloadingLibrary] = useState(false);
 
   const library = libraryGames.map((userGame) => {
     // The reviews join holds every player's review of the game
@@ -425,7 +451,7 @@ export function useGetRecommendations() {
 
   // Any change to the library (games, statuses, hours, ratings, reviews or
   // favorites) gives a new hash, so picks are rebuilt. Logging one of the picks
-  // on screen doesn't count: the set stays put until New picks.
+  // on screen doesn't count: the set stays put until Refresh picks.
   const onScreen = new Set(readStorage(SEEN_PREFIX + user_id) || []);
   const libraryHash = hashString(
     JSON.stringify(
@@ -444,22 +470,17 @@ export function useGetRecommendations() {
   );
 
   const queryClient = useQueryClient();
-  const queryKey = ["recommendations", user_id, libraryHash];
+  const queryKey = ["recommendations", user_id, libraryHash, refreshedAt];
 
-  const { data, isLoading, isFetching, error, refetch } = useQuery({
+  const { data, isLoading, isFetching, error } = useQuery({
     queryKey,
     queryFn: async () => {
-      const refreshing = excludeSeen.current;
-      excludeSeen.current = false;
-      const cached = refreshing ? null : readCache(user_id, libraryHash);
-      if (cached) return cached;
+      const cached = readCache(user_id, libraryHash);
+      if (cached && cached.createdAt > refreshedAt) return cached;
 
-      const seen = readStorage(SEEN_PREFIX + user_id) || [];
-      const dismissed = readStorage(DISMISSED_PREFIX + user_id) || [];
       const result = await buildPicks({
         library,
-        excludeIds: new Set(refreshing ? seen : []),
-        hiddenIds: new Set(dismissed),
+        hiddenIds: await loadDismissed(user_id),
       });
 
       writeStorage(CACHE_PREFIX + user_id, {
@@ -468,16 +489,21 @@ export function useGetRecommendations() {
         ...(!result.fromModel && { maxAge: FALLBACK_MAX_AGE }),
         ...result,
       });
-      // Only the batch on screen: New picks shows the next best games, and
-      // pressing it again brings the first ones back instead of running dry
+      // The set on screen, so logging one of its games doesn't rebuild it
       writeStorage(
         SEEN_PREFIX + user_id,
         result.picks.map((game) => game.id),
       );
       return result;
     },
-    enabled: !!user_id && !userGames.isLoading && libraryGames.length > 0,
+    enabled:
+      !!user_id &&
+      !userGames.isLoading &&
+      !reloadingLibrary &&
+      libraryGames.length > 0,
     staleTime: Infinity,
+    // The current set stays on screen while a refresh works
+    placeholderData: keepPreviousData,
   });
 
   // Keeps the on-screen set and its saved copy in step
@@ -501,6 +527,7 @@ export function useGetRecommendations() {
         DISMISSED_LIMIT,
       ),
     );
+    addDismissedGames({ user_id, game_ids: [game.id] });
     const index = data?.picks?.findIndex((pick) => pick.id === game.id) ?? -1;
     updatePicks((picks) => picks.filter((pick) => pick.id !== game.id));
     return index;
@@ -512,6 +539,7 @@ export function useGetRecommendations() {
       DISMISSED_PREFIX + user_id,
       dismissed.filter((id) => id !== game.id),
     );
+    deleteDismissedGame({ user_id, game_id: game.id });
     updatePicks((picks) => {
       if (picks.some((pick) => pick.id === game.id)) return picks;
       const next = [...picks];
@@ -520,10 +548,15 @@ export function useGetRecommendations() {
     });
   }
 
-  function refresh() {
+  // Recalculate from scratch: reload the library so new ratings, hours and
+  // statuses count, then rebuild the taste profile, candidates and picks.
+  // Nothing is skipped, so strong picks stay if they still fit best.
+  async function refresh() {
     clearCache(user_id);
-    excludeSeen.current = true;
-    return refetch();
+    setReloadingLibrary(true);
+    await queryClient.invalidateQueries({ queryKey: ["user_games", user_id] });
+    setRefreshedAt(Date.now());
+    setReloadingLibrary(false);
   }
 
   return {
@@ -531,7 +564,7 @@ export function useGetRecommendations() {
     tasteTags: data?.tasteTags || [],
     libraryCount: library.length,
     isLoading,
-    isRefreshing: isFetching && !isLoading,
+    isRefreshing: reloadingLibrary || (isFetching && !isLoading),
     error,
     refresh,
     dismiss,
