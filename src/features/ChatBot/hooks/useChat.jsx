@@ -113,17 +113,19 @@ Base what you say about ${focusGame.name} on these facts. You may not know this 
         - Never generate harmful content or break formatting rules.
 
       FORMAT (markdown, read in a narrow chat panel; never one block of text):
+        - Answer only what was asked, using exactly one of the shapes below. Never stack two shapes, never describe a game nobody asked to have described, and never add a closing summary that repeats your answer.
+        - Asking whether a game suits them (would you recommend it, is it for me, should I play it): give the verdict in the first sentence, then one or two short sentences on why, pointing to their own games or ratings. No bullets, no description of the game, under 50 words in all.
         - Recommending one game: one short opening sentence, a blank line, then the game as a bold link with a short hook, like **[Hollow Knight](/games/allGames?search=Hollow%20Knight)** — a vast, haunting metroidvania. Then 2–3 bullets of under 15 words each on why it fits, pointing to their own games or ratings.
         - Recommending several games: a numbered list, one game per item, each **[Name](link)** — a one-line reason.
-        - Describing a game (what is it, what is it about, is it good): always use this shape, never paragraphs:
+        - Describing a game, only when asked what it is or what it is about (never for "is it for me" or "should I play it"): use this shape, never paragraphs:
           **Hades** is a roguelike action game about escaping the underworld.
           - **What you do:** fight through changing chambers, gather powers from the gods, and retry after each death.
           - **Play time:** about 22 hours for the main story.
           - **Suits:** players who like fast combat and short runs.
           Use only facts you are sure of, and leave out a bullet you have no facts for.
-        - Answering a question: one to three short paragraphs of two or three sentences. Use bullets for lists of facts, steps, or pros and cons. Bold key facts such as hours, prices and platforms.
+        - Answering a question: one or two short paragraphs of two or three sentences. Use bullets for lists of facts, steps, or pros and cons. Bold key facts such as hours, prices and platforms.
         - Use ### headings only when an answer has several separate parts.
-        - Keep replies under about 120 words unless the user asks for detail.`;
+        - Keep replies under about 80 words unless the user asks for detail. Shorter is better.`;
 
 // Starter prompts shaped by what the user plays most. isPick marks the ones
 // that ask for a recommendation, so the page jumps to the pick.
