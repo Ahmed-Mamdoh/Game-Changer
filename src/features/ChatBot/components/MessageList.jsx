@@ -1,3 +1,4 @@
+import { useLayoutEffect } from "react";
 import Markdown from "react-markdown";
 import { Link } from "react-router-dom";
 import { useGamePath } from "../hooks/useGamePath";
@@ -12,6 +13,32 @@ function InternalLink({ to, onNavigate, children }) {
     <Link to={path} onClick={onNavigate} className={linkClass}>
       {children}
     </Link>
+  );
+}
+
+// Marks where the chat started being about a game
+function ContextDivider({ game }) {
+  return (
+    <div
+      role="note"
+      className="text-text-muted my-1 flex items-center gap-2.5 text-xs"
+    >
+      <span className="bg-stroke-subtle h-px flex-1" aria-hidden />
+      {game.cover ? (
+        <img
+          src={game.cover}
+          alt=""
+          width={16}
+          height={21}
+          className="h-[21px] w-4 shrink-0 rounded-[2px] object-cover"
+        />
+      ) : null}
+      <span className="max-w-[70%] truncate">
+        Now talking about{" "}
+        <span className="text-text-main font-medium">{game.name}</span>
+      </span>
+      <span className="bg-stroke-subtle h-px flex-1" aria-hidden />
+    </div>
   );
 }
 
@@ -65,15 +92,31 @@ function AssistantMessage({ content, streaming, onNavigate }) {
               </a>
             );
           },
-          p: ({ children }) => <p dir="auto">{children}</p>,
+          p: ({ children }) => (
+            <p dir="auto" className="text-text-main">
+              {children}
+            </p>
+          ),
+          h3: ({ children }) => (
+            <h3 className="font-heading text-text-main pt-1 text-sm font-semibold">
+              {children}
+            </h3>
+          ),
           ul: ({ children }) => (
-            <ul className="list-disc space-y-1 ps-5">{children}</ul>
+            <ul className="marker:text-text-muted list-disc space-y-1.5 ps-4">
+              {children}
+            </ul>
           ),
           ol: ({ children }) => (
-            <ol className="list-decimal space-y-1 ps-5">{children}</ol>
+            <ol className="marker:text-text-muted list-decimal space-y-2 ps-4">
+              {children}
+            </ol>
+          ),
+          li: ({ children }) => (
+            <li className="text-text-main ps-0.5">{children}</li>
           ),
           strong: ({ children }) => (
-            <strong className="font-semibold">{children}</strong>
+            <strong className="text-text-main font-semibold">{children}</strong>
           ),
         }}
       >
@@ -90,6 +133,12 @@ function MessageList({
   onNavigate,
   announcement,
 }) {
+  // Open on the newest messages, not the top of an old conversation
+  useLayoutEffect(() => {
+    const list = messagesRef.current;
+    if (list) list.scrollTop = list.scrollHeight;
+  }, [messagesRef]);
+
   return (
     <div
       ref={messagesRef}
@@ -99,6 +148,8 @@ function MessageList({
         const prevRole = messages[index - 1]?.role;
         // Extra space where the speaker changes
         const gap = index > 0 && prevRole !== item.role ? "mt-2" : "";
+        if (item.role === "context")
+          return <ContextDivider key={index} game={item.game} />;
         return item.role === "user" ? (
           <div
             key={index}

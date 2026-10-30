@@ -1,6 +1,6 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import useChat from "./hooks/useChat";
 import { useResolveGamePath } from "./hooks/useGamePath";
 import { onAskAboutGame } from "./chatFocus";
@@ -9,6 +9,7 @@ import ChatHeader from "./components/ChatHeader";
 import MessageList from "./components/MessageList";
 import ChatInput from "./components/ChatInput";
 import ChatStarters from "./components/ChatStarters";
+import ChatContextChip from "./components/ChatContextChip";
 import ChatSignedOut from "./components/ChatSignedOut";
 
 const isDesktop = () => window.matchMedia("(min-width: 768px)").matches;
@@ -17,6 +18,7 @@ export default function ChatBot() {
   const [open, setOpen] = useState(false);
   const inputRef = useRef(null);
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const resolveGamePath = useResolveGamePath();
 
   // The panel covers the page on phones, so following a link closes it
@@ -44,7 +46,14 @@ export default function ChatBot() {
     stopReply,
     announcement,
     focusOnGame,
+    focusGame,
+    clearFocus,
   } = useChat({ onRecommend: handleRecommend });
+
+  // The chat is about a game only while its page is open
+  useEffect(() => {
+    if (focusGame && pathname !== `/game/${focusGame.id}`) clearFocus();
+  }, [pathname, focusGame, clearFocus]);
 
   // "Ask about it" on a game page opens the chat about that game
   useEffect(
@@ -85,6 +94,9 @@ export default function ChatBot() {
                 announcement={announcement}
               />
               <div className="border-stroke-subtle flex flex-col gap-3 border-t p-3">
+                {focusGame && (
+                  <ChatContextChip game={focusGame} onRemove={clearFocus} />
+                )}
                 {starters.length > 0 && (
                   <ChatStarters
                     starters={starters}

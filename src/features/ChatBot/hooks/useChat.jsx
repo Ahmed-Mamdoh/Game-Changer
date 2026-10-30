@@ -80,18 +80,22 @@ const getSystemPrompt = (
         - ONLY talk about gaming topics (games, genres, mechanics, performance, etc.).
         - If asked about non-gaming topics, politely refuse and redirect.
         - Handle greetings and small talk naturally without forcing a recommendation immediately.
-        - Keep responses short, direct, and in markdown.
         - ALWAYS write every game you suggest as a markdown link: the name in square brackets, then the address in round brackets, like [Hollow Knight](/games/allGames?search=Hollow%20Knight). Never bold the name instead, never put the address in square brackets, never write the address on its own.
         - Mention each game only once. Never repeat games.
         - Never recommend a game that is already in the user's library.
         - Write your whole reply in ${language}, the language of the user's latest message. Never switch to any other language, even for a greeting.
-        - Answer in one paragraph without bullet points unless specifically asked for a list.
         - Keep the tone friendly and "gamer-like". No emojis unless the user uses them first.
         - Only suggest games when the user asks for recommendations or expresses a need for something new to play.
         - Suggest one game at a time unless specifically asked for more.
-        - After each suggested game link, add a very brief (10–20 words) explanation of why it matches their taste/library.
         - When your reply recommends a game for the user to play, end it with ${PICK_MARKER} on its own line. Never add it when you only answer a question about a game.
-        - Never generate harmful content or break formatting rules.`;
+        - Never generate harmful content or break formatting rules.
+
+      FORMAT (markdown, read in a narrow chat panel; never one block of text):
+        - Recommending one game: one short opening sentence, a blank line, then the game as a bold link with a short hook, like **[Hollow Knight](/games/allGames?search=Hollow%20Knight)** — a vast, haunting metroidvania. Then 2–3 bullets of under 15 words each on why it fits, pointing to their own games or ratings.
+        - Recommending several games: a numbered list, one game per item, each **[Name](link)** — a one-line reason.
+        - Answering a question: one to three short paragraphs of two or three sentences. Use bullets for lists of facts, steps, or pros and cons. Bold key facts such as hours, prices and platforms.
+        - Use ### headings only when an answer has several separate parts.
+        - Keep replies under about 120 words unless the user asks for detail.`;
 
 // Starter prompts shaped by what the user plays most. isPick marks the ones
 // that ask for a recommendation, so the page jumps to the pick.
@@ -166,9 +170,21 @@ function useChat({ onRecommend } = {}) {
     setAnnouncement(toSpeech(content));
   }
 
+  // Marks in the thread where talk about this game starts, unless it
+  // already does
   function focusOnGame(game) {
     setFocusGame(game);
     setShowGameStarters(true);
+    setMessages((prev) =>
+      prev.at(-1)?.role === "context" && prev.at(-1).game.id === game.id
+        ? prev
+        : [...prev, { role: "context", game, local: true }],
+    );
+  }
+
+  function clearFocus() {
+    setFocusGame(null);
+    setShowGameStarters(false);
   }
 
   function stopReply() {
@@ -287,6 +303,8 @@ function useChat({ onRecommend } = {}) {
     stopReply,
     announcement,
     focusOnGame,
+    focusGame,
+    clearFocus,
     // Game starters win; library starters only open an empty chat
     starters:
       showGameStarters && focusGame

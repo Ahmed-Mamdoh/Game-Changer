@@ -330,7 +330,14 @@ function GameDetailsOverview({ data }) {
 
               <button
                 type="button"
-                onClick={() => askAboutGame({ id, name })}
+                onClick={() =>
+                  askAboutGame({
+                    id,
+                    name,
+                    year,
+                    cover: coverUrlOf(game, "t_cover_small"),
+                  })
+                }
                 className="btn-on-art px-4"
               >
                 <MessageCircle className="text-pulse-primary h-4 w-4" />
