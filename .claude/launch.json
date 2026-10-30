@@ -2,6 +2,7 @@
   "version": "0.0.1",
   "configurations": [
     { "name": "web", "runtimeExecutable": "npm", "runtimeArgs": ["run", "dev"], "port": 5173 },
-    { "name": "web-4173", "runtimeExecutable": "npm", "runtimeArgs": ["run", "dev", "--", "--port", "4173", "--strictPort"], "port": 4173, "autoPort": false }
+    { "name": "web-4173", "runtimeExecutable": "npm", "runtimeArgs": ["run", "dev", "--", "--port", "4173", "--strictPort"], "port": 4173, "autoPort": false },
+    { "name": "preview-4174", "runtimeExecutable": "npm", "runtimeArgs": ["run", "preview", "--", "--port", "4174", "--strictPort"], "port": 4174, "autoPort": false }
   ]
 }

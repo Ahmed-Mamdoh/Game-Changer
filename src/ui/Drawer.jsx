@@ -2,6 +2,7 @@ import { Calendar, Gamepad2, Gift, Library, Sparkles } from "lucide-react";
 import { useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { UserToken } from "@/hooks/useUserToken";
+import InstallAppButton from "./InstallAppButton";
 
 function Drawer() {
   const drawerCheckboxRef = useRef(null);
@@ -71,6 +72,13 @@ function Drawer() {
               );
             })}
           </nav>
+
+          <div className="border-stroke-subtle mt-auto border-t pt-3">
+            <InstallAppButton
+              onPress={closeDrawer}
+              className="text-text-dim hover:text-text-main [&>svg]:text-text-muted flex h-11 w-full items-center gap-3 rounded-md px-3 text-base transition-colors duration-100 hover:bg-white/[0.05] [&>svg]:h-5 [&>svg]:w-5"
+            />
+          </div>
         </div>
       </div>
     </div>

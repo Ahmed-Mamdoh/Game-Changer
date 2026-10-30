@@ -1,4 +1,5 @@
 import { IoLogoGithub, IoLogoLinkedin } from "react-icons/io5";
+import InstallAppButton from "./InstallAppButton";
 
 function Footer() {
   return (
@@ -18,6 +19,7 @@ function Footer() {
         </p>
 
         <div className="flex items-center gap-1">
+          <InstallAppButton className="hover:text-text-main mr-2 flex h-9 items-center gap-2 rounded-md px-3 hover:bg-white/[0.06]" />
           <a
             href="https://github.com/Ahmed-Mamdoh"
             target="_blank"
