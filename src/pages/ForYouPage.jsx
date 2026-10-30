@@ -231,6 +231,9 @@ function PageHeader({
         )}
       </div>
       <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
+        {onReset && (
+          <ResetForYou hiddenCount={hiddenCount} onReset={onReset} />
+        )}
         {hiddenCount > 0 && (
           <Link
             to="/games/forYou/hidden"
@@ -257,9 +260,6 @@ function PageHeader({
             </button>
           }
         />
-        {onReset && (
-          <ResetForYou hiddenCount={hiddenCount} onReset={onReset} />
-        )}
         {platforms && (
           <PlatformPicker
             selected={platforms.selected}
@@ -752,9 +752,9 @@ function ResetForYou({ hiddenCount, onReset }) {
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="btn-on-art h-9 gap-1.5 px-3"
+        className="btn-on-art text-pulse-error h-9 gap-1.5 px-3"
       >
-        <RotateCcw className="h-4 w-4 opacity-80" aria-hidden="true" />
+        <RotateCcw className="h-4 w-4" aria-hidden="true" />
         Reset
       </button>
       <ConfirmDialog
