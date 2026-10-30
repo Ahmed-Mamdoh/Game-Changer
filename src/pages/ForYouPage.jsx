@@ -1,3 +1,5 @@
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { clearDismissed } from "@/features/games/dismissedGames";
 import { useGetRecommendations } from "@/features/games/hooks/useGetRecommendations";
 import { useDismissedGames } from "@/features/games/hooks/useDismissedGames";
 import {
@@ -32,6 +34,7 @@ import {
   EyeOff,
   Gamepad2,
   RefreshCw,
+  RotateCcw,
   ThumbsDown,
 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -703,8 +706,54 @@ function PicksStage({
   );
 }
 
+// Brings back every hidden game and forgets what they taught; Never show and
+// the library stay
+function ResetForYou({ hiddenCount, onReset }) {
+  const user_id = UserToken()?.user?.id;
+  const queryClient = useQueryClient();
+  const [isOpen, setIsOpen] = useState(false);
+
+  async function onConfirm() {
+    const { error } = await clearDismissed(user_id);
+    if (error) {
+      toast.error("Reset didn't go through. Try again in a moment.");
+      return;
+    }
+    queryClient.setQueryData(["dismissed_games", user_id], (current) =>
+      current ? { ids: [], hiddenIds: new Set(), reasons: new Map() } : current,
+    );
+    onReset();
+    toast.success(
+      "For You is reset. Your picks are rebuilding from your library.",
+    );
+  }
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setIsOpen(true)}
+        className="btn-quiet text-pulse-error"
+      >
+        <RotateCcw className="h-4 w-4" aria-hidden="true" />
+        Reset For You
+      </button>
+      <ConfirmDialog
+        open={isOpen}
+        onOpenChange={setIsOpen}
+        title="Reset For You?"
+        description={`${hiddenCount === 1 ? "Your hidden game" : `All ${hiddenCount} hidden games`} can come up again, and the cutoff year and style dislikes they taught are gone. Your library, ratings and Never show list stay. This can't be undone.`}
+        confirmLabel="Reset"
+        pendingLabel="Resetting…"
+        onConfirm={onConfirm}
+        icon={RotateCcw}
+      />
+    </>
+  );
+}
+
 // What the picks are built from: the library size and the heaviest tags
-function TasteStrip({ tags, libraryCount }) {
+function TasteStrip({ tags, libraryCount, hiddenCount, onReset }) {
   if (!tags.length) return null;
   return (
     <section className="mx-auto w-full max-w-[1440px] px-4 pt-6 pb-20 md:px-8">
@@ -728,10 +777,15 @@ function TasteStrip({ tags, libraryCount }) {
           ))}
         </ul>
       </div>
-      <Link to="/account" className="link-quiet mt-6">
-        Your library
-        <ArrowRight className="h-4 w-4" />
-      </Link>
+      <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
+        <Link to="/account" className="link-quiet">
+          Your library
+          <ArrowRight className="h-4 w-4" />
+        </Link>
+        {hiddenCount > 0 && (
+          <ResetForYou hiddenCount={hiddenCount} onReset={onReset} />
+        )}
+      </div>
     </section>
   );
 }
@@ -1020,7 +1074,12 @@ function ForYouPage() {
         reasonsPending={reasonsPending}
         header={header}
       />
-      <TasteStrip tags={tasteTags} libraryCount={libraryCount} />
+      <TasteStrip
+        tags={tasteTags}
+        libraryCount={libraryCount}
+        hiddenCount={hiddenCount}
+        onReset={refresh}
+      />
     </>
   );
 }

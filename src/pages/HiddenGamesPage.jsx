@@ -1,4 +1,3 @@
-import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import {
   Select,
   SelectContent,
@@ -9,7 +8,6 @@ import {
 import {
   DISMISS_REASONS,
   addDismissed,
-  clearDismissed,
   removeDismissed,
   setReason,
 } from "@/features/games/dismissedGames";
@@ -18,8 +16,7 @@ import { forgetPicks } from "@/features/games/hooks/useGetRecommendations";
 import { UserToken } from "@/hooks/useUserToken";
 import { coverUrlOf } from "@/utils/igdbImage";
 import { useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, EyeOff, RotateCcw } from "lucide-react";
-import { useState } from "react";
+import { ArrowLeft, EyeOff } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import toast from "react-hot-toast";
 import { Link, Navigate } from "react-router-dom";
@@ -113,7 +110,6 @@ function HiddenGamesPage() {
   const { games, count, isLoading, error } = useDismissedGames(user_id, {
     withDetails: true,
   });
-  const [isResetOpen, setIsResetOpen] = useState(false);
 
   if (!user_id) return <Navigate to="/auth" replace />;
 
@@ -164,16 +160,6 @@ function HiddenGamesPage() {
       ),
       { duration: 6000 },
     );
-  }
-
-  async function onReset() {
-    const { error: resetError } = await clearDismissed(user_id);
-    if (resetError) {
-      toast.error("Reset didn't go through. Try again in a moment.");
-      return;
-    }
-    updateList(() => ({ ids: [], hiddenIds: new Set(), reasons: new Map() }));
-    toast.success("For You is reset. Your next picks start from your library.");
   }
 
   return (
@@ -239,39 +225,7 @@ function HiddenGamesPage() {
           </ul>
         )}
 
-        {count > 0 && (
-          <section className="border-stroke-subtle flex flex-col gap-4 border-t pt-8 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h2 className="text-text-main text-base font-semibold">
-                Reset For You
-              </h2>
-              <p className="text-text-dim mt-1 max-w-[50ch] text-sm">
-                Brings back every hidden game and forgets what they taught. Your
-                library and ratings stay.
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => setIsResetOpen(true)}
-              className="btn-quiet text-pulse-error shrink-0"
-            >
-              <RotateCcw className="h-4 w-4" aria-hidden="true" />
-              Reset For You
-            </button>
-          </section>
-        )}
       </div>
-
-      <ConfirmDialog
-        open={isResetOpen}
-        onOpenChange={setIsResetOpen}
-        title="Reset For You?"
-        description={`${count === 1 ? "Your hidden game" : `All ${count} hidden games`} can come up again, and the cutoff year and style dislikes they taught are gone. Your library and ratings stay. This can't be undone.`}
-        confirmLabel="Reset"
-        pendingLabel="Resetting…"
-        onConfirm={onReset}
-        icon={RotateCcw}
-      />
     </>
   );
 }

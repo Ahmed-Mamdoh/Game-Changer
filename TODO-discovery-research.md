@@ -28,9 +28,9 @@ Shipped: a "Never show" list (genres, themes, tags, studios) on For You, in the 
 - [ ] [X - @BortBurgoes - tired of seeing "games I've already ignored or stuff from publishers I've already ignored" (Sep 29)](https://x.com/BortBurgoes/status/2105044818703663442)
 - [ ] [X - @BladerLBM - "saturated with this garbage, along with Survivor-likes" (52 likes, Jun 4)](https://x.com/BladerLBM/status/2062648261844885781)
 
-### 2. Stop one game from steering my recommendations, and let me reset my taste ❌ S
+### 2. Stop one game from steering my recommendations, and let me reset my taste ✅ shipped 2026-10-30
 Players play things for work, for a friend, or out of curiosity, and those games pollute their recs. They also want a "reset" because tastes change.
-Build: a per-game "Don't use for recommendations" toggle in the library/log dialog (skip it in `src/utils/tasteProfile.js`), plus a "Reset my taste" button in Account that clears the dismissed list and taste weights.
+Shipped: "Reset For You" now sits in For You's "What your picks lean on" strip (it used to be at the bottom of the Hidden page). It brings back every hidden game, forgets what they taught and rebuilds the picks; the library and Never show list stay. Decided against a per-game "Don't use for recommendations" toggle: "Not my style" in the Not for me menu covers it.
 - [ ] [r/Steam - u/Ray-Zide426 - "disable steam from using certain games as reference for your recommendations" (31 upvotes, Aug 25)](https://www.reddit.com/r/Steam/comments/1vxpzxp/) · strict · locks ~Feb 25
 - [ ] [r/Steam - u/viewNSFWreddit - "Why can't we reset the Discovery Queue? ...requested several times" (Aug 13)](https://www.reddit.com/r/Steam/comments/1vnd1p2/) · strict · locks ~Feb 13
 - [ ] [X - @314MxxD - "Would love to reset my suggest queue. Tastes change over time." (25 likes, Sep 29)](https://x.com/314MxxD/status/2105018945728323942)
