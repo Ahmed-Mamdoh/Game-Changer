@@ -3,13 +3,11 @@ import { useGetUserGames } from "@/features/User/hooks/useGetUserGames";
 import { UserToken } from "@/hooks/useUserToken";
 import { useEffect, useRef, useState } from "react";
 
-// Chat models only, tried in order when one fails (classifier models removed)
+// Chat models Groq still serves, tried in order when one fails
 export const CHAT_MODELS = [
   "openai/gpt-oss-120b",
-  "moonshotai/kimi-k2-instruct-0905",
-  "llama-3.3-70b-versatile",
+  "qwen/qwen3.8-27b",
   "openai/gpt-oss-20b",
-  "llama-3.1-8b-instant",
 ];
 const MAX_ATTEMPTS = 3;
 // The proxy caps a request at 50 messages, so only recent turns are sent
@@ -29,6 +27,33 @@ const GREETING = {
   content: "Ask me what to play next, or anything about a game.",
   local: true,
 };
+
+// The chat is kept per user in this browser so a reload doesn't wipe it
+const STORAGE_PREFIX = "chat_history_";
+const STORED_LIMIT = 40;
+
+function loadChat(userId) {
+  if (!userId) return [GREETING];
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_PREFIX + userId));
+    if (Array.isArray(saved) && saved.length) return saved;
+  } catch {
+    // Unreadable or blocked storage starts a fresh chat
+  }
+  return [GREETING];
+}
+
+function saveChat(userId, messages) {
+  if (!userId || messages.at(-1)?.streaming) return;
+  try {
+    const key = STORAGE_PREFIX + userId;
+    if (!messages.some((m) => m.role === "user")) localStorage.removeItem(key);
+    else
+      localStorage.setItem(key, JSON.stringify(messages.slice(-STORED_LIMIT)));
+  } catch {
+    // Storage full or blocked: the chat still works for this visit
+  }
+}
 
 const getSystemPrompt = (
   context,
@@ -90,7 +115,24 @@ function useChat({ onRecommend } = {}) {
       ? `The user's library contains: ${userGamesData.map((g) => `${g.game_name} (${g.hours_played}h, Rated: ${g.rating}, Review: ${g.review})`).join(", ")}.`
       : "The user's library is currently empty.";
 
-  const [messages, setMessages] = useState([GREETING]);
+  // The owner travels with the messages, so switching accounts never saves
+  // one user's chat under another's key
+  const [chat, setChat] = useState(() => ({
+    userId: user_id,
+    messages: loadChat(user_id),
+  }));
+  if (chat.userId !== user_id) {
+    setChat({ userId: user_id, messages: loadChat(user_id) });
+  }
+  const messages = chat.messages;
+  const setMessages = (update) =>
+    setChat((prev) => ({
+      ...prev,
+      messages: typeof update === "function" ? update(prev.messages) : update,
+    }));
+
+  useEffect(() => saveChat(chat.userId, chat.messages), [chat]);
+
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesRef = useRef(null);
@@ -141,6 +183,8 @@ function useChat({ onRecommend } = {}) {
         const res = await streamChatWithGroq({
           model: CHAT_MODELS[modelNumber.current],
           messages: payload,
+          // Less hidden thinking, so the reply starts sooner
+          reasoning_effort: "low",
           onText: (text) => {
             const reply = {
               role: "assistant",

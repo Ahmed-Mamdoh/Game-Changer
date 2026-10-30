@@ -5,10 +5,8 @@ import { checkOrigin, rateLimit, requireUser } from "./_lib/guard.js";
 // and src/features/games/hooks/useGetRecommendations.js)
 const ALLOWED_MODELS = new Set([
   "openai/gpt-oss-120b",
-  "moonshotai/kimi-k2-instruct-0905",
-  "llama-3.3-70b-versatile",
+  "qwen/qwen3.8-27b",
   "openai/gpt-oss-20b",
-  "llama-3.1-8b-instant",
 ]);
 const ALLOWED_ROLES = new Set(["system", "user", "assistant"]);
 const MAX_MESSAGES = 50;

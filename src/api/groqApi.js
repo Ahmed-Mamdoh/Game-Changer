@@ -38,7 +38,12 @@ export async function chatWithGroq({ messages, model, ...settings }) {
 // Streams a chat reply, calling onText with the text so far as it arrives.
 // Returns the final message, or the same status strings as chatWithGroq.
 // Falls back to a plain JSON reply when the proxy does not stream.
-export async function streamChatWithGroq({ messages, model, onText }) {
+export async function streamChatWithGroq({
+  messages,
+  model,
+  onText,
+  ...settings
+}) {
   let content = "";
   try {
     const {
@@ -52,7 +57,7 @@ export async function streamChatWithGroq({ messages, model, onText }) {
         "Content-Type": "application/json",
         Authorization: `Bearer ${session.access_token}`,
       },
-      body: JSON.stringify({ model, messages, stream: true }),
+      body: JSON.stringify({ model, messages, stream: true, ...settings }),
     });
     if (response.status === 401) return "unauthenticated";
     if (response.status === 429) return "rate_limited";
