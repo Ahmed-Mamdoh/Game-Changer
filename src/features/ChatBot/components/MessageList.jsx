@@ -1,7 +1,7 @@
-import chatBotIcon from "@/assets/chatbot-icon.webp";
 import Markdown from "react-markdown";
 import { Link } from "react-router-dom";
 import { useGamePath } from "../hooks/useGamePath";
+import AssistantMark from "./AssistantMark";
 
 const SITE_URL = "https://game-changer-gg.vercel.app";
 const linkClass = "text-text-brand underline underline-offset-2";
@@ -20,13 +20,9 @@ function AssistantRow({ showAvatar, children }) {
   return (
     <div className="flex max-w-[92%] items-start gap-2">
       {showAvatar ? (
-        <img
-          src={chatBotIcon}
-          alt=""
-          width={28}
-          height={28}
-          className="bg-bg-raised border-stroke-subtle mt-0.5 h-7 w-7 shrink-0 rounded-full border p-0.5"
-        />
+        <span className="bg-bg-raised border-stroke-subtle mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border">
+          <AssistantMark size="sm" />
+        </span>
       ) : (
         <span className="w-7 shrink-0" aria-hidden />
       )}
@@ -87,7 +83,13 @@ function AssistantMessage({ content, streaming, onNavigate }) {
   );
 }
 
-function MessageList({ messages, messagesRef, isLoading, onNavigate }) {
+function MessageList({
+  messages,
+  messagesRef,
+  isLoading,
+  onNavigate,
+  announcement,
+}) {
   return (
     <div
       ref={messagesRef}
@@ -124,6 +126,10 @@ function MessageList({ messages, messagesRef, isLoading, onNavigate }) {
           </AssistantRow>
         </div>
       )}
+      {/* Finished replies are read out once; streaming text would be read word by word */}
+      <p className="sr-only" aria-live="polite">
+        {announcement}
+      </p>
     </div>
   );
 }

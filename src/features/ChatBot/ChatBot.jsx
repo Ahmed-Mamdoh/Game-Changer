@@ -1,8 +1,9 @@
 import * as Dialog from "@radix-ui/react-dialog";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useChat from "./hooks/useChat";
 import { useResolveGamePath } from "./hooks/useGamePath";
+import { onAskAboutGame } from "./chatFocus";
 import ChatTrigger from "./components/ChatTrigger";
 import ChatHeader from "./components/ChatHeader";
 import MessageList from "./components/MessageList";
@@ -40,7 +41,20 @@ export default function ChatBot() {
     isSignedIn,
     hasConversation,
     starters,
+    stopReply,
+    announcement,
+    focusOnGame,
   } = useChat({ onRecommend: handleRecommend });
+
+  // "Ask about it" on a game page opens the chat about that game
+  useEffect(
+    () =>
+      onAskAboutGame((game) => {
+        focusOnGame(game);
+        setOpen(true);
+      }),
+    [focusOnGame],
+  );
 
   return (
     // Non-modal so the page stays usable while the panel is open on desktop
@@ -68,13 +82,14 @@ export default function ChatBot() {
                 messagesRef={messagesRef}
                 isLoading={isLoading}
                 onNavigate={handleNavigate}
+                announcement={announcement}
               />
               <div className="border-stroke-subtle flex flex-col gap-3 border-t p-3">
-                {!hasConversation && (
+                {starters.length > 0 && (
                   <ChatStarters
                     starters={starters}
-                    onPick={(text) =>
-                      handleSendMessage(text, { isPickRequest: true })
+                    onPick={(text, isPick) =>
+                      handleSendMessage(text, { isPickRequest: isPick })
                     }
                   />
                 )}
@@ -84,6 +99,7 @@ export default function ChatBot() {
                   setInput={setInput}
                   inputRef={inputRef}
                   isLoading={isLoading}
+                  onStop={stopReply}
                 />
               </div>
             </>

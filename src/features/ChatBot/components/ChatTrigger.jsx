@@ -1,6 +1,6 @@
-import chatBotIcon from "@/assets/chatbot-icon.webp";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import { ChevronDown } from "lucide-react";
+import AssistantMark from "./AssistantMark";
 
 function ChatTrigger({ open }) {
   const label = open ? "Close the game assistant" : "Ask the game assistant";
@@ -14,14 +14,7 @@ function ChatTrigger({ open }) {
         {open ? (
           <ChevronDown className="text-text-main h-6 w-6" aria-hidden />
         ) : (
-          <img
-            src={chatBotIcon}
-            alt=""
-            className="h-11 w-11"
-            width={44}
-            height={44}
-            loading="eager"
-          />
+          <AssistantMark />
         )}
       </button>
     </DialogTrigger>

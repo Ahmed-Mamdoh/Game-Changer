@@ -7,7 +7,8 @@ import BackdropImage from "@/ui/BackdropImage";
 import { coverUrlOf } from "@/utils/igdbImage";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { formatDate } from "date-fns";
-import { Bookmark, ChevronDown, Trash2 } from "lucide-react";
+import { askAboutGame } from "@/features/ChatBot/chatFocus";
+import { Bookmark, ChevronDown, MessageCircle, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { FaPlaystation, FaSteam, FaXbox } from "react-icons/fa";
 import { SiEpicgames, SiGogdotcom } from "react-icons/si";
@@ -326,6 +327,15 @@ function GameDetailsOverview({ data }) {
                   {isWishlisted ? "Wishlisted" : "Wishlist"}
                 </button>
               )}
+
+              <button
+                type="button"
+                onClick={() => askAboutGame({ id, name })}
+                className="btn-on-art px-4"
+              >
+                <MessageCircle className="text-pulse-primary h-4 w-4" />
+                Ask about it
+              </button>
 
               {isReleased && isLogged && (
                 <div className="flex items-center gap-2">

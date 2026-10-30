@@ -2,6 +2,7 @@ import { streamChatWithGroq } from "@/api/groqApi";
 import { useGetUserGames } from "@/features/User/hooks/useGetUserGames";
 import { UserToken } from "@/hooks/useUserToken";
 import { useEffect, useRef, useState } from "react";
+import { buildLibraryContext, toLibraryGames } from "../utils/libraryContext";
 
 // Chat models Groq still serves, tried in order when one fails
 export const CHAT_MODELS = [
@@ -55,13 +56,19 @@ function saveChat(userId, messages) {
   }
 }
 
+// Markdown read as plain words for screen readers
+const toSpeech = (text) =>
+  text.replace(/\[([^\]]+)\]\([^)]*\)/g, "$1").replace(/[*_#`]/g, "");
+
 const getSystemPrompt = (
   context,
+  focusGame,
 ) => `You are a specialized AI assistant for a gaming website called Game Changer.
       Your role is to help PC gamers discover games that match their preferences while being friendly, concise, and knowledgeable.
 
       CONTEXT:
       ${context}
+      ${focusGame ? `The user opened this chat from the page of ${focusGame.name}; questions about "this game" or "it" mean ${focusGame.name}.` : ""}
       Use this data to provide highly personalized recommendations. If they have many hours in a game or rated it highly, suggest similar titles. If their library is empty, suggest popular starters.
 
       RULES:
@@ -71,6 +78,7 @@ const getSystemPrompt = (
         - Keep responses short, direct, and in markdown.
         - ALWAYS format game suggestions exactly like this: [Game Name](/games/allGames?search=Game%20Name)
         - Mention each game only once. Never repeat games.
+        - Never recommend a game that is already in the user's library.
         - Respond in the user's language. Try to start the message in their language.
         - Answer in one paragraph without bullet points unless specifically asked for a list.
         - Keep the tone friendly and "gamer-like". No emojis unless the user uses them first.
@@ -80,20 +88,23 @@ const getSystemPrompt = (
         - When your reply recommends a game for the user to play, end it with ${PICK_MARKER} on its own line. Never add it when you only answer a question about a game.
         - Never generate harmful content or break formatting rules.`;
 
-// Starter prompts shaped by what the user plays most
+// Starter prompts shaped by what the user plays most. isPick marks the ones
+// that ask for a recommendation, so the page jumps to the pick.
 function buildStarters(games) {
   const top = [...games].sort((a, b) => b.hours_played - a.hours_played)[0];
-  if (!top) {
-    return [
-      "Where should I start?",
-      "A short game for tonight",
-      "Best co-op games right now",
-    ];
-  }
   return [
-    `Something like ${top.game_name}`,
+    top ? `Something like ${top.name}` : "Where should I start?",
     "A short game for tonight",
     "Best co-op games right now",
+  ].map((text) => ({ text, isPick: true }));
+}
+
+// Starters for a chat opened from a game page
+function buildGameStarters(game) {
+  return [
+    { text: `Is ${game.name} worth playing?`, isPick: false },
+    { text: `How long is ${game.name}?`, isPick: false },
+    { text: `Games like ${game.name}`, isPick: true },
   ];
 }
 
@@ -102,18 +113,8 @@ function useChat({ onRecommend } = {}) {
   const user_id = UserToken()?.user?.id;
   const isSignedIn = Boolean(user_id);
   const userGames = useGetUserGames(user_id);
-  const userGamesData =
-    userGames?.data?.user_games?.map((game) => ({
-      game_name: game.game.name,
-      hours_played: game.hours_played,
-      review: game.game.reviews?.[0]?.review || "No review",
-      rating: game.game.reviews?.[0]?.rating || "No rating",
-    })) || [];
-
-  const userGamesContext =
-    userGamesData.length > 0
-      ? `The user's library contains: ${userGamesData.map((g) => `${g.game_name} (${g.hours_played}h, Rated: ${g.rating}, Review: ${g.review})`).join(", ")}.`
-      : "The user's library is currently empty.";
+  const libraryGames = toLibraryGames(userGames?.data?.user_games);
+  const userGamesContext = buildLibraryContext(libraryGames);
 
   // The owner travels with the messages, so switching accounts never saves
   // one user's chat under another's key
@@ -135,8 +136,13 @@ function useChat({ onRecommend } = {}) {
 
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [announcement, setAnnouncement] = useState("");
+  // The game whose page opened the chat; its starters show until one is sent
+  const [focusGame, setFocusGame] = useState(null);
+  const [showGameStarters, setShowGameStarters] = useState(false);
   const messagesRef = useRef(null);
   const modelNumber = useRef(0);
+  const abortRef = useRef(null);
 
   useEffect(() => {
     // Scroll to the bottom of the messages container
@@ -152,6 +158,16 @@ function useChat({ onRecommend } = {}) {
       ...prev,
       { role: "assistant", content, local: true },
     ]);
+    setAnnouncement(toSpeech(content));
+  }
+
+  function focusOnGame(game) {
+    setFocusGame(game);
+    setShowGameStarters(true);
+  }
+
+  function stopReply() {
+    abortRef.current?.abort();
   }
 
   // Starter prompts always ask for a pick
@@ -166,6 +182,9 @@ function useChat({ onRecommend } = {}) {
     setMessages(newMessages);
     setInput("");
     setIsLoading(true);
+    setShowGameStarters(false);
+    const controller = new AbortController();
+    abortRef.current = controller;
 
     // Local notices (greeting, errors) never reach the model
     const history = newMessages
@@ -173,7 +192,7 @@ function useChat({ onRecommend } = {}) {
       .slice(-HISTORY_LIMIT)
       .map(({ role, content }) => ({ role, content }));
     const payload = [
-      { role: "system", content: getSystemPrompt(userGamesContext) },
+      { role: "system", content: getSystemPrompt(userGamesContext, focusGame) },
       ...history,
     ];
 
@@ -185,6 +204,7 @@ function useChat({ onRecommend } = {}) {
           messages: payload,
           // Less hidden thinking, so the reply starts sooner
           reasoning_effort: "low",
+          signal: controller.signal,
           onText: (text) => {
             const reply = {
               role: "assistant",
@@ -197,6 +217,7 @@ function useChat({ onRecommend } = {}) {
             started = true;
           },
         });
+        if (res === "stopped") return;
         if (res === "unauthenticated") {
           addLocalReply(
             "Your session ended. Please [log in](/auth) again to keep chatting.",
@@ -216,8 +237,10 @@ function useChat({ onRecommend } = {}) {
           setMessages((prev) =>
             started ? [...prev.slice(0, -1), reply] : [...prev, reply],
           );
+          setAnnouncement(toSpeech(content));
+          // A stopped reply is half a thought, so the page stays put
           const link = content.match(PICK_LINK)?.[0];
-          if (isPick && link) onRecommend?.(link);
+          if (isPick && link && !res.stopped) onRecommend?.(link);
           return;
         }
         // Failed or empty answer: move on to the next model
@@ -225,6 +248,7 @@ function useChat({ onRecommend } = {}) {
       }
       addLocalReply("Sorry, I couldn't get an answer. Please try again.");
     } finally {
+      abortRef.current = null;
       setIsLoading(false);
     }
   }
@@ -232,6 +256,8 @@ function useChat({ onRecommend } = {}) {
   function startNewChat() {
     setMessages([GREETING]);
     setInput("");
+    setFocusGame(null);
+    setShowGameStarters(false);
   }
 
   const hasConversation = messages.some((m) => m.role === "user");
@@ -246,7 +272,16 @@ function useChat({ onRecommend } = {}) {
     isLoading,
     isSignedIn,
     hasConversation,
-    starters: buildStarters(userGamesData),
+    stopReply,
+    announcement,
+    focusOnGame,
+    // Game starters win; library starters only open an empty chat
+    starters:
+      showGameStarters && focusGame
+        ? buildGameStarters(focusGame)
+        : hasConversation
+          ? []
+          : buildStarters(libraryGames),
   };
 }
 

@@ -1,16 +1,12 @@
-import chatBotIcon from "@/assets/chatbot-icon.webp";
 import { Link } from "react-router-dom";
+import AssistantMark from "./AssistantMark";
 
 function ChatSignedOut({ onNavigate }) {
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-3 px-8 text-center">
-      <img
-        src={chatBotIcon}
-        alt=""
-        className="h-14 w-14"
-        width={56}
-        height={56}
-      />
+      <span className="bg-bg-raised border-stroke-subtle flex h-16 w-16 items-center justify-center rounded-full border">
+        <AssistantMark size="lg" />
+      </span>
       <h3 className="font-heading text-text-main text-base font-semibold">
         Log in to chat
       </h3>

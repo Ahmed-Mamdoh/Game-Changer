@@ -37,11 +37,14 @@ export async function chatWithGroq({ messages, model, ...settings }) {
 
 // Streams a chat reply, calling onText with the text so far as it arrives.
 // Returns the final message, or the same status strings as chatWithGroq.
+// Aborting the signal stops the reply: what arrived comes back marked
+// stopped, or "stopped" when nothing did.
 // Falls back to a plain JSON reply when the proxy does not stream.
 export async function streamChatWithGroq({
   messages,
   model,
   onText,
+  signal,
   ...settings
 }) {
   let content = "";
@@ -58,6 +61,7 @@ export async function streamChatWithGroq({
         Authorization: `Bearer ${session.access_token}`,
       },
       body: JSON.stringify({ model, messages, stream: true, ...settings }),
+      signal,
     });
     if (response.status === 401) return "unauthenticated";
     if (response.status === 429) return "rate_limited";
@@ -90,6 +94,11 @@ export async function streamChatWithGroq({
     }
     return content ? { role: "assistant", content } : "error";
   } catch (error) {
+    if (signal?.aborted) {
+      return content
+        ? { role: "assistant", content, stopped: true }
+        : "stopped";
+    }
     console.error(error);
     // Keep what arrived if the stream broke partway
     return content ? { role: "assistant", content } : "error";
