@@ -345,13 +345,19 @@ function NotForMeMenu({ game, onDismiss, onBlock }) {
                     setOpen(false);
                     onBlock(item);
                   }}
-                  className="hover:bg-bg-chip focus-visible:bg-bg-chip flex w-full cursor-pointer items-center gap-2 rounded-sm px-2.5 py-2 text-left text-sm font-semibold outline-none"
+                  aria-label={`Never show ${item.name} (${item.kind === "genre" ? "genre" : "theme"}) anywhere`}
+                  className="hover:bg-bg-chip focus-visible:bg-bg-chip flex w-full cursor-pointer items-center gap-2.5 rounded-sm px-2.5 py-2 text-left text-sm outline-none"
                 >
                   <Ban
                     className="text-pulse-error h-3.5 w-3.5 shrink-0"
                     aria-hidden="true"
                   />
-                  {item.name} games
+                  <span className="min-w-0 flex-1 truncate font-semibold">
+                    {item.name}
+                  </span>
+                  <span className="text-text-muted shrink-0 text-xs">
+                    {item.kind === "genre" ? "Genre" : "Theme"}
+                  </span>
                 </button>
               ))}
             </>
