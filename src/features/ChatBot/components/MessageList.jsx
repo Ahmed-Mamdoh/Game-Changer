@@ -1,8 +1,18 @@
 import Markdown from "react-markdown";
 import { Link } from "react-router-dom";
+import { useGamePath } from "../hooks/useGamePath";
 
 const SITE_URL = "https://game-changer-gg.vercel.app";
 const linkClass = "text-text-brand underline underline-offset-2";
+
+function InternalLink({ to, onNavigate, children }) {
+  const path = useGamePath(to);
+  return (
+    <Link to={path} onClick={onNavigate} className={linkClass}>
+      {children}
+    </Link>
+  );
+}
 
 function AssistantMessage({ content, onNavigate }) {
   return (
@@ -17,13 +27,12 @@ function AssistantMessage({ content, onNavigate }) {
               href?.startsWith("/") || href?.startsWith(SITE_URL);
             if (isInternal) {
               return (
-                <Link
+                <InternalLink
                   to={href.replace(SITE_URL, "")}
-                  onClick={onNavigate}
-                  className={linkClass}
+                  onNavigate={onNavigate}
                 >
                   {children}
-                </Link>
+                </InternalLink>
               );
             }
             return (

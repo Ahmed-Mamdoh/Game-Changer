@@ -2,6 +2,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useChat from "./hooks/useChat";
+import { useResolveGamePath } from "./hooks/useGamePath";
 import ChatTrigger from "./components/ChatTrigger";
 import ChatHeader from "./components/ChatHeader";
 import MessageList from "./components/MessageList";
@@ -15,6 +16,7 @@ export default function ChatBot() {
   const [open, setOpen] = useState(false);
   const inputRef = useRef(null);
   const navigate = useNavigate();
+  const resolveGamePath = useResolveGamePath();
 
   // The panel covers the page on phones, so following a link closes it
   function handleNavigate() {
@@ -22,8 +24,8 @@ export default function ChatBot() {
   }
 
   // A recommended game opens behind the panel so the pick shows right away
-  function handleRecommend(link) {
-    navigate(link);
+  async function handleRecommend(link) {
+    navigate(await resolveGamePath(link));
     handleNavigate();
   }
 
