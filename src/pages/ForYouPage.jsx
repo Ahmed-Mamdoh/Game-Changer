@@ -215,6 +215,7 @@ function PageHeader({
   position,
   platforms,
   hiddenCount,
+  onReset,
 }) {
   const { blocked } = useBlockedTags();
   return (
@@ -256,6 +257,9 @@ function PageHeader({
             </button>
           }
         />
+        {onReset && (
+          <ResetForYou hiddenCount={hiddenCount} onReset={onReset} />
+        )}
         {platforms && (
           <PlatformPicker
             selected={platforms.selected}
@@ -706,16 +710,31 @@ function PicksStage({
   );
 }
 
-// Brings back every hidden game and forgets what they taught; Never show and
-// the library stay
+// Brings back every hidden game, forgets what they taught and empties Never
+// show; the library stays
 function ResetForYou({ hiddenCount, onReset }) {
   const user_id = UserToken()?.user?.id;
   const queryClient = useQueryClient();
+  const { blocked, setAll } = useBlockedTags();
   const [isOpen, setIsOpen] = useState(false);
+  if (!hiddenCount && !blocked.length) return null;
+
+  const lost = [
+    hiddenCount === 1
+      ? "your hidden game can come up again"
+      : hiddenCount > 1 && `all ${hiddenCount} hidden games can come up again`,
+    blocked.length > 0 &&
+      (blocked.length === 1
+        ? "the one item on Never show comes back"
+        : `all ${blocked.length} items on Never show come back`),
+  ].filter(Boolean);
 
   async function onConfirm() {
-    const { error } = await clearDismissed(user_id);
-    if (error) {
+    const [{ error }, { error: blockError }] = await Promise.all([
+      hiddenCount ? clearDismissed(user_id) : { error: null },
+      blocked.length ? setAll([]) : { error: null },
+    ]);
+    if (error || blockError) {
       toast.error("Reset didn't go through. Try again in a moment.");
       return;
     }
@@ -733,16 +752,16 @@ function ResetForYou({ hiddenCount, onReset }) {
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="btn-quiet text-pulse-error"
+        className="btn-on-art h-9 gap-1.5 px-3"
       >
-        <RotateCcw className="h-4 w-4" aria-hidden="true" />
-        Reset For You
+        <RotateCcw className="h-4 w-4 opacity-80" aria-hidden="true" />
+        Reset
       </button>
       <ConfirmDialog
         open={isOpen}
         onOpenChange={setIsOpen}
         title="Reset For You?"
-        description={`${hiddenCount === 1 ? "Your hidden game" : `All ${hiddenCount} hidden games`} can come up again, and the cutoff year and style dislikes they taught are gone. Your library, ratings and Never show list stay. This can't be undone.`}
+        description={`${listOf(lost).replace(/^./, (c) => c.toUpperCase())}${hiddenCount ? ", and the cutoff year and style dislikes the hidden games taught are gone" : ""}. Your library and ratings stay. This can't be undone.`}
         confirmLabel="Reset"
         pendingLabel="Resetting…"
         onConfirm={onConfirm}
@@ -753,7 +772,7 @@ function ResetForYou({ hiddenCount, onReset }) {
 }
 
 // What the picks are built from: the library size and the heaviest tags
-function TasteStrip({ tags, libraryCount, hiddenCount, onReset }) {
+function TasteStrip({ tags, libraryCount }) {
   if (!tags.length) return null;
   return (
     <section className="mx-auto w-full max-w-[1440px] px-4 pt-6 pb-20 md:px-8">
@@ -777,15 +796,10 @@ function TasteStrip({ tags, libraryCount, hiddenCount, onReset }) {
           ))}
         </ul>
       </div>
-      <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
-        <Link to="/account" className="link-quiet">
-          Your library
-          <ArrowRight className="h-4 w-4" />
-        </Link>
-        {hiddenCount > 0 && (
-          <ResetForYou hiddenCount={hiddenCount} onReset={onReset} />
-        )}
-      </div>
+      <Link to="/account" className="link-quiet mt-6">
+        Your library
+        <ArrowRight className="h-4 w-4" />
+      </Link>
     </section>
   );
 }
@@ -956,6 +970,7 @@ function ForYouPage() {
       }
       platforms={platforms}
       hiddenCount={hiddenCount}
+      onReset={refresh}
     />
   );
 
@@ -1074,12 +1089,7 @@ function ForYouPage() {
         reasonsPending={reasonsPending}
         header={header}
       />
-      <TasteStrip
-        tags={tasteTags}
-        libraryCount={libraryCount}
-        hiddenCount={hiddenCount}
-        onReset={refresh}
-      />
+      <TasteStrip tags={tasteTags} libraryCount={libraryCount} />
     </>
   );
 }

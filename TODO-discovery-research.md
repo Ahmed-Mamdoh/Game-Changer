@@ -30,7 +30,7 @@ Shipped: a "Never show" list (genres, themes, tags, studios) on For You, in the 
 
 ### 2. Stop one game from steering my recommendations, and let me reset my taste ✅ shipped 2026-10-30
 Players play things for work, for a friend, or out of curiosity, and those games pollute their recs. They also want a "reset" because tastes change.
-Shipped: "Reset For You" now sits in For You's "What your picks lean on" strip (it used to be at the bottom of the Hidden page). It brings back every hidden game, forgets what they taught and rebuilds the picks; the library and Never show list stay. Decided against a per-game "Don't use for recommendations" toggle: "Not my style" in the Not for me menu covers it.
+Shipped: a "Reset" button in For You's header, next to Hidden and Never show (it used to be at the bottom of the Hidden page). It brings back every hidden game, forgets what they taught, empties the Never show list and rebuilds the picks; the library and ratings stay. Decided against a per-game "Don't use for recommendations" toggle: "Not my style" in the Not for me menu covers it.
 - [ ] [r/Steam - u/Ray-Zide426 - "disable steam from using certain games as reference for your recommendations" (31 upvotes, Aug 25)](https://www.reddit.com/r/Steam/comments/1vxpzxp/) · strict · locks ~Feb 25
 - [ ] [r/Steam - u/viewNSFWreddit - "Why can't we reset the Discovery Queue? ...requested several times" (Aug 13)](https://www.reddit.com/r/Steam/comments/1vnd1p2/) · strict · locks ~Feb 13
 - [ ] [X - @314MxxD - "Would love to reset my suggest queue. Tastes change over time." (25 likes, Sep 29)](https://x.com/314MxxD/status/2105018945728323942)
