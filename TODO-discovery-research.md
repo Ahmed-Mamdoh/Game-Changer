@@ -6,7 +6,7 @@ Sources: Reddit (via the Arctic Shift Reddit archive, since reddit.com blocks au
 
 ## How to read this
 
-- Status: ❌ we don't have it, 🟡 partly have it, ✅ we have it (bottom section, reply now).
+- Status: ❌ we don't have it, 🟡 partly have it, ✅ we have it (bottom section, reply now), ⛔ decided not to build.
 - Effort: S = a day or two, M = about a week, L = multi-week or needs new data sources.
 - Priority = how often people ask × how cheap it is to build.
 - Each source line has a `[ ] replied` box. Tick it once you've answered that person after shipping.
@@ -35,9 +35,10 @@ Shipped: a "Reset" button in For You's header, next to Hidden and Never show (it
 - [ ] [r/Steam - u/viewNSFWreddit - "Why can't we reset the Discovery Queue? ...requested several times" (Aug 13)](https://www.reddit.com/r/Steam/comments/1vnd1p2/) · strict · locks ~Feb 13
 - [ ] [X - @314MxxD - "Would love to reset my suggest queue. Tastes change over time." (25 likes, Sep 29)](https://x.com/314MxxD/status/2105018945728323942)
 
-### 3. Quality floor: no shovelware, AI slop, asset flips or porn in discovery 🟡 M
-This is the loudest hate across both platforms. We already drop IGDB's erotic theme and some junk (`src/api/igdbApi.js:54, 345`), but there's no minimum-quality bar.
-Build: a default "Quality floor" on browse and For You (minimum rating count + rating, hide games with no cover or summary, hide flagged keywords), with a visible toggle to turn it off. Mention it on the home page, because it's a selling point against Steam.
+### 3. Quality floor: no shovelware, AI slop, asset flips or porn in discovery ⛔ dropped 2026-10-30
+This is the loudest hate across both platforms.
+Dropped: we already hide most of the trash, so a separate quality floor isn't worth building. Every list keeps main games and expansions only and drops erotic, unofficial and cancelled games (`src/api/igdbApi.js:60`); For You only picks games with 25+ ratings; browse sorts by rating count; Newest and Popular Now need some hype or ratings. Anyone who wants a higher bar can use the browse rating filter. The one gap is the Soonest sort for upcoming games, which has no hype minimum. Add one only if junk actually shows up there.
+Replies: these people still count. Answer as the builder that discovery here has no adult games and no slop by default, where the sub's rules allow it.
 - [ ] [r/Steam - u/lean_hoemoan - "Thanks for the recommendations, Steam" (adult games in recs, 1,844 upvotes, 147 comments, Sep 7)](https://www.reddit.com/r/Steam/comments/1wa0dvd/) · strict · locks ~Mar 7
 - [ ] [r/Steam - u/killer5907 - "Overwhelmed with so much shovelware ...struggling to find anything good" (26 comments, Oct 19)](https://www.reddit.com/r/Steam/comments/1xa3yj0/) · strict · locks ~Apr 19
 - [ ] [r/Steam - u/tomodashi96 - "Did the Next Fest Algorithm Really Work to Bury AI Slop?" (Oct 22)](https://www.reddit.com/r/Steam/comments/1xca07g/) · strict · locks ~Apr 22
@@ -163,7 +164,7 @@ Players trust specific people over critics, and find "taste twins" by who rated 
 ## Hates: things to avoid (or fix if we already do them)
 
 1. **The same popular games again and again.** Rotate home rows and never repeat a game the user already saw/hid this week. [u/Least_Yard_4327, r/Steam](https://www.reddit.com/r/Steam/comments/1udelmc/)
-2. **Adult content and AI-slop capsule art in recommendations.** Keep the erotic-theme filter on by default for everyone, and add the quality floor (Priority 1 #3). [u/lean_hoemoan](https://www.reddit.com/r/Steam/comments/1wa0dvd/), [u/tomodashi96](https://www.reddit.com/r/Steam/comments/1xca07g/)
+2. **Adult content and AI-slop capsule art in recommendations.** Keep the erotic-theme filter and the existing junk filters on by default for everyone (Priority 1 #3). [u/lean_hoemoan](https://www.reddit.com/r/Steam/comments/1wa0dvd/), [u/tomodashi96](https://www.reddit.com/r/Steam/comments/1xca07g/)
 3. **One off-genre game wrecking the whole profile.** Weight by rating and hours (we do), and let users exclude a game (Priority 1 #2). [u/Ray-Zide426](https://www.reddit.com/r/Steam/comments/1vxpzxp/)
 4. **Recs that don't match anything I played.** Always show the "because you liked X" line. We do this; keep it on every pick, including the AI chat. [u/Typek834 comment](https://www.reddit.com/r/Steam/comments/1udelmc/_/otceb12/)
 5. **Duplicate and irrelevant results.** Dedupe editions/remasters/bundles in every list. [u/Few-Reading5087 on SteamPeek](https://www.reddit.com/r/gamingsuggestions/comments/1vbziby/)
