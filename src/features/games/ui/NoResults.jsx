@@ -12,7 +12,6 @@ import {
   filtersFromParams,
   useLibraryIds,
 } from "../hooks/useGetFiltersParams";
-import { moodOf, withoutMood } from "../moods";
 
 // Shown when filters leave nothing. For each picked filter it counts what
 // dropping just that one would bring back, and offers the best of those.
@@ -21,29 +20,13 @@ function NoResults({ isUpcoming = false, menuOptions }) {
   const { menus } = useFilterMenus(menuOptions);
   const search = searchParams.get("search");
   const sortBy = searchParams.get("sortBy") || DEFAULT_BROWSE_SORT;
-  const mood = moodOf(searchParams.get("mood"));
-  // Each picked filter (and the mood) with the URL that drops just it
-  const chips = [
-    ...(mood
-      ? [
-          {
-            key: "mood",
-            label: mood.name,
-            item: mood,
-            next: withoutMood(searchParams),
-          },
-        ]
-      : []),
-    ...activeChips(searchParams, menus).map((chip) => ({
-      ...chip,
-      next: withoutItem(searchParams, chip.filter, chip.item),
-    })),
-  ];
+  const chips = activeChips(searchParams, menus);
   const libraryIds = useLibraryIds();
 
   // Counts mirror useGetNumberOfResults, so they share its cache
   const counts = useQueries({
-    queries: chips.map(({ next }) => {
+    queries: chips.map((chip) => {
+      const next = withoutItem(searchParams, chip.filter, chip.item);
       const { filters, platform, player_perspectives, length } =
         filtersFromParams(next, libraryIds);
       const params = isUpcoming
@@ -100,11 +83,13 @@ function NoResults({ isUpcoming = false, menuOptions }) {
 
       {suggestions.length > 0 && (
         <ul className="mt-5 flex w-full max-w-sm flex-col gap-2">
-          {suggestions.map(({ key, label, item, next, count }) => (
+          {suggestions.map(({ key, label, filter, item, count }) => (
             <li key={key}>
               <button
                 type="button"
-                onClick={() => setSearchParams(next)}
+                onClick={() =>
+                  setSearchParams(withoutItem(searchParams, filter, item))
+                }
                 className="bg-bg-raised border-stroke-medium hover:border-stroke-brand flex h-12 w-full cursor-pointer items-center gap-3 rounded-lg border px-4 text-left transition-colors duration-100"
               >
                 {item.icon && (

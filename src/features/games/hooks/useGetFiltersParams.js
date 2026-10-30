@@ -1,7 +1,6 @@
 import { useGetUserGames } from "@/features/User/hooks/useGetUserGames";
 import { UserToken } from "@/hooks/useUserToken";
 import { LENGTH_BANDS } from "@/api/igdbApi";
-import { moodOf } from "../moods";
 import { useSearchParams } from "react-router-dom";
 
 // URL values go straight into the IGDB query, so only digits get through
@@ -52,9 +51,6 @@ export function filtersFromParams(searchParams, libraryIds = []) {
     : null;
 
   const filters = [];
-
-  const mood = moodOf(searchParams.get("mood"));
-  if (mood) filters.push(mood.where);
 
   // Picks inside one menu widen the results unless "Match all" is on.
   // Genre and theme share a menu, so "any" spans both.
