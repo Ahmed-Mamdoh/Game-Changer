@@ -77,6 +77,21 @@ const yearOf = (game) =>
     ? new Date(game.first_release_date * 1000).getFullYear()
     : null;
 
+// The liked games shown on the tie line: a series or studio tie names its one
+// game, anything else every game the pick draws on
+function tieGamesOf(game) {
+  if (!game.becauseOf) return [];
+  if (game.link === "series" || game.link === "studio" || !game.sources?.length)
+    return [game.becauseOf];
+  return game.sources;
+}
+
+// "A", "A and B", "A, B and C"
+const listOf = (names) =>
+  names.length < 2
+    ? names[0]
+    : `${names.slice(0, -1).join(", ")} and ${names.at(-1)}`;
+
 // How the pick ties back to the library, in the player's words
 function tieOf(game) {
   const source = game.becauseOf?.name;
@@ -86,7 +101,7 @@ function tieOf(game) {
     return game.studioName
       ? `From ${game.studioName}, like ${source}`
       : `Same studio as ${source}`;
-  return `Because you liked ${source}`;
+  return `Because you liked ${listOf(tieGamesOf(game).map((g) => g.name))}`;
 }
 
 const platformLabel = (keys) =>
@@ -338,6 +353,7 @@ function FocusedPick({ game, onDismiss, onLogged, reasonsPending }) {
   const { statusOf } = useQuickStatus();
   const status = statusOf(game.id);
   const tie = tieOf(game);
+  const tieGames = tieGamesOf(game);
   const families = familiesOf(game.platforms);
   const facts = [
     yearOf(game),
@@ -414,13 +430,18 @@ function FocusedPick({ game, onDismiss, onLogged, reasonsPending }) {
 
       {tie && (
         <p className="text-text-main short:mb-3 mb-4 flex items-center gap-3 text-sm font-semibold">
-          {game.becauseOf.cover && (
-            <img
-              src={coverUrlOf({ cover: game.becauseOf.cover }, "t_cover_small")}
-              alt=""
-              className="aspect-[3/4] w-8 rounded-sm object-cover ring-1 ring-white/15"
-            />
-          )}
+          <span className="flex shrink-0 -space-x-3">
+            {tieGames
+              .filter((source) => source.cover)
+              .map((source) => (
+                <img
+                  key={source.id}
+                  src={coverUrlOf({ cover: source.cover }, "t_cover_small")}
+                  alt=""
+                  className="aspect-[3/4] w-8 rounded-sm object-cover shadow-md ring-1 ring-white/15"
+                />
+              ))}
+          </span>
           {tie}
         </p>
       )}

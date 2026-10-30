@@ -214,7 +214,18 @@ export function buildLibraryLinks(entries) {
       push(byStudio, id, entry);
     for (const id of new Set(seriesOf(entry.game))) push(bySeries, id, entry);
   }
-  return { similarTo, byStudio, bySeries };
+  // Liked games with their tags, to find which ones a pick draws on
+  const liked = entries
+    .filter((entry) => entry.weight > 0)
+    .sort((a, b) => b.weight - a.weight)
+    .slice(0, 30)
+    .map((entry) => ({
+      id: entry.id,
+      name: entry.name,
+      weight: entry.weight,
+      features: gameFeatures(entry.game),
+    }));
+  return { similarTo, byStudio, bySeries, liked };
 }
 
 const strongest = (sources) =>
@@ -292,6 +303,68 @@ export function scoreCandidate(profile, candidate, links) {
         )?.company?.name || null
       : null;
   return { score, match, becauseOf, link, studioName };
+}
+
+// Tags that say how a game plays or feels; modes, studios and series say
+// little about why two games click
+const TRAIT_TYPES = new Set(["genre", "theme", "keyword"]);
+// Rarity-weighted overlap a liked game needs to count as a reason: one fairly
+// rare tag, or two common ones
+const MIN_SOURCE_GAIN = 3.5;
+const MAX_SOURCES = 3;
+
+// The liked games a pick draws on, one to three, each with the traits it adds
+// that the games before it don't. The tie from scoreCandidate (lead) stays
+// first. Another game joins only when it brings something new, so a pick reads
+// as "Elden Ring's bosses plus Hades's runs", not three games sharing "action".
+export function sourceGames(profile, candidate, links, lead) {
+  const traits = new Map(
+    [...gameFeatures(candidate)].filter(
+      ([key, name]) => name && TRAIT_TYPES.has(typeOf(key)),
+    ),
+  );
+  const rarity = (key) => profile.rarity?.get(key) || 1;
+  const listedSimilar = new Set(
+    (links.similarTo.get(candidate.id) || []).map((s) => s.id),
+  );
+  const covered = new Set();
+  const sources = [];
+  const take = (source, keys) => {
+    const brings = keys
+      .filter((key) => !covered.has(key))
+      .sort((a, b) => rarity(b) - rarity(a));
+    brings.forEach((key) => covered.add(key));
+    sources.push({
+      id: source.id,
+      name: source.name,
+      weight: source.weight,
+      shared: brings.slice(0, 2).map((key) => traits.get(key)),
+    });
+  };
+  const sharedWith = (source) =>
+    [...traits.keys()].filter((key) => source.features.has(key));
+
+  if (lead) {
+    const entry = links.liked.find((s) => s.id === lead.id);
+    take(lead, entry ? sharedWith(entry) : []);
+  }
+  while (sources.length < MAX_SOURCES) {
+    let best = null;
+    for (const source of links.liked) {
+      if (sources.some((s) => s.id === source.id)) continue;
+      const fresh = sharedWith(source).filter((key) => !covered.has(key));
+      // IGDB listing the pick as similar counts as a rare shared tag
+      const gain =
+        fresh.reduce((sum, key) => sum + rarity(key), 0) +
+        (listedSimilar.has(source.id) ? 2 : 0);
+      if (gain < MIN_SOURCE_GAIN) continue;
+      const rank = gain * (0.6 + 0.2 * Math.min(source.weight, 3));
+      if (!best || rank > best.rank) best = { source, fresh, rank };
+    }
+    if (!best) break;
+    take(best.source, best.fresh);
+  }
+  return sources;
 }
 
 // Score taken off games released in or before the year the player calls too
