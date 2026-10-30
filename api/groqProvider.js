@@ -68,6 +68,7 @@ export default async function handler(req, res) {
     response_format,
     reasoning_effort,
     max_completion_tokens,
+    stream,
   } = req.body || {};
   if (!ALLOWED_MODELS.has(model)) {
     return res.status(400).json({ error: "Model not allowed" });
@@ -82,6 +83,7 @@ export default async function handler(req, res) {
   }
   // Optional limits on how much the model thinks and writes
   const extras = {};
+  if (stream === true) extras.stream = true;
   if (["low", "medium", "high"].includes(reasoning_effort))
     extras.reasoning_effort = reasoning_effort;
   if (
@@ -109,10 +111,24 @@ export default async function handler(req, res) {
       },
     );
 
+    // Relay the reply as server-sent events as Groq writes it
+    if (extras.stream && response.ok) {
+      res.writeHead(200, {
+        "Content-Type": "text/event-stream; charset=utf-8",
+        "Cache-Control": "no-cache, no-transform",
+        Connection: "keep-alive",
+        "X-Accel-Buffering": "no",
+      });
+      for await (const chunk of response.body) res.write(chunk);
+      return res.end();
+    }
+
     const data = await response.json();
     res.status(response.status).json(data);
   } catch (err) {
     console.error("Groq fetch error:", err);
+    // A stream that broke partway can only be closed
+    if (res.headersSent) return res.end();
     res.status(500).json({ error: "Failed to fetch Groq data" });
   }
 }

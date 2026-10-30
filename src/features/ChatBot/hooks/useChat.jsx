@@ -1,4 +1,4 @@
-import { chatWithGroq } from "@/api/groqApi";
+import { streamChatWithGroq } from "@/api/groqApi";
 import { useGetUserGames } from "@/features/User/hooks/useGetUserGames";
 import { UserToken } from "@/hooks/useUserToken";
 import { useEffect, useRef, useState } from "react";
@@ -16,6 +16,12 @@ const MAX_ATTEMPTS = 3;
 const HISTORY_LIMIT = 20;
 // The model ends a reply with this when it recommends games
 const PICK_MARKER = "[[pick]]";
+// Hides the marker, including a half-written one at the end of a stream
+const cleanReply = (text) =>
+  text
+    .replaceAll(PICK_MARKER, "")
+    .replace(/\[\[[a-z]*\]?$/, "")
+    .trim();
 const PICK_LINK = /\/games\/allGames\?search=[^)\s]*/;
 
 const GREETING = {
@@ -92,9 +98,10 @@ function useChat({ onRecommend } = {}) {
 
   useEffect(() => {
     // Scroll to the bottom of the messages container
+    // Jump instantly while a reply streams in; smooth scrolls would pile up
     messagesRef?.current?.scrollTo({
       top: messagesRef.current.scrollHeight,
-      behavior: "smooth",
+      behavior: messages.at(-1)?.streaming ? "auto" : "smooth",
     });
   }, [messages, isLoading]);
 
@@ -130,9 +137,21 @@ function useChat({ onRecommend } = {}) {
 
     try {
       for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
-        const res = await chatWithGroq({
+        let started = false;
+        const res = await streamChatWithGroq({
           model: CHAT_MODELS[modelNumber.current],
           messages: payload,
+          onText: (text) => {
+            const reply = {
+              role: "assistant",
+              content: cleanReply(text),
+              streaming: true,
+            };
+            setMessages((prev) =>
+              started ? [...prev.slice(0, -1), reply] : [...prev, reply],
+            );
+            started = true;
+          },
         });
         if (res === "unauthenticated") {
           addLocalReply(
@@ -148,8 +167,11 @@ function useChat({ onRecommend } = {}) {
         }
         if (typeof res === "object" && res?.content) {
           const isPick = res.content.includes(PICK_MARKER) || isPickRequest;
-          const content = res.content.replaceAll(PICK_MARKER, "").trim();
-          setMessages((prev) => [...prev, { role: "assistant", content }]);
+          const content = cleanReply(res.content);
+          const reply = { role: "assistant", content };
+          setMessages((prev) =>
+            started ? [...prev.slice(0, -1), reply] : [...prev, reply],
+          );
           const link = content.match(PICK_LINK)?.[0];
           if (isPick && link) onRecommend?.(link);
           return;

@@ -1,3 +1,4 @@
+import chatBotIcon from "@/assets/chatbot-icon.webp";
 import Markdown from "react-markdown";
 import { Link } from "react-router-dom";
 import { useGamePath } from "../hooks/useGamePath";
@@ -14,11 +15,33 @@ function InternalLink({ to, onNavigate, children }) {
   );
 }
 
-function AssistantMessage({ content, onNavigate }) {
+// The bot's face marks the start of each run of assistant messages
+function AssistantRow({ showAvatar, children }) {
+  return (
+    <div className="flex max-w-[92%] items-start gap-2">
+      {showAvatar ? (
+        <img
+          src={chatBotIcon}
+          alt=""
+          width={28}
+          height={28}
+          className="bg-bg-raised border-stroke-subtle mt-0.5 h-7 w-7 shrink-0 rounded-full border p-0.5"
+        />
+      ) : (
+        <span className="w-7 shrink-0" aria-hidden />
+      )}
+      <div className="bg-bg-raised border-stroke-subtle min-w-0 rounded-2xl rounded-ss-md border px-3.5 py-2.5">
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function AssistantMessage({ content, streaming, onNavigate }) {
   return (
     <div
       dir="auto"
-      className="text-text-main font-arabic text-sm leading-relaxed [&>*+*]:mt-2"
+      className={`text-text-main font-arabic text-sm leading-relaxed [&>*+*]:mt-2 ${streaming ? "chat-caret" : ""}`}
     >
       <Markdown
         components={{
@@ -68,32 +91,37 @@ function MessageList({ messages, messagesRef, isLoading, onNavigate }) {
   return (
     <div
       ref={messagesRef}
-      className="flex flex-1 flex-col gap-4 overflow-x-hidden overflow-y-auto px-4 py-4"
+      className="flex flex-1 flex-col gap-2 overflow-x-hidden overflow-y-auto px-4 py-4"
     >
-      {messages.map((item, index) =>
-        item.role === "user" ? (
+      {messages.map((item, index) => {
+        const prevRole = messages[index - 1]?.role;
+        // Extra space where the speaker changes
+        const gap = index > 0 && prevRole !== item.role ? "mt-2" : "";
+        return item.role === "user" ? (
           <div
             key={index}
             dir="auto"
-            className="bg-bg-chip text-text-main font-arabic max-w-[85%] self-end rounded-2xl rounded-ee-md px-3 py-2 text-sm whitespace-pre-wrap"
+            className={`bg-bg-chip text-text-main font-arabic max-w-[85%] self-end rounded-2xl rounded-ee-md px-3.5 py-2 text-sm whitespace-pre-wrap ${gap}`}
           >
             {item.content}
           </div>
         ) : (
-          <AssistantMessage
-            key={index}
-            content={item.content}
-            onNavigate={onNavigate}
-          />
-        ),
-      )}
-      {isLoading && (
-        <div
-          role="status"
-          aria-label="Assistant is typing"
-          className="text-text-dim"
-        >
-          <span className="loading loading-dots loading-sm"></span>
+          <div key={index} className={gap}>
+            <AssistantRow showAvatar={prevRole !== "assistant"}>
+              <AssistantMessage
+                content={item.content}
+                streaming={item.streaming}
+                onNavigate={onNavigate}
+              />
+            </AssistantRow>
+          </div>
+        );
+      })}
+      {isLoading && !messages.at(-1)?.streaming && (
+        <div role="status" aria-label="Assistant is typing" className="mt-2">
+          <AssistantRow showAvatar>
+            <span className="loading loading-dots loading-sm text-text-dim block"></span>
+          </AssistantRow>
         </div>
       )}
     </div>

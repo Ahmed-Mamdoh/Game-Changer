@@ -493,3 +493,29 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* Blinking caret after the last line of a reply that is still streaming */
+.chat-caret > :last-child:not(ul, ol)::after,
+.chat-caret > :is(ul, ol):last-child > li:last-child::after {
+  content: "";
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin-inline-start: 3px;
+  vertical-align: -0.15em;
+  background-color: var(--color-pulse-accent);
+  animation: chat-caret-blink 1s steps(1) infinite;
+}
+
+@keyframes chat-caret-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chat-caret > :last-child::after,
+  .chat-caret li:last-child::after {
+    animation: none;
+  }
+}
