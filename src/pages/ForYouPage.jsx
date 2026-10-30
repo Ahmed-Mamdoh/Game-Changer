@@ -257,6 +257,94 @@ function PageHeader({
   );
 }
 
+// The tie line, which opens a panel listing every liked game behind the pick
+// and what the pick has in common with each
+function WhyThisPick({ game, tie, tieGames }) {
+  const [open, setOpen] = useState(false);
+  const sources = game.sources?.length ? game.sources : [game.becauseOf];
+  // What the lead game's tie is, when it isn't shared tags
+  const leadTie =
+    game.link === "series"
+      ? "Same series"
+      : game.link === "studio"
+        ? "Same studio"
+        : game.link === "similar"
+          ? "Listed as similar on IGDB"
+          : null;
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger className="text-text-main short:mb-3 group mb-4 flex cursor-pointer items-center gap-3 rounded-sm text-left text-sm font-semibold">
+        <span className="flex shrink-0 -space-x-3">
+          {tieGames
+            .filter((source) => source.cover)
+            .map((source) => (
+              <img
+                key={source.id}
+                src={coverUrlOf({ cover: source.cover }, "t_cover_small")}
+                alt=""
+                className="aspect-[3/4] w-8 rounded-sm object-cover shadow-md ring-1 ring-white/15"
+              />
+            ))}
+        </span>
+        <span className="decoration-text-dim underline-offset-4 group-hover:underline">
+          {tie}
+        </span>
+        <ChevronDown
+          className={`h-4 w-4 opacity-70 transition-transform duration-150 ${open ? "rotate-180" : ""}`}
+          aria-hidden="true"
+        />
+      </PopoverTrigger>
+      <PopoverContent
+        align="start"
+        className="dropdown-pop bg-bg-raised border-stroke-medium text-text-main w-80 rounded-lg p-3 shadow-[var(--shadow-float)]"
+      >
+        <p className="text-text-dim mb-2 text-xs font-semibold">
+          Why {game.name}
+        </p>
+        <ul className="flex flex-col gap-3">
+          {sources.map((source, i) => (
+            <li key={source.id} className="flex items-start gap-3">
+              {source.cover ? (
+                <img
+                  src={coverUrlOf({ cover: source.cover }, "t_cover_small")}
+                  alt=""
+                  className="aspect-[3/4] w-9 shrink-0 rounded-sm object-cover ring-1 ring-white/15"
+                />
+              ) : (
+                <span className="bg-bg-chip aspect-[3/4] w-9 shrink-0 rounded-sm" />
+              )}
+              <span className="min-w-0">
+                <Link
+                  to={`/game/${source.id}`}
+                  className="block truncate text-sm font-semibold hover:underline"
+                >
+                  {source.name}
+                </Link>
+                {i === 0 && leadTie && (
+                  <span className="text-text-dim block text-xs">{leadTie}</span>
+                )}
+                {source.shares?.length > 0 && (
+                  <span className="mt-1 flex flex-wrap gap-1">
+                    {source.shares.map((trait) => (
+                      <span
+                        key={trait}
+                        className="bg-bg-chip rounded-sm px-1.5 py-0.5 text-xs"
+                      >
+                        {trait}
+                      </span>
+                    ))}
+                  </span>
+                )}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 // Asks why before hiding, so the engine knows what to learn from it
 function NotForMeMenu({ game, onDismiss }) {
   const [open, setOpen] = useState(false);
@@ -428,23 +516,7 @@ function FocusedPick({ game, onDismiss, onLogged, reasonsPending }) {
         </p>
       </div>
 
-      {tie && (
-        <p className="text-text-main short:mb-3 mb-4 flex items-center gap-3 text-sm font-semibold">
-          <span className="flex shrink-0 -space-x-3">
-            {tieGames
-              .filter((source) => source.cover)
-              .map((source) => (
-                <img
-                  key={source.id}
-                  src={coverUrlOf({ cover: source.cover }, "t_cover_small")}
-                  alt=""
-                  className="aspect-[3/4] w-8 rounded-sm object-cover shadow-md ring-1 ring-white/15"
-                />
-              ))}
-          </span>
-          {tie}
-        </p>
-      )}
+      {tie && <WhyThisPick game={game} tie={tie} tieGames={tieGames} />}
 
       {/* Fixed height for three lines, so moving across the shelf doesn't
           make the actions jump */}

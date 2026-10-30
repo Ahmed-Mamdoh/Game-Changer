@@ -24,6 +24,7 @@ import {
   libraryGameWeight,
   pickVaried,
   scoreCandidate,
+  sharedTraits,
   sourceGames,
   topIdsOfType,
   withRarity,
@@ -38,7 +39,7 @@ import {
 // 4. the model only chooses from that shortlist by id and writes the reasons.
 // If the model fails, the scored shortlist still gives picks.
 
-const CACHE_PREFIX = "recommendations:v8:";
+const CACHE_PREFIX = "recommendations:v9:";
 const SEEN_PREFIX = "recommendations:seen:";
 // How hard a "Not my style" game pulls against its tags; a dropped game with
 // no rating weighs -0.8
@@ -388,10 +389,19 @@ export async function buildPicks({
           cover: libraryById.get(item.becauseOf.id)?.cover || null,
         }
       : null,
+    // Each liked game with what the pick has in common with it, for the
+    // "why" panel
     sources: item.sources.map((source) => ({
       id: source.id,
       name: source.name,
       cover: libraryById.get(source.id)?.cover || null,
+      shares: detailsById.has(source.id)
+        ? sharedTraits(
+            profile,
+            item.game,
+            gameFeatures(detailsById.get(source.id)),
+          )
+        : [],
     })),
     // "series", "studio", "similar" or null: how the pick ties to the library
     link: item.link,

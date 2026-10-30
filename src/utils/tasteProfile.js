@@ -313,6 +313,19 @@ const TRAIT_TYPES = new Set(["genre", "theme", "keyword"]);
 const MIN_SOURCE_GAIN = 3.5;
 const MAX_SOURCES = 3;
 
+// Names of the traits a candidate shares with one library game, rarest first
+export function sharedTraits(profile, candidate, features, count = 3) {
+  const rarity = (key) => profile.rarity?.get(key) || 1;
+  return [...gameFeatures(candidate)]
+    .filter(
+      ([key, name]) =>
+        name && TRAIT_TYPES.has(typeOf(key)) && features.has(key),
+    )
+    .sort(([a], [b]) => rarity(b) - rarity(a))
+    .slice(0, count)
+    .map(([, name]) => name);
+}
+
 // The liked games a pick draws on, one to three, each with the traits it adds
 // that the games before it don't. The tie from scoreCandidate (lead) stays
 // first. Another game joins only when it brings something new, so a pick reads
