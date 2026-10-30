@@ -1,5 +1,9 @@
 import { LIMIT } from "@/constants/constant";
 import { rankSearchResults } from "@/utils/searchRanking";
+import {
+  blockedClauses,
+  withoutBlockedGames,
+} from "@/features/games/blockedTags";
 
 async function igdbFetch(endpoint, query) {
   const response = await fetch("/api/igdbProvider", {
@@ -26,15 +30,18 @@ const UNOFFICIAL_KEYWORDS = [
 ];
 
 // Shared where-clause so the list and the result count always agree.
+// Lists leave out the player's "Never show" genres, themes and keywords;
+// name searches (withBlocked) still find them.
 function buildGamesWhere({
   filters = [],
   platform,
   player_perspectives,
   isUpcoming,
   isReleased,
+  withBlocked = false,
 }) {
-  const filtersString =
-    filters?.length !== 0 ? " & " + filters.join(" & ") : "";
+  const all = withBlocked ? filters : [...filters, ...blockedClauses(filters)];
+  const filtersString = all.length !== 0 ? " & " + all.join(" & ") : "";
   const platformString =
     platform === "all" || !platform
       ? "& platforms = (6,48,167,49,169,130)"
@@ -92,7 +99,7 @@ export async function getAllGames({
     ? `sort ${sortBy} ${sortBy === "name" || (isUpcoming && sortBy === "first_release_date") ? "asc" : "desc"};`
     : "";
 
-  return igdbFetch(
+  const games = await igdbFetch(
     "games",
     `fields ${LIST_FIELDS};
       limit ${limit || LIMIT};
@@ -100,6 +107,7 @@ export async function getAllGames({
       ${sortByString}
       ${buildGamesWhere({ platform, player_perspectives, isUpcoming, isReleased, ...scope })}`,
   );
+  return withoutBlockedGames(games);
 }
 
 // Only games out within this window count as "popular now", so evergreen
@@ -137,8 +145,9 @@ export async function getPopularNowGames(limit) {
   if (!Array.isArray(games)) throw new Error("Failed to load popular games");
 
   const rank = new Map(ids.map((id, i) => [id, i]));
-  games.sort((a, b) => rank.get(a.id) - rank.get(b.id));
-  return pickAcrossGenres(games, limit).sort(
+  const shown = withoutBlockedGames(games);
+  shown.sort((a, b) => rank.get(a.id) - rank.get(b.id));
+  return pickAcrossGenres(shown, limit).sort(
     (a, b) => rank.get(a.id) - rank.get(b.id),
   );
 }
@@ -207,7 +216,7 @@ export async function searchGames({
     `search "${escapeIgdbString(search)}";
       fields ${LIST_FIELDS};
       limit ${poolSize};
-      ${buildGamesWhere({ filters, platform, player_perspectives, isUpcoming, isReleased })}`,
+      ${buildGamesWhere({ filters, platform, player_perspectives, isUpcoming, isReleased, withBlocked: true })}`,
   );
   return rankSearchResults(response, search);
 }
@@ -219,7 +228,7 @@ const QUICK_FIELDS =
 
 export async function quickSearchGames(search, poolSize = 50) {
   const escaped = escapeIgdbString(search);
-  const where = buildGamesWhere({});
+  const where = buildGamesWhere({ withBlocked: true });
   const [searched, contains] = await Promise.all([
     igdbFetch(
       "games",
@@ -323,6 +332,67 @@ export async function getCompany(id) {
   return igdbFetch("companies", `fields name; where id = ${id};`);
 }
 
+// "Never show" search: tags (IGDB keywords, found through the games that
+// carry them, since the proxy has no keywords endpoint) and studios with
+// games out
+export async function searchBlockOptions(text) {
+  const escaped = escapeIgdbString(text);
+  const [games, companies] = await Promise.all([
+    igdbFetch(
+      "games",
+      `fields keywords.name; where keywords.name ~ *"${escaped}"*;
+        sort total_rating_count desc; limit 60;`,
+    ),
+    igdbFetch(
+      "companies",
+      `fields name,published,developed; where name ~ *"${escaped}"* &
+        (published != null | developed != null); limit 50;`,
+    ),
+  ]);
+  const needle = text.toLowerCase();
+  // Keywords most games share first
+  const counts = new Map();
+  for (const game of Array.isArray(games) ? games : [])
+    for (const keyword of game.keywords || [])
+      if (keyword.name?.toLowerCase().includes(needle)) {
+        const entry = counts.get(keyword.id) || { ...keyword, count: 0 };
+        entry.count++;
+        counts.set(keyword.id, entry);
+      }
+  const keywords = [...counts.values()]
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 6)
+    .map(({ id, name }) => ({ kind: "keyword", id, name }));
+  // Studios with the most games first, so "Ubisoft" finds the publisher
+  // before its small branches
+  const gameCount = (c) =>
+    (c.published?.length || 0) + (c.developed?.length || 0);
+  const studios = (Array.isArray(companies) ? companies : [])
+    .sort((a, b) => gameCount(b) - gameCount(a))
+    .slice(0, 6)
+    .map(({ id, name }) => ({ kind: "company", id, name }));
+  return [...keywords, ...studios];
+}
+
+// Every game a studio made or published, so blocked studios can be left out
+export async function getCompanyGameIds(companyIds) {
+  if (!companyIds.length) return [];
+  const companies = await igdbFetch(
+    "companies",
+    `fields published,developed; where id = (${companyIds.join(",")});
+      limit 500;`,
+  );
+  if (!Array.isArray(companies)) throw new Error("Studios didn't load");
+  return [
+    ...new Set(
+      companies.flatMap((c) => [
+        ...(c.published || []),
+        ...(c.developed || []),
+      ]),
+    ),
+  ];
+}
+
 // Tag fields the recommender reads (see src/utils/tasteProfile.js)
 const TASTE_FIELDS =
   "genres.name,themes.name,keywords.name,player_perspectives.name,game_modes.name,involved_companies.company.name,involved_companies.developer,franchises,collections";
@@ -341,8 +411,13 @@ export async function getTasteDetails(ids) {
 // Released, official base games only, with what a pick card needs.
 const CANDIDATE_FIELDS = `name,cover.url,platforms,first_release_date,total_rating,total_rating_count,artworks.url,artworks.artwork_type,artworks.width,remakes,remasters,${TASTE_FIELDS}`;
 // Empty platformIds means any platform
-const candidateWhere = (platformIds = []) => `game_type = (0,8,9) & version_parent = null &
+const candidateWhere = (
+  platformIds = [],
+) => `game_type = (0,8,9) & version_parent = null &
       themes != (42) & keywords != (${UNOFFICIAL_KEYWORDS.join(",")}) &
+      ${blockedClauses()
+        .map((clause) => `${clause} & `)
+        .join("")}
       (game_status = null | game_status != (5,6,7,8)) &
       first_release_date <= ${Math.floor(Date.now() / 1000)}${
         platformIds.length ? ` & platforms = (${platformIds.join(",")})` : ""
@@ -428,5 +503,7 @@ export async function getRecommendationCandidates({
       ),
     );
   const results = await Promise.all(queries);
-  return results.flatMap((result) => (Array.isArray(result) ? result : []));
+  return withoutBlockedGames(
+    results.flatMap((result) => (Array.isArray(result) ? result : [])),
+  );
 }

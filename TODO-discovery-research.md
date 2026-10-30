@@ -21,10 +21,10 @@ Sources: Reddit (via the Arctic Shift Reddit archive, since reddit.com blocks au
 
 ## Priority 1: build next
 
-### 1. Hide whole genres, tags or publishers 🟡 S
-People hate being recommended a genre they never play. Today "Not my style" pushes down games with the same tags (`src/features/games/dismissedGames.js:22`), but there's no explicit "never show me racing / survivor-likes / this publisher" switch.
-Build: a "Never show" list on the For You page and in filters (genre, theme, keyword, publisher), applied to every query and to the AI picks.
-- [ ] [r/Steam - u/Material_Dot2444 - "It's offensive to say the algorithm just gives you what you want...I hate racing games." (2,723 upvotes, 133 comments, Sep 24)](https://www.reddit.com/r/Steam/comments/1wow3fn/) · strict · locks ~Mar 24
+### 1. Hide whole genres, tags or publishers ✅ shipped 2026-10-30
+People hate being recommended a genre they never play.
+Shipped: a "Never show" list (genres, themes, tags, studios) on For You, in the browse filters, and as one-press options in For You's "Not for me" menu. It applies to browse, home rows, For You and the chat's picks; searching a game by name still finds it. Code: `src/features/games/blockedTags.js`.
+- ~~r/Steam - u/Material_Dot2444 - "I hate racing games."~~ Dropped: the post is a troll, not a real request. Don't reply.
 - [ ] [X - @BortBurgoes - tired of seeing "games I've already ignored or stuff from publishers I've already ignored" (Sep 29)](https://x.com/BortBurgoes/status/2105044818703663442)
 - [ ] [X - @BladerLBM - "saturated with this garbage, along with Survivor-likes" (52 likes, Jun 4)](https://x.com/BladerLBM/status/2062648261844885781)
 

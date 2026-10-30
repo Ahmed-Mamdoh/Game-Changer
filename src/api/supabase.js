@@ -328,3 +328,15 @@ export async function getMyPlatforms() {
   const { data, error } = await supabase.auth.getUser();
   return { data: data?.user?.user_metadata?.platforms ?? null, error };
 }
+
+// "Never show" genres, themes, tags and studios, kept on the account like
+// the platforms
+export async function saveBlockedTags(blocked_tags) {
+  const { error } = await supabase.auth.updateUser({ data: { blocked_tags } });
+  return { error };
+}
+
+export async function getBlockedTags() {
+  const { data, error } = await supabase.auth.getUser();
+  return { data: data?.user?.user_metadata?.blocked_tags ?? null, error };
+}

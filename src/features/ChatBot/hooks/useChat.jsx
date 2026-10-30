@@ -1,5 +1,6 @@
 import { streamChatWithGroq } from "@/api/groqApi";
 import { useGetUserGames } from "@/features/User/hooks/useGetUserGames";
+import { BLOCK_KINDS, readBlocked } from "@/features/games/blockedTags";
 import { UserToken } from "@/hooks/useUserToken";
 import { useEffect, useRef, useState } from "react";
 import { buildLibraryContext, toLibraryGames } from "../utils/libraryContext";
@@ -68,6 +69,16 @@ function saveChat(userId, messages) {
 const toSpeech = (text) =>
   text.replace(/\[([^\]]+)\]\([^)]*\)/g, "$1").replace(/[*_#`]/g, "");
 
+// The player's "Never show" list, so the chat never suggests those games
+function neverShowRule() {
+  const blocked = readBlocked();
+  if (!blocked.length) return "";
+  const names = blocked.map(
+    (item) => `${item.name} (${BLOCK_KINDS[item.kind].label.toLowerCase()})`,
+  );
+  return `The user never wants to be shown games with any of these: ${names.join(", ")}. Never suggest such a game, even when it would otherwise fit. If they ask about one by name, you may answer.`;
+}
+
 const getSystemPrompt = (
   context,
   focusGame,
@@ -84,6 +95,7 @@ ${focusGame.facts || `Name: ${focusGame.name}`}
 Base what you say about ${focusGame.name} on these facts. You may not know this game from training, so never invent its story, mechanics or details; if the facts do not cover something, say you don't have that detail.`
           : ""
       }
+      ${neverShowRule()}
       Use this data to provide highly personalized recommendations. If they have many hours in a game or rated it highly, suggest similar titles. If their library is empty, suggest popular starters.
 
       RULES:

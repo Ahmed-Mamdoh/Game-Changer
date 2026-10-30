@@ -6,6 +6,8 @@ import {
 } from "@/features/games/hooks/useQuickStatus";
 import { useRemoveGame } from "@/features/games/hooks/useRemoveGame";
 import LogGameDialog from "@/features/games/components/LogGameDialog";
+import NeverShowDialog from "@/features/games/components/NeverShowDialog";
+import { useBlockedTags } from "@/features/games/hooks/useBlockedTags";
 import {
   PLATFORM_FAMILIES,
   familiesOf,
@@ -23,6 +25,7 @@ import BackdropImage from "@/ui/BackdropImage";
 import { coverUrlOf } from "@/utils/igdbImage";
 import {
   ArrowRight,
+  Ban,
   Bookmark,
   Check,
   ChevronDown,
@@ -210,6 +213,7 @@ function PageHeader({
   platforms,
   hiddenCount,
 }) {
+  const { blocked } = useBlockedTags();
   return (
     <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
       <div className="flex items-baseline gap-3">
@@ -233,6 +237,22 @@ function PageHeader({
             <span className="text-text-dim tabular">{hiddenCount}</span>
           </Link>
         )}
+        <NeverShowDialog
+          trigger={
+            <button
+              type="button"
+              className={`btn-on-art h-9 gap-1.5 px-3 ${
+                blocked.length ? "border-stroke-brand" : ""
+              }`}
+            >
+              <Ban className="h-4 w-4 opacity-80" aria-hidden="true" />
+              Never show
+              {blocked.length > 0 && (
+                <span className="text-text-dim tabular">{blocked.length}</span>
+              )}
+            </button>
+          }
+        />
         {platforms && (
           <PlatformPicker
             selected={platforms.selected}
@@ -257,9 +277,27 @@ function PageHeader({
   );
 }
 
+// The pick's main genres and theme, offered as "Never show" in one press
+function blockOptionsOf(game, has) {
+  return [
+    ...(game.genres || []).slice(0, 2).map(({ id, name }) => ({
+      kind: "genre",
+      id,
+      name,
+    })),
+    ...(game.themes || []).slice(0, 1).map(({ id, name }) => ({
+      kind: "theme",
+      id,
+      name,
+    })),
+  ].filter((item) => item.name && !has(item));
+}
+
 // Asks why before hiding, so the engine knows what to learn from it
-function NotForMeMenu({ game, onDismiss }) {
+function NotForMeMenu({ game, onDismiss, onBlock }) {
   const [open, setOpen] = useState(false);
+  const { has, isFull } = useBlockedTags();
+  const blockOptions = isFull ? [] : blockOptionsOf(game, has);
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger className="btn-on-art h-11 px-4">
@@ -293,6 +331,31 @@ function NotForMeMenu({ game, onDismiss }) {
               <span className="text-text-dim text-xs">{hint}</span>
             </button>
           ))}
+          {blockOptions.length > 0 && (
+            <>
+              <p className="text-text-dim border-stroke-subtle mt-1 border-t px-2.5 pt-2 pb-1 text-xs font-semibold">
+                Never show anywhere
+              </p>
+              {blockOptions.map((item) => (
+                <button
+                  key={`${item.kind}:${item.id}`}
+                  type="button"
+                  role="menuitem"
+                  onClick={() => {
+                    setOpen(false);
+                    onBlock(item);
+                  }}
+                  className="hover:bg-bg-chip focus-visible:bg-bg-chip flex w-full cursor-pointer items-center gap-2 rounded-sm px-2.5 py-2 text-left text-sm font-semibold outline-none"
+                >
+                  <Ban
+                    className="text-pulse-error h-3.5 w-3.5 shrink-0"
+                    aria-hidden="true"
+                  />
+                  {item.name} games
+                </button>
+              ))}
+            </>
+          )}
         </div>
       </PopoverContent>
     </Popover>
@@ -301,7 +364,7 @@ function NotForMeMenu({ game, onDismiss }) {
 
 // Open, wishlist, log as played and "not for me" for the focused pick. Keyed
 // by game so the hooks always point at the game on screen.
-function PickActions({ game, onDismiss, onLogged }) {
+function PickActions({ game, onDismiss, onBlock, onLogged }) {
   const { statusOf, logOf, setStatus } = useQuickStatus();
   const { removeGame } = useRemoveGame(game);
   const status = statusOf(game.id);
@@ -344,12 +407,14 @@ function PickActions({ game, onDismiss, onLogged }) {
         }
       />
 
-      {!status && <NotForMeMenu game={game} onDismiss={onDismiss} />}
+      {!status && (
+        <NotForMeMenu game={game} onDismiss={onDismiss} onBlock={onBlock} />
+      )}
     </div>
   );
 }
 
-function FocusedPick({ game, onDismiss, onLogged, reasonsPending }) {
+function FocusedPick({ game, onDismiss, onBlock, onLogged, reasonsPending }) {
   const { statusOf } = useQuickStatus();
   const status = statusOf(game.id);
   const tie = tieOf(game);
@@ -468,6 +533,7 @@ function FocusedPick({ game, onDismiss, onLogged, reasonsPending }) {
         key={game.id}
         game={game}
         onDismiss={onDismiss}
+        onBlock={onBlock}
         onLogged={onLogged}
       />
     </div>
@@ -479,6 +545,7 @@ function PicksStage({
   index,
   setFocusIndex,
   onDismiss,
+  onBlock,
   onLogged,
   reasonsPending,
   header,
@@ -542,6 +609,7 @@ function PicksStage({
           <FocusedPick
             game={focused}
             onDismiss={onDismiss}
+            onBlock={onBlock}
             onLogged={onLogged}
             reasonsPending={reasonsPending}
           />
@@ -732,6 +800,7 @@ function ForYouPage() {
     dismiss,
     undoDismiss,
   } = useGetRecommendations({ platformIds: platforms.platformIds });
+  const { block, unblock } = useBlockedTags();
   // A new set is on its way: Refresh picks, a platform change, or a log
   const isRebuilding = isRefreshing;
 
@@ -776,6 +845,34 @@ function ForYouPage() {
             className="text-text-brand cursor-pointer font-semibold hover:underline hover:underline-offset-4"
             onClick={() => {
               undoDismiss(game, index);
+              toast.dismiss(t.id);
+            }}
+          >
+            Undo
+          </button>
+        </span>
+      ),
+      { duration: 6000 },
+    );
+  }
+
+  // "Never show" a genre or theme: picks rebuild without it
+  function onBlock(item) {
+    block(item);
+    toast(
+      (t) => (
+        <span className="flex items-center gap-3">
+          <span>
+            {item.name} games won't show anywhere.
+            <span className="text-text-dim block text-xs">
+              Change it any time under Never show.
+            </span>
+          </span>
+          <button
+            type="button"
+            className="text-text-brand cursor-pointer font-semibold hover:underline hover:underline-offset-4"
+            onClick={() => {
+              unblock(item);
               toast.dismiss(t.id);
             }}
           >
@@ -912,6 +1009,7 @@ function ForYouPage() {
         index={index}
         setFocusIndex={setFocusIndex}
         onDismiss={onDismiss}
+        onBlock={onBlock}
         onLogged={onLogged}
         reasonsPending={reasonsPending}
         header={header}

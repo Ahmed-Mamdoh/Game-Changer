@@ -83,6 +83,10 @@ function clearCache(user_id) {
   }
 }
 
+// The saved set is built from old settings ("Never show" changed): the next
+// fetch builds a new one
+export const clearSavedPicks = clearCache;
+
 // After the hidden games change outside For You (Show again, Reset), the
 // next visit builds a fresh set instead of the saved one
 export function forgetPicks(queryClient, user_id) {
