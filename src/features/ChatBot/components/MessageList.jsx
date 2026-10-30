@@ -1,87 +1,90 @@
 import Markdown from "react-markdown";
 import { Link } from "react-router-dom";
 
-function MessageList({ messages, messagesRef, isLoading }) {
+const SITE_URL = "https://game-changer-gg.vercel.app";
+const linkClass = "text-text-brand underline underline-offset-2";
+
+function AssistantMessage({ content, onNavigate }) {
+  return (
+    <div
+      dir="auto"
+      className="text-text-main font-arabic text-sm leading-relaxed [&>*+*]:mt-2"
+    >
+      <Markdown
+        components={{
+          a: ({ href, children }) => {
+            const isInternal =
+              href?.startsWith("/") || href?.startsWith(SITE_URL);
+            if (isInternal) {
+              return (
+                <Link
+                  to={href.replace(SITE_URL, "")}
+                  onClick={onNavigate}
+                  className={linkClass}
+                >
+                  {children}
+                </Link>
+              );
+            }
+            return (
+              <a
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={linkClass}
+              >
+                {children}
+              </a>
+            );
+          },
+          p: ({ children }) => <p dir="auto">{children}</p>,
+          ul: ({ children }) => (
+            <ul className="list-disc space-y-1 ps-5">{children}</ul>
+          ),
+          ol: ({ children }) => (
+            <ol className="list-decimal space-y-1 ps-5">{children}</ol>
+          ),
+          strong: ({ children }) => (
+            <strong className="font-semibold">{children}</strong>
+          ),
+        }}
+      >
+        {content}
+      </Markdown>
+    </div>
+  );
+}
+
+function MessageList({ messages, messagesRef, isLoading, onNavigate }) {
   return (
     <div
       ref={messagesRef}
-      className="flex max-h-[60dvh] min-h-[30dvh] flex-col gap-2 overflow-x-hidden overflow-y-auto"
+      className="flex flex-1 flex-col gap-4 overflow-x-hidden overflow-y-auto px-4 py-4"
     >
-      {messages.map((item, index) => {
-        if (item.role === "user")
-          return (
-            <div key={index} className="chat chat-end">
-              <div className="chat-bubble bg-bg-chip font-arabic rounded-lg text-sm before:hidden">
-                <p dir="auto" className="text-text-main">
-                  {item.content}
-                </p>
-              </div>
-            </div>
-          );
-        if (item.role === "assistant") {
-          return (
-            <div key={index} className="chat chat-start">
-              <div
-                dir="auto"
-                className="chat-bubble bg-bg-base border-stroke-subtle text-text-main font-arabic rounded-lg border text-sm before:hidden"
-              >
-                <Markdown
-                  components={{
-                    a: ({ href, children, ...props }) => {
-                      const isInternal =
-                        href?.startsWith("/") ||
-                        href?.startsWith("https://game-changer-gg.vercel.app");
-                      if (isInternal) {
-                        const to = href.replace(
-                          "https://game-changer-gg.vercel.app",
-                          "",
-                        );
-                        return (
-                          <Link
-                            to={to}
-                            {...props}
-                            className="text-text-brand underline underline-offset-2"
-                          >
-                            {children}
-                          </Link>
-                        );
-                      }
-                      return (
-                        <a
-                          href={href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-text-brand underline underline-offset-2"
-                          {...props}
-                        >
-                          {children}
-                        </a>
-                      );
-                    },
-
-                    p: ({ children, ...props }) => (
-                      <p {...props} dir="auto" className="text-text-main">
-                        {children}
-                      </p>
-                    ),
-                  }}
-                >
-                  {item.content}
-                </Markdown>
-              </div>
-            </div>
-          );
-        }
-      })}
+      {messages.map((item, index) =>
+        item.role === "user" ? (
+          <div
+            key={index}
+            dir="auto"
+            className="bg-bg-chip text-text-main font-arabic max-w-[85%] self-end rounded-2xl rounded-ee-md px-3 py-2 text-sm whitespace-pre-wrap"
+          >
+            {item.content}
+          </div>
+        ) : (
+          <AssistantMessage
+            key={index}
+            content={item.content}
+            onNavigate={onNavigate}
+          />
+        ),
+      )}
       {isLoading && (
         <div
-          className="chat chat-start"
           role="status"
           aria-label="Assistant is typing"
+          className="text-text-dim"
         >
-          <div className="chat-bubble bg-bg-base border-stroke-subtle text-text-dim rounded-lg border before:hidden">
-            <span className="loading loading-dots loading-xs"></span>
-          </div>
+          <span className="loading loading-dots loading-sm"></span>
         </div>
       )}
     </div>

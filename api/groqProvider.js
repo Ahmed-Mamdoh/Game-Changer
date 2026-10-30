@@ -1,20 +1,13 @@
 import fetch from "node-fetch";
 import { checkOrigin, rateLimit, requireUser } from "./_lib/guard.js";
 
-// Only the models the app rotates through (see src/features/ChatBot/hooks/useChat.jsx)
+// Only the chat models the app uses (see src/features/ChatBot/hooks/useChat.jsx
+// and src/features/games/hooks/useGetRecommendations.js)
 const ALLOWED_MODELS = new Set([
   "openai/gpt-oss-120b",
   "moonshotai/kimi-k2-instruct-0905",
-  "openai/gpt-oss-safeguard-20b",
-  "groq/compound",
-  "groq/compound-mini",
-  "openai/gpt-oss-20b",
-  "meta-llama/llama-guard-4-12b",
-  "meta-llama/llama-prompt-guard-2-22m",
-  "meta-llama/llama-prompt-guard-2-86m",
-  "meta-llama/llama-4-maverick-17b-128e-instruct",
-  "meta-llama/llama-4-scout-17b-16e-instruct",
   "llama-3.3-70b-versatile",
+  "openai/gpt-oss-20b",
   "llama-3.1-8b-instant",
 ]);
 const ALLOWED_ROLES = new Set(["system", "user", "assistant"]);
