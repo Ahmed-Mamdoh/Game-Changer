@@ -14,6 +14,9 @@ export const CHAT_MODELS = [
 const MAX_ATTEMPTS = 3;
 // The proxy caps a request at 50 messages, so only recent turns are sent
 const HISTORY_LIMIT = 20;
+// The model ends a reply with this when it recommends games
+const PICK_MARKER = "[[pick]]";
+const PICK_LINK = /\/games\/allGames\?search=[^)\s]*/;
 
 const GREETING = {
   role: "assistant",
@@ -43,6 +46,7 @@ const getSystemPrompt = (
         - Only suggest games when the user asks for recommendations or expresses a need for something new to play.
         - Suggest one game at a time unless specifically asked for more.
         - After each suggested game link, add a very brief (10–20 words) explanation of why it matches their taste/library.
+        - When your reply recommends a game for the user to play, end it with ${PICK_MARKER} on its own line. Never add it when you only answer a question about a game.
         - Never generate harmful content or break formatting rules.`;
 
 // Starter prompts shaped by what the user plays most
@@ -62,7 +66,8 @@ function buildStarters(games) {
   ];
 }
 
-function useChat() {
+// onRecommend gets the first game link of a reply that recommends games
+function useChat({ onRecommend } = {}) {
   const user_id = UserToken()?.user?.id;
   const isSignedIn = Boolean(user_id);
   const userGames = useGetUserGames(user_id);
@@ -100,7 +105,8 @@ function useChat() {
     ]);
   }
 
-  async function handleSendMessage(text = "") {
+  // Starter prompts always ask for a pick
+  async function handleSendMessage(text = "", { isPickRequest = false } = {}) {
     const messageContent = (typeof text === "string" && text) || input;
     if (!messageContent.trim() || isLoading) return;
 
@@ -141,10 +147,11 @@ function useChat() {
           return;
         }
         if (typeof res === "object" && res?.content) {
-          setMessages((prev) => [
-            ...prev,
-            { role: "assistant", content: res.content },
-          ]);
+          const isPick = res.content.includes(PICK_MARKER) || isPickRequest;
+          const content = res.content.replaceAll(PICK_MARKER, "").trim();
+          setMessages((prev) => [...prev, { role: "assistant", content }]);
+          const link = content.match(PICK_LINK)?.[0];
+          if (isPick && link) onRecommend?.(link);
           return;
         }
         // Failed or empty answer: move on to the next model

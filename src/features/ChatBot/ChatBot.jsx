@@ -1,5 +1,6 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import useChat from "./hooks/useChat";
 import ChatTrigger from "./components/ChatTrigger";
 import ChatHeader from "./components/ChatHeader";
@@ -11,6 +12,21 @@ import ChatSignedOut from "./components/ChatSignedOut";
 const isDesktop = () => window.matchMedia("(min-width: 768px)").matches;
 
 export default function ChatBot() {
+  const [open, setOpen] = useState(false);
+  const inputRef = useRef(null);
+  const navigate = useNavigate();
+
+  // The panel covers the page on phones, so following a link closes it
+  function handleNavigate() {
+    if (!isDesktop()) setOpen(false);
+  }
+
+  // A recommended game opens behind the panel so the pick shows right away
+  function handleRecommend(link) {
+    navigate(link);
+    handleNavigate();
+  }
+
   const {
     messages,
     input,
@@ -22,14 +38,7 @@ export default function ChatBot() {
     isSignedIn,
     hasConversation,
     starters,
-  } = useChat();
-  const [open, setOpen] = useState(false);
-  const inputRef = useRef(null);
-
-  // The panel covers the page on phones, so following a link closes it
-  function handleNavigate() {
-    if (!isDesktop()) setOpen(false);
-  }
+  } = useChat({ onRecommend: handleRecommend });
 
   return (
     // Non-modal so the page stays usable while the panel is open on desktop
@@ -62,7 +71,9 @@ export default function ChatBot() {
                 {!hasConversation && (
                   <ChatStarters
                     starters={starters}
-                    onPick={handleSendMessage}
+                    onPick={(text) =>
+                      handleSendMessage(text, { isPickRequest: true })
+                    }
                   />
                 )}
                 <ChatInput
