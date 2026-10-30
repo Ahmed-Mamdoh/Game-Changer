@@ -66,7 +66,8 @@ Shipped: game cards show hours to beat at a normal pace, and the game page shows
 - [ ] [X - @heydemoura - "see how long to beat any game from the home screen" (152 likes, Oct 17)](https://x.com/heydemoura/status/2111525027917058511)
 - [ ] r/gaming - u/Appropriate-Ebb-7525 - "not-too-long story games" (Aug 12) (removed)
 
-### 6. "What should I play next?" from my own backlog ❌ S
+### 6. "What should I play next?" from my own backlog ⛔ dropped 2026-10-30
+Dropped: Game Changer isn't a store like Steam, so users don't own games here and there's no owned library to pick from. The wishlist already covers "games I want to play".
 Big backlogs cause decision paralysis. People want the site to pick from games they already own or wishlisted, not from new ones. We also have no explicit "Backlog" status (wishlist, playing, played, dropped only; `useQuickStatus.js:13`).
 Build: add a "Backlog / Own it" status, plus a "Pick for me" button that chooses from backlog by mood + length + why ("you loved X, this is the closest unplayed one").
 - [ ] [r/gamingsuggestions - u/62lasa - "recommend the next 2 or 3 games i should play out of this backlog" (9 comments, Aug 20)](https://www.reddit.com/r/gamingsuggestions/comments/1vts62r/) · strict · locks ~Feb 20
@@ -76,8 +77,9 @@ Build: add a "Backlog / Own it" status, plus a "Pick for me" button that chooses
 - r/patientgamers - u/Rude_Direction4304 - "How do you decide what to play next when your backlog keeps growing?" (removed)
 - r/patientgamers - u/shwomz - "tips on tracking your backlog and picking what to play next?" (removed)
 
-### 7. Installable app (PWA) ❌ S
+### 7. Installable app (PWA) ✅ shipped 2026-10-30
 Backloggd's most-repeated request on X is a phone app. They're web-only and even had to warn users about fake apps stealing logins. We're already responsive, so a PWA (manifest + icons + offline shell) is cheap and gets us "on the home screen".
+Shipped: a full manifest (name, dark theme so launch doesn't flash white, Browse / For you / Your library shortcuts), new brand icons with a maskable one for Android, and a service worker (`vite-plugin-pwa`) that keeps the app shell, fonts and cover art for offline and never caches `/api`. "Install app" sits at the bottom of the mobile menu and in the footer, and only shows when the browser can install or on iPhone/iPad, where it opens the Share → Add to Home Screen steps and names the only official address. No popup on load. Icons regenerate from `pwa/icon-source.svg` (see `pwa-assets.config.js`).
 - [ ] [X - @trailtexxt - "We need a Backloggd app" (Aug 2)](https://x.com/trailtexxt/status/2083936308724940888)
 - [ ] [X - @fromfireforged - "How much money do I need to give Backloggd devs to make that app on iOS" (Aug 16)](https://x.com/fromfireforged/status/2089012894553833598)
 - [ ] [X - @fableplayss - "I personally hate using backloggd due to it being web only" (Jul 11)](https://x.com/fableplayss/status/2075990520455700684)
@@ -175,8 +177,8 @@ Players trust specific people over critics, and find "taste twins" by who rated 
 9. **Logging as a chore or a flex.** Don't push users to rate every game they ever played. Make logging optional and quick. [@FinalMasonry](https://x.com/FinalMasonry/status/2099943135174328683), [@dmc3lady](https://x.com/dmc3lady/status/2095442294530793965)
 10. **Paywalled customization.** Keep profile basics free. [@cheliseul](https://x.com/cheliseul/status/2103696804533403980)
 11. **Time-to-beat numbers that feel wrong.** Show main / main+extras / completionist ranges and say it depends on playstyle. [@KiwiJuicez](https://x.com/KiwiJuicez/status/2107172125589242136)
-12. **Web-only, no app.** See Priority 1 #7. [@fableplayss](https://x.com/fableplayss/status/2075990520455700684)
-13. **Fake apps phishing logins.** If we ship a PWA, tell users the only official address. [@BackloggdApp](https://x.com/BackloggdApp/status/2103132580011003948)
+12. **Web-only, no app.** Fixed: the site installs as an app (Priority 1 #7). [@fableplayss](https://x.com/fableplayss/status/2075990520455700684)
+13. **Fake apps phishing logins.** The iPhone install steps name the only official address. [@BackloggdApp](https://x.com/BackloggdApp/status/2103132580011003948)
 
 ---
 
