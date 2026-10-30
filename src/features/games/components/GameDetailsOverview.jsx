@@ -8,6 +8,7 @@ import { coverUrlOf } from "@/utils/igdbImage";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { formatDate } from "date-fns";
 import { askAboutGame } from "@/features/ChatBot/chatFocus";
+import { buildGameFacts } from "@/features/ChatBot/utils/gameFacts";
 import { Bookmark, ChevronDown, MessageCircle, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { FaPlaystation, FaSteam, FaXbox } from "react-icons/fa";
@@ -336,6 +337,7 @@ function GameDetailsOverview({ data }) {
                     name,
                     year,
                     cover: coverUrlOf(game, "t_cover_small"),
+                    facts: buildGameFacts(game, ttb),
                   })
                 }
                 className="btn-on-art px-4"

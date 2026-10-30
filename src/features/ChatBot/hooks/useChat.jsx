@@ -3,7 +3,11 @@ import { useGetUserGames } from "@/features/User/hooks/useGetUserGames";
 import { UserToken } from "@/hooks/useUserToken";
 import { useEffect, useRef, useState } from "react";
 import { buildLibraryContext, toLibraryGames } from "../utils/libraryContext";
-import { languageOf, repairGameLinks } from "../utils/replyFormat";
+import {
+  languageOf,
+  repairGameLinks,
+  splitLongParagraphs,
+} from "../utils/replyFormat";
 
 // Chat models Groq still serves, tried in order when one fails
 export const CHAT_MODELS = [
@@ -73,7 +77,13 @@ const getSystemPrompt = (
 
       CONTEXT:
       ${context}
-      ${focusGame ? `The user opened this chat from the page of ${focusGame.name}; questions about "this game" or "it" mean ${focusGame.name}.` : ""}
+      ${
+        focusGame
+          ? `The user opened this chat from the page of ${focusGame.name}; questions about "this game" or "it" mean ${focusGame.name}. Facts about it from the site's game database:
+${focusGame.facts || `Name: ${focusGame.name}`}
+Base what you say about ${focusGame.name} on these facts. You may not know this game from training, so never invent its story, mechanics or details; if the facts do not cover something, say you don't have that detail.`
+          : ""
+      }
       Use this data to provide highly personalized recommendations. If they have many hours in a game or rated it highly, suggest similar titles. If their library is empty, suggest popular starters.
 
       RULES:
@@ -93,6 +103,12 @@ const getSystemPrompt = (
       FORMAT (markdown, read in a narrow chat panel; never one block of text):
         - Recommending one game: one short opening sentence, a blank line, then the game as a bold link with a short hook, like **[Hollow Knight](/games/allGames?search=Hollow%20Knight)** — a vast, haunting metroidvania. Then 2–3 bullets of under 15 words each on why it fits, pointing to their own games or ratings.
         - Recommending several games: a numbered list, one game per item, each **[Name](link)** — a one-line reason.
+        - Describing a game (what is it, what is it about, is it good): always use this shape, never paragraphs:
+          **Hades** is a roguelike action game about escaping the underworld.
+          - **What you do:** fight through changing chambers, gather powers from the gods, and retry after each death.
+          - **Play time:** about 22 hours for the main story.
+          - **Suits:** players who like fast combat and short runs.
+          Use only facts you are sure of, and leave out a bullet you have no facts for.
         - Answering a question: one to three short paragraphs of two or three sentences. Use bullets for lists of facts, steps, or pros and cons. Bold key facts such as hours, prices and platforms.
         - Use ### headings only when an answer has several separate parts.
         - Keep replies under about 120 words unless the user asks for detail.`;
@@ -260,7 +276,7 @@ function useChat({ onRecommend } = {}) {
         }
         if (typeof res === "object" && res?.content) {
           const isPick = res.content.includes(PICK_MARKER) || isPickRequest;
-          const content = cleanReply(res.content);
+          const content = splitLongParagraphs(cleanReply(res.content));
           const reply = { role: "assistant", content };
           setMessages((prev) =>
             started ? [...prev.slice(0, -1), reply] : [...prev, reply],

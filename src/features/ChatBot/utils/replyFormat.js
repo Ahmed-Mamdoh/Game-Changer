@@ -28,3 +28,25 @@ export function repairGameLinks(text) {
 export function languageOf(text) {
   return /[؀-ۿ]/.test(text) ? "Arabic" : "English";
 }
+
+// Models still write the odd wall of text; a paragraph of more than three
+// sentences is split into paragraphs of two. Lists, headings and quotes are
+// left alone.
+const SENTENCE_END = /(?<=[.!?؟])\s+(?=[A-Z؀-ۿ"“*[])/;
+const MAX_SENTENCES = 3;
+
+export function splitLongParagraphs(text) {
+  return text
+    .split(/\n{2,}/)
+    .map((block) => {
+      if (/^\s*([-*+>#]|\d+[.)])\s/.test(block) || block.includes("\n"))
+        return block;
+      const sentences = block.split(SENTENCE_END);
+      if (sentences.length <= MAX_SENTENCES) return block;
+      const paragraphs = [];
+      for (let i = 0; i < sentences.length; i += 2)
+        paragraphs.push(sentences.slice(i, i + 2).join(" "));
+      return paragraphs.join("\n\n");
+    })
+    .join("\n\n");
+}
