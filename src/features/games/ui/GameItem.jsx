@@ -15,6 +15,7 @@ import FavoriteButton from "@/features/games/components/FavoriteButton";
 import LogGameDialog from "@/features/games/components/LogGameDialog";
 import { useRemoveGame } from "@/features/games/hooks/useRemoveGame";
 import { useFavorites } from "@/features/games/hooks/useFavorites";
+import { useGetTimeToBeat } from "@/features/games/hooks/useGetTimeToBeat";
 
 const STORE_ICONS = {
   Steam: FaSteam,
@@ -37,6 +38,13 @@ function formatCountdown(d) {
   return "under a minute";
 }
 
+// IGDB stores seconds; a game under an hour still shows as something
+function storyHours(seconds) {
+  if (!seconds) return null;
+  const hours = Math.round(seconds / 3600);
+  return hours < 1 ? "<1" : String(hours);
+}
+
 function hasValidEnd(endDate) {
   const time = new Date(endDate).getTime();
   return Number.isFinite(time) && time > Date.now();
@@ -53,6 +61,12 @@ function GameItem({ game, className = "" }) {
   const isUnreleased =
     game?.first_release_date &&
     game.first_release_date > Math.floor(Date.now() / 1000);
+  // Giveaway and library cards already have their own line under the title
+  const showsLength = !isUnreleased && !game?.giveAwayLink && !game?.status;
+  const { data: timeToBeat } = useGetTimeToBeat(game.id, {
+    enabled: showsLength,
+  });
+  const toBeat = showsLength ? storyHours(timeToBeat?.[0]?.normally) : null;
 
   const [countDown, setCountDown] = useState(() =>
     hasValidEnd(game?.endDate)
@@ -198,6 +212,15 @@ function GameItem({ game, className = "" }) {
         {!game?.giveAwayLink && isUnreleased && (
           <p className="tabular text-xs">
             {formatReleaseDate(game.first_release_date)}
+          </p>
+        )}
+
+        {toBeat && (
+          <p className="text-text-dim tabular flex items-center gap-1.5 text-xs">
+            <Clock className="h-3.5 w-3.5" aria-hidden="true" />
+            <span>
+              {toBeat} h <span className="text-text-muted">to beat</span>
+            </span>
           </p>
         )}
 

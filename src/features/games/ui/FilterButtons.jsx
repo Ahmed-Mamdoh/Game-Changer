@@ -115,6 +115,7 @@ export function FilterOptions({
   defaultValue = [],
   matchable = false,
   yearRange = false,
+  note,
   inputRef: outerInputRef,
 }) {
   const { isOn, toggle, clear, set, matchAll, setMatchAll } = useFilterParams(
@@ -264,6 +265,11 @@ export function FilterOptions({
           <p className="text-text-muted px-2.5 py-2 text-sm">No matches</p>
         )}
       </div>
+      {note && (
+        <p className="text-text-muted max-w-[32ch] px-2.5 pt-1 pb-1.5 text-xs">
+          {note}
+        </p>
+      )}
       {yearRange && (
         <div className="border-stroke-subtle mt-1 border-t">
           <YearRange onApply={(value) => set(paramName, value)} />

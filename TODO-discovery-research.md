@@ -6,7 +6,7 @@ Sources: Reddit (via the Arctic Shift Reddit archive, since reddit.com blocks au
 
 ## How to read this
 
-- Status: ❌ we don't have it, 🟡 partly have it, ✅ we have it (bottom section, reply now), ⛔ decided not to build.
+- Status: ❌ we don't have it, 🟡 partly have it, ✅ we have it (bottom section, reply now), ⛔ decided not to build, ⏸ skipped for now.
 - Effort: S = a day or two, M = about a week, L = multi-week or needs new data sources.
 - Priority = how often people ask × how cheap it is to build.
 - Each source line has a `[ ] replied` box. Tick it once you've answered that person after shipping.
@@ -48,7 +48,8 @@ Replies: these people still count. Answer as the builder that discovery here has
 - [ ] [X - @PhriekshoTV - "44k games deep in the discovery queue and it's 6/10 games per queue" (Oct 20)](https://x.com/PhriekshoTV/status/2112602144868352074)
 - [ ] [X - @g1itt3rp1peb0mb - "porn game came up on steam discovery queue" (25 likes, Sep 30)](https://x.com/g1itt3rp1peb0mb/status/2105378249237012907)
 
-### 4. Hidden gems: a popular-to-niche slider ❌ S
+### 4. Hidden gems: a popular-to-niche slider ⏸ skipped for now (2026-10-30)
+Skipped: the risk is surfacing hidden trash instead of hidden gems. If it comes back, skip the slider. Use one "Hidden gems" sort with fixed bounds (rating 80+, 10 to 80 ratings, out 6+ months), and test the query on real results before building.
 Steam's home page keeps showing the same popular games. The thing people praise is Steam's "interactive recommender" with a niche/popularity range. Our sorts are Popular, Newest, Most hyped and Soonest. There's no "show me what I've never heard of".
 Build: a "Mainstream ↔ Hidden gem" slider (IGDB `total_rating_count` / hypes bands) on browse and For You, kept alongside the quality floor so niche doesn't turn into junk.
 - [ ] [r/Steam - u/Least_Yard_4327 - "always shoves the same popular games instead of niche or new games" (42 upvotes, Jun 23)](https://www.reddit.com/r/Steam/comments/1udelmc/) · strict · locks ~Dec 23
@@ -58,9 +59,9 @@ Build: a "Mainstream ↔ Hidden gem" slider (IGDB `total_rating_count` / hypes b
 - [ ] [X - @PokeIndie - "Good Indie Games Disappear Too Fast" (25 likes, Oct 13)](https://x.com/PokeIndie/status/2109984473483825198)
 - [ ] r/patientgamers - u/AccomplishedEvent273 - "How do you find hidden gems you missed in the past?" (Aug 5) (removed)
 
-### 5. Filter by length ("short games", "a weekend") 🟡 S
-We already fetch IGDB time-to-beat (`useGetTimeToBeat.js`), but it only shows in the log dialog. People want it on cards and as a filter. HowLongToBeat-at-a-glance plugins get big engagement.
-Build: show the main-story hours on game cards and details, and add a length filter (under 5h, 5-15h, 15-40h, 40h+). Show it as a range, not one number (see Hates: wrong time estimates).
+### 5. Filter by length ("short games", "a weekend") ✅ shipped 2026-10-30
+People want game length on cards and as a filter. HowLongToBeat-at-a-glance plugins get big engagement.
+Shipped: game cards show hours to beat at a normal pace, and the game page shows all three of IGDB's paces (rushed, normal pace, 100%). Browse has a Length menu (under 5 h, 5–15 h, 15–40 h, 40+ h). IGDB's "hastily" time is a rushed run (GTA San Andreas 7 h vs HowLongToBeat's 31 h main story), so the cards and the filter use "normally". Limit: IGDB only has lengths for about 5,400 games, almost all popular ones but only about a third of recent ones, and the filter uses the 500 most-reported games per band. Code: `LENGTH_BANDS` in `src/api/igdbApi.js`.
 - [ ] [X - @Forhanvv - Steam Deck plugin with "HowLongToBeat stats" on the home screen (172 likes, Oct 16)](https://x.com/Forhanvv/status/2110952152969703677)
 - [ ] [X - @heydemoura - "see how long to beat any game from the home screen" (152 likes, Oct 17)](https://x.com/heydemoura/status/2111525027917058511)
 - [ ] r/gaming - u/Appropriate-Ebb-7525 - "not-too-long story games" (Aug 12) (removed)

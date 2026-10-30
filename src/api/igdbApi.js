@@ -91,9 +91,14 @@ export async function getAllGames({
   isUpcoming,
   isReleased,
   player_perspectives,
+  length,
 }) {
   const offset = (page - 1) * LIMIT;
-  const scope = browseScope({ filters, sortBy, isUpcoming });
+  const scope = browseScope({
+    filters: await withLength(filters, length),
+    sortBy,
+    isUpcoming,
+  });
 
   const sortByString = sortBy
     ? `sort ${sortBy} ${sortBy === "name" || (isUpcoming && sortBy === "first_release_date") ? "asc" : "desc"};`
@@ -209,8 +214,10 @@ export async function searchGames({
   player_perspectives,
   isUpcoming,
   isReleased,
+  length,
   poolSize = SEARCH_POOL_SIZE,
 }) {
+  filters = await withLength(filters, length);
   const response = await igdbFetch(
     "games",
     `search "${escapeIgdbString(search)}";
@@ -297,6 +304,7 @@ export async function getNumberOfResults({
   player_perspectives,
   isUpcoming = false,
   sortBy,
+  length,
 }) {
   return igdbFetch(
     "games/count",
@@ -304,7 +312,11 @@ export async function getNumberOfResults({
       platform,
       player_perspectives,
       isUpcoming,
-      ...browseScope({ filters, sortBy, isUpcoming }),
+      ...browseScope({
+        filters: await withLength(filters, length),
+        sortBy,
+        isUpcoming,
+      }),
     }),
   );
 }
@@ -321,11 +333,83 @@ export async function getThemes() {
   return igdbFetch("themes", `fields name; limit 500;`);
 }
 
-export async function getTimeToBeat(id) {
-  return igdbFetch(
-    "game_time_to_beats",
-    `fields completely,hastily,normally; limit 500; where game_id = ${id};`,
-  );
+// Cards ask one game at a time; ids asked in the same tick share one request
+let ttbQueue = null;
+
+export function getTimeToBeat(id) {
+  if (!ttbQueue) {
+    const queue = new Map();
+    ttbQueue = queue;
+    setTimeout(async () => {
+      ttbQueue = null;
+      const ids = [...queue.keys()];
+      try {
+        const rows = await igdbFetch(
+          "game_time_to_beats",
+          `fields game_id,completely,hastily,normally; limit 500; where game_id = (${ids.join(",")});`,
+        );
+        // A rate-limited reply is an error object; throw so the query retries
+        if (!Array.isArray(rows)) throw new Error("Time to beat failed");
+        for (const [gameId, { resolve }] of queue)
+          resolve(rows.filter((row) => String(row.game_id) === gameId));
+      } catch (err) {
+        for (const { reject } of queue.values()) reject(err);
+      }
+    }, 0);
+  }
+  const key = String(id);
+  const queued = ttbQueue.get(key);
+  if (queued) return queued.promise;
+  let resolve, reject;
+  const promise = new Promise((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
+  ttbQueue.set(key, { promise, resolve, reject });
+  return promise;
+}
+
+// Hours to beat at a normal pace per Length option. IGDB stores seconds;
+// its "hastily" time is a rushed run and reads far too short.
+export const LENGTH_BANDS = {
+  short: [0, 5],
+  medium: [5, 15],
+  long: [15, 40],
+  epic: [40, null],
+};
+
+const lengthIdsCache = new Map();
+
+// Ids of games whose time to beat falls in the band. An IGDB query only takes
+// so many ids, so it keeps the 500 with the most player reports.
+function lengthIds(length) {
+  const band = LENGTH_BANDS[length];
+  if (!band) return null;
+  if (!lengthIdsCache.has(length)) {
+    const [from, to] = band;
+    const where = [
+      `normally >= ${from * 3600}`,
+      to && `normally < ${to * 3600}`,
+    ]
+      .filter(Boolean)
+      .join(" & ");
+    const request = igdbFetch(
+      "game_time_to_beats",
+      `fields game_id; where ${where}; sort count desc; limit 500;`,
+    ).then((rows) => {
+      if (!Array.isArray(rows)) throw new Error("Length lookup failed");
+      return rows.map((row) => row.game_id);
+    });
+    request.catch(() => lengthIdsCache.delete(length));
+    lengthIdsCache.set(length, request);
+  }
+  return lengthIdsCache.get(length);
+}
+
+async function withLength(filters, length) {
+  const ids = await lengthIds(length);
+  if (!ids) return filters;
+  return [...filters, ids.length ? `id = (${ids.join(",")})` : "id = 0"];
 }
 
 export async function getCompany(id) {

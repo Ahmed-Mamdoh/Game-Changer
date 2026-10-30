@@ -6,8 +6,15 @@ import useGetFiltersParams from "./useGetFiltersParams";
 import { useSearchGames } from "./useSearchGames";
 
 export function useGetAllGames() {
-  const { filters, sortBy, platform, page, search, player_perspectives } =
-    useGetFiltersParams();
+  const {
+    filters,
+    sortBy,
+    platform,
+    page,
+    search,
+    player_perspectives,
+    length,
+  } = useGetFiltersParams();
   const queryClient = useQueryClient();
 
   const searchQuery = useSearchGames();
@@ -21,6 +28,7 @@ export function useGetAllGames() {
     sortBy,
     platform,
     player_perspectives,
+    length,
   ];
   const browseFn = (pageNumber) => () =>
     getAllGames({
@@ -29,6 +37,7 @@ export function useGetAllGames() {
       sortBy: sortBy || DEFAULT_BROWSE_SORT,
       page: pageNumber,
       player_perspectives,
+      length,
     });
 
   const browseQuery = useQuery({

@@ -34,11 +34,15 @@ export function buildGameFacts(game, timeToBeat) {
         : null,
     ],
     [
-      "Main story",
+      "Time to beat, rushed",
       hours(timeToBeat?.hastily) && `${hours(timeToBeat.hastily)} hours`,
     ],
     [
-      "Completionist",
+      "Time to beat, normal pace",
+      hours(timeToBeat?.normally) && `${hours(timeToBeat.normally)} hours`,
+    ],
+    [
+      "Time to beat, 100%",
       hours(timeToBeat?.completely) && `${hours(timeToBeat.completely)} hours`,
     ],
     [

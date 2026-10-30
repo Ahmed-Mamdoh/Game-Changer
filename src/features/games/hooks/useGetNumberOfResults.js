@@ -4,7 +4,7 @@ import useGetFiltersParams from "./useGetFiltersParams";
 import { useSearchGames } from "./useSearchGames";
 
 export function useGetNumberOfResults(path) {
-  const { filters, search, platform, player_perspectives, sortBy } =
+  const { filters, search, platform, player_perspectives, sortBy, length } =
     useGetFiltersParams();
   const isUpcoming = path.includes("/upcomingGames");
   const isSearch = Boolean(search) && !isUpcoming;
@@ -19,6 +19,7 @@ export function useGetNumberOfResults(path) {
         player_perspectives,
         isUpcoming,
         sortBy: sortBy || DEFAULT_BROWSE_SORT,
+        length,
       };
 
   const searchQuery = useSearchGames();
@@ -30,6 +31,7 @@ export function useGetNumberOfResults(path) {
       countParams.platform || null,
       countParams.player_perspectives || null,
       countParams.sortBy || null,
+      countParams.length || null,
     ],
     queryFn: () => getNumberOfResults(countParams),
     enabled: !isSearch,

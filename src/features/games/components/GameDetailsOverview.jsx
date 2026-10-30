@@ -244,18 +244,19 @@ function GameDetailsOverview({ data }) {
                     }
                     value={rating ? Math.round(rating) : null}
                   />
+                  {/* IGDB's three player-reported paces */}
                   <Fact
-                    label="main story"
+                    label="rushed"
                     value={hoursOf(ttb?.hastily) && `${hoursOf(ttb.hastily)} h`}
                   />
                   <Fact
-                    label="main + extras"
+                    label="normal pace"
                     value={
                       hoursOf(ttb?.normally) && `${hoursOf(ttb.normally)} h`
                     }
                   />
                   <Fact
-                    label="completionist"
+                    label="100%"
                     value={
                       hoursOf(ttb?.completely) && `${hoursOf(ttb.completely)} h`
                     }

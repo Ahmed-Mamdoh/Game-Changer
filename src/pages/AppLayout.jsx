@@ -37,7 +37,15 @@ function AppLayout() {
       queryFn: getGameModes,
     });
     queryClient.prefetchQuery({
-      queryKey: ["numberOfResults", "all", [], null, null, DEFAULT_BROWSE_SORT],
+      queryKey: [
+        "numberOfResults",
+        "all",
+        [],
+        null,
+        null,
+        DEFAULT_BROWSE_SORT,
+        null,
+      ],
       queryFn: () =>
         getNumberOfResults({
           filters: [],
@@ -50,7 +58,7 @@ function AppLayout() {
       queryFn: () => getNumberOfResults({ filters: [], isUpcoming: true }),
     });
     queryClient.prefetchQuery({
-      queryKey: ["games", "all", 1, null, [], null, null, null],
+      queryKey: ["games", "all", 1, null, [], null, null, null, null],
       queryFn: () => getAllGames({ sortBy: DEFAULT_BROWSE_SORT, page: 1 }),
     });
     queryClient.prefetchQuery({

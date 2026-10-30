@@ -82,6 +82,14 @@ const RATINGS = [
   { id: "60", name: "60+ Decent" },
 ];
 
+// Hours to beat at a normal pace; ids match LENGTH_BANDS in igdbApi
+const LENGTHS = [
+  { id: "short", name: "Under 5 hours" },
+  { id: "medium", name: "5–15 hours" },
+  { id: "long", name: "15–40 hours" },
+  { id: "epic", name: "40+ hours" },
+];
+
 // Year ranges are stored as "from..to"; a range typed by hand that isn't a
 // preset joins the list so it can show as picked
 function releasedOptions(current) {
@@ -107,13 +115,14 @@ function releasedOptions(current) {
 }
 
 // Upcoming games have no platforms worth filtering yet, and no release date,
-// rating or development stage to filter on
+// rating, length or development stage to filter on
 export const UPCOMING_FILTERS = {
   isUpcoming: true,
   showPlatform: false,
   showPerspective: false,
   showReleased: false,
   showRating: false,
+  showLength: false,
   showStage: false,
 };
 
@@ -144,6 +153,7 @@ export function useFilterMenus({
   showPerspective = true,
   showReleased = true,
   showRating = true,
+  showLength = true,
   showStage = true,
 } = {}) {
   const [searchParams] = useSearchParams();
@@ -221,6 +231,15 @@ export function useFilterMenus({
       sort: false,
       or: true,
       icon: Star,
+    },
+    showLength && {
+      category: LENGTHS,
+      name: "Length",
+      paramName: "length",
+      sort: false,
+      or: true,
+      icon: Clock,
+      note: "Time to beat at a normal pace, from IGDB player reports. Games nobody has timed yet are left out.",
     },
     showStage && {
       category: STAGES,

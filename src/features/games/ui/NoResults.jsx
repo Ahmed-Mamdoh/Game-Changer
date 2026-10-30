@@ -27,11 +27,18 @@ function NoResults({ isUpcoming = false, menuOptions }) {
   const counts = useQueries({
     queries: chips.map((chip) => {
       const next = withoutItem(searchParams, chip.filter, chip.item);
-      const { filters, platform, player_perspectives } =
+      const { filters, platform, player_perspectives, length } =
         filtersFromParams(next, libraryIds);
       const params = isUpcoming
         ? { filters, isUpcoming }
-        : { filters, platform, player_perspectives, isUpcoming, sortBy };
+        : {
+            filters,
+            platform,
+            player_perspectives,
+            isUpcoming,
+            sortBy,
+            length,
+          };
       return {
         queryKey: [
           "numberOfResults",
@@ -40,6 +47,7 @@ function NoResults({ isUpcoming = false, menuOptions }) {
           params.platform || null,
           params.player_perspectives || null,
           params.sortBy || null,
+          params.length || null,
         ],
         queryFn: () => getNumberOfResults(params),
         enabled: !search,

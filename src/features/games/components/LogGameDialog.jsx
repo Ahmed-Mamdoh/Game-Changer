@@ -157,9 +157,8 @@ function LogGameDialog({
   const year = releaseDate ? new Date(releaseDate * 1000).getFullYear() : null;
   const ttb = timeToBeat?.[0];
   const ttbHint = [
-    hoursOf(ttb?.hastily) && `main story about ${hoursOf(ttb.hastily)} h`,
-    hoursOf(ttb?.completely) &&
-      `completionist about ${hoursOf(ttb.completely)} h`,
+    hoursOf(ttb?.normally) && `about ${hoursOf(ttb.normally)} h to beat`,
+    hoursOf(ttb?.completely) && `about ${hoursOf(ttb.completely)} h for 100%`,
   ]
     .filter(Boolean)
     .join(", ");

@@ -1,5 +1,6 @@
 import { useGetUserGames } from "@/features/User/hooks/useGetUserGames";
 import { UserToken } from "@/hooks/useUserToken";
+import { LENGTH_BANDS } from "@/api/igdbApi";
 import { useSearchParams } from "react-router-dom";
 
 // URL values go straight into the IGDB query, so only digits get through
@@ -44,6 +45,10 @@ export function filtersFromParams(searchParams, libraryIds = []) {
   const platform = ids(searchParams.get("platform")).join(",") || null;
   const player_perspectives =
     ids(searchParams.get("player_perspectives")).join(",") || null;
+  // Resolved to game ids in igdbApi, since IGDB keeps lengths apart from games
+  const length = LENGTH_BANDS[searchParams.get("length")]
+    ? searchParams.get("length")
+    : null;
 
   const filters = [];
 
@@ -83,7 +88,7 @@ export function filtersFromParams(searchParams, libraryIds = []) {
     );
   }
 
-  return { filters, platform, player_perspectives };
+  return { filters, platform, player_perspectives, length };
 }
 
 // Ids of every game in the signed-in user's library, sorted so the query key
