@@ -1,4 +1,5 @@
 import { UserToken } from "@/hooks/useUserToken";
+import { isMoodClause } from "./moods";
 
 // "Never show": genres, themes, keywords and studios the player never wants
 // recommended. The list lives on the account (user_metadata, like the
@@ -84,11 +85,12 @@ export function writeBlockedGameIds(user_id, companyIds, gameIds) {
 }
 
 // Ids a filter string picks on purpose ("genres = (10)"): browsing Racing
-// on purpose shows racing games even when Racing is blocked
+// on purpose shows racing games even when Racing is blocked. A mood is not a
+// pick on purpose, so its clause is skipped.
 function pickedIds(filters, field) {
   const ids = new Set();
   const pattern = new RegExp(`\\b${field}\\s*=\\s*[([{]([\\d,\\s]+)`, "g");
-  for (const filter of filters)
+  for (const filter of filters.filter((filter) => !isMoodClause(filter)))
     for (const match of String(filter).matchAll(pattern))
       match[1]
         .split(",")

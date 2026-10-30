@@ -4,6 +4,7 @@ import { useGetPopularNow } from "@/features/games/hooks/useGetPopularNow";
 import { useGetUpcomingGames } from "@/features/games/hooks/useGetUpcomingGames";
 import HeroSection from "@/ui/HeroSection";
 import HomeSection from "@/ui/HomeSection";
+import MoodRow from "@/ui/MoodRow";
 import { Helmet } from "react-helmet-async";
 
 function Home() {
@@ -42,6 +43,7 @@ function Home() {
 
       <HeroSection popularGames={popularNow} isLoading={isLoadingPopularNow} />
       <div className="mx-auto flex max-w-[1440px] flex-col gap-12 pt-4 pb-24">
+        <MoodRow />
         <HomeSection
           sectionName="Free to keep now"
           data={freeGames}

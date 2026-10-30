@@ -89,9 +89,10 @@ Shipped: a full manifest (name, dark theme so launch doesn't flash white, Browse
 
 ## Priority 2: strong demand, more work
 
-### 8. Mood-based discovery 🟡 M
+### 8. Mood-based discovery 🟡 browse + home shipped 2026-10-30, For You next
 The most-commented request posts are moods, not genres: "wreck me emotionally", "low stakes, aimless", "cozy but simple". Our AI chat can handle this, but there's no mood entry point on browse.
-Build: mood chips on Home/For You (Emotional, Cozy & low-stakes, Brain-off action, Scary-but-mild, Mind-bending) mapped to IGDB themes/keywords + AI re-rank.
+Shipped: five moods (Emotional, Cozy & low-stakes, Brain-off action, Scary but mild, Mind-bending), each an IGDB keyword/theme/genre query checked by hand on real results. Browse has a mood chip row (`?mood=`, one at a time, combines with every filter and the search), and the empty state offers to drop the mood. Home has a "Pick a mood" row of art tiles that open Browse on that mood, most popular first. A mood never overrides Never show. Code: `src/features/games/moods.js`.
+Still to build: mood chips on For You with the AI re-rank (mood candidates, a mood boost in scoring, the mood in the model's reasons, saved picks per mood).
 - [ ] [r/gamingsuggestions - u/Daedalparacosm3000 - "recommend me a game that will wreck me emotionally?" (203 upvotes, 668 comments, Oct 22)](https://www.reddit.com/r/gamingsuggestions/comments/1xc5he2/) · strict · locks ~Apr 22
 - [ ] [r/gamingsuggestions - u/isthisevenreal1765 - "truly aimless, task-less, low stakes game ...during a rough mental patch" (32 comments, Oct 18)](https://www.reddit.com/r/gamingsuggestions/comments/1x9gmsf/) · strict · locks ~Apr 18
 - [ ] [r/gaming - u/Bananafoofoofwee - "Please recommend some mildly scary games." (246 comments, Oct 14)](https://www.reddit.com/r/gaming/comments/1x66jbt/) · strict · locks ~Apr 14

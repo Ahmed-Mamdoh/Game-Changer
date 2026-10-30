@@ -1,5 +1,6 @@
 import Filters from "@/features/games/ui/Filters";
 import FullPagination from "@/features/games/ui/FullPagination";
+import MoodPicker from "@/features/games/ui/MoodPicker";
 import { UPCOMING_FILTERS } from "@/features/games/hooks/useFilterMenus";
 import { useGetNumberOfResults } from "@/features/games/hooks/useGetNumberOfResults";
 import Spinner from "@/ui/Spinner";
@@ -7,7 +8,12 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import { Outlet, useLocation, useSearchParams } from "react-router-dom";
 
 const PAGES = {
-  "/games/allGames": { title: "Browse games", noun: "games", filters: {} },
+  "/games/allGames": {
+    title: "Browse games",
+    noun: "games",
+    filters: {},
+    moods: true,
+  },
   "/games/upcomingGames": {
     title: "Upcoming",
     noun: "upcoming games",
@@ -68,6 +74,7 @@ function GameDiscoveryLayout() {
           ) : (
             page.note && <p className="max-w-[65ch]">{page.note}</p>
           )}
+          {page.moods && <MoodPicker className="mt-4" />}
         </header>
       </div>
 
