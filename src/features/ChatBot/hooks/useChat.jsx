@@ -3,6 +3,7 @@ import { useGetUserGames } from "@/features/User/hooks/useGetUserGames";
 import { UserToken } from "@/hooks/useUserToken";
 import { useEffect, useRef, useState } from "react";
 import { buildLibraryContext, toLibraryGames } from "../utils/libraryContext";
+import { languageOf, repairGameLinks } from "../utils/replyFormat";
 
 // Chat models Groq still serves, tried in order when one fails
 export const CHAT_MODELS = [
@@ -15,12 +16,15 @@ const MAX_ATTEMPTS = 3;
 const HISTORY_LIMIT = 20;
 // The model ends a reply with this when it recommends games
 const PICK_MARKER = "[[pick]]";
-// Hides the marker, including a half-written one at the end of a stream
+// Hides the marker, including a half-written one at the end of a stream,
+// and rebuilds game links the model wrote in the wrong shape
 const cleanReply = (text) =>
-  text
-    .replaceAll(PICK_MARKER, "")
-    .replace(/\[\[[a-z]*\]?$/, "")
-    .trim();
+  repairGameLinks(
+    text
+      .replaceAll(PICK_MARKER, "")
+      .replace(/\[\[[a-z]*\]?$/, "")
+      .trim(),
+  );
 const PICK_LINK = /\/games\/allGames\?search=[^)\s]*/;
 
 const GREETING = {
@@ -63,6 +67,7 @@ const toSpeech = (text) =>
 const getSystemPrompt = (
   context,
   focusGame,
+  language,
 ) => `You are a specialized AI assistant for a gaming website called Game Changer.
       Your role is to help PC gamers discover games that match their preferences while being friendly, concise, and knowledgeable.
 
@@ -76,10 +81,10 @@ const getSystemPrompt = (
         - If asked about non-gaming topics, politely refuse and redirect.
         - Handle greetings and small talk naturally without forcing a recommendation immediately.
         - Keep responses short, direct, and in markdown.
-        - ALWAYS format game suggestions exactly like this: [Game Name](/games/allGames?search=Game%20Name)
+        - ALWAYS write every game you suggest as a markdown link: the name in square brackets, then the address in round brackets, like [Hollow Knight](/games/allGames?search=Hollow%20Knight). Never bold the name instead, never put the address in square brackets, never write the address on its own.
         - Mention each game only once. Never repeat games.
         - Never recommend a game that is already in the user's library.
-        - Respond in the user's language. Try to start the message in their language.
+        - Write your whole reply in ${language}, the language of the user's latest message. Never switch to any other language, even for a greeting.
         - Answer in one paragraph without bullet points unless specifically asked for a list.
         - Keep the tone friendly and "gamer-like". No emojis unless the user uses them first.
         - Only suggest games when the user asks for recommendations or expresses a need for something new to play.
@@ -192,7 +197,14 @@ function useChat({ onRecommend } = {}) {
       .slice(-HISTORY_LIMIT)
       .map(({ role, content }) => ({ role, content }));
     const payload = [
-      { role: "system", content: getSystemPrompt(userGamesContext, focusGame) },
+      {
+        role: "system",
+        content: getSystemPrompt(
+          userGamesContext,
+          focusGame,
+          languageOf(messageContent),
+        ),
+      },
       ...history,
     ];
 
