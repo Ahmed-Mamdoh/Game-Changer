@@ -1,20 +1,33 @@
 import { BsNintendoSwitch, BsPcDisplay } from "react-icons/bs";
 import { FaPlaystation, FaXbox } from "react-icons/fa";
 import {
+  GiApc,
+  GiAura,
   GiBearFace,
   GiBrain,
+  GiBrickWall,
   GiBroadsword,
+  GiBullets,
   GiCampfire,
+  GiCardPlay,
   GiCardRandom,
+  GiCastle,
   GiChessKnight,
   GiClick,
   GiCompass,
-  GiCrosshair,
+  GiConsoleController,
   GiCrossedSwords,
+  GiCrosshair,
+  GiCutDiamond,
+  GiCycle,
   GiDiceTwentyFacesTwenty,
   GiDragonHead,
   GiDramaMasks,
+  GiDrumKit,
+  GiDungeonGate,
+  GiEggClutch,
   GiExplosionRays,
+  GiFamilyHouse,
   GiFloatingPlatforms,
   GiGears,
   GiGhost,
@@ -24,8 +37,15 @@ import {
   GiHood,
   GiHourglass,
   GiJesterHat,
+  GiJetFighter,
+  GiJigsawBox,
   GiJoystick,
+  GiJumpAcross,
+  GiKatana,
+  GiLoveLetter,
+  GiMachineGun,
   GiMagnifyingGlass,
+  GiModernCity,
   GiMoneyStack,
   GiMusicalNotes,
   GiNewspaper,
@@ -37,21 +57,33 @@ import {
   GiPulse,
   GiPunch,
   GiPuzzle,
+  GiQuill,
   GiRaceCar,
+  GiRobotGolem,
   GiRocket,
-  GiSandCastle,
-  GiSoccerBall,
-  GiSprout,
-  GiTank,
-  GiTrebuchet,
-  GiWorld,
-  GiBullets,
-  GiCardPlay,
-  GiCycle,
-  GiModernCity,
   GiRollingDices,
+  GiSandCastle,
+  GiSandsOfTime,
+  GiShamblingZombie,
+  GiSherlockHolmes,
+  GiShotgun,
   GiSkullCrossedBones,
+  GiSoccerBall,
+  GiSpaceship,
+  GiSprout,
+  GiSpyglass,
+  GiStoneTower,
+  GiSwordsPower,
+  GiTakeMyMoney,
+  GiTank,
+  GiTargetArrows,
+  GiTeapot,
   GiTreasureMap,
+  GiTrebuchet,
+  GiVillage,
+  GiWalkingBoot,
+  GiWheat,
+  GiWorld,
 } from "react-icons/gi";
 
 // Keyed by IGDB id; genres and themes share ids, so they're kept apart
@@ -114,6 +146,38 @@ export const SUBGENRE_ICONS = {
   5: GiCardPlay, // Deckbuilder
   6: GiBullets, // Bullet hell
   7: GiModernCity, // City builder
+  8: GiStoneTower, // Tower defense
+  9: GiShamblingZombie, // Survival horror
+  10: GiKatana, // JRPG
+  11: GiWalkingBoot, // Walking simulator
+  12: GiSherlockHolmes, // Detective
+  13: GiDrumKit, // Rhythm
+  14: GiDungeonGate, // Dungeon crawler
+  15: GiFamilyHouse, // Life sim
+  16: GiWheat, // Farming sim
+  17: GiJumpAcross, // Precision platformer
+  18: GiJigsawBox, // Puzzle platformer
+  19: GiSpaceship, // Shoot 'em up
+  20: GiConsoleController, // Twin-stick shooter
+  21: GiTakeMyMoney, // Tycoon & management
+  22: GiSandsOfTime, // Idle & incremental
+  23: GiSpyglass, // Hidden object
+  24: GiLoveLetter, // Dating sim
+  25: GiCutDiamond, // Match 3
+  26: GiEggClutch, // Monster taming
+  27: GiBrickWall, // Base building
+  28: GiRobotGolem, // Mecha
+  29: GiJetFighter, // Flight sim
+  30: GiSwordsPower, // Auto battler
+  31: GiCastle, // Grand strategy
+  32: GiTeapot, // Cozy
+  33: GiShotgun, // Boomer shooter
+  34: GiMachineGun, // Run and gun
+  35: GiTargetArrows, // Arena shooter
+  36: GiApc, // Vehicular combat
+  37: GiQuill, // Interactive fiction
+  38: GiAura, // God game
+  39: GiVillage, // Colony sim
 };
 
 export const PLATFORM_ICONS = {
