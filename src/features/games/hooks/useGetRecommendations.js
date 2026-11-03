@@ -24,6 +24,7 @@ import {
   libraryGameWeight,
   pickVaried,
   scoreCandidate,
+  searchKeywordIds,
   sourceGames,
   topIdsOfType,
   withRarity,
@@ -38,7 +39,7 @@ import {
 // 4. the model only chooses from that shortlist by id and writes the reasons.
 // If the model fails, the scored shortlist still gives picks.
 
-const CACHE_PREFIX = "recommendations:v8:";
+const CACHE_PREFIX = "recommendations:v10:";
 const SEEN_PREFIX = "recommendations:seen:";
 // How hard a "Not my style" game pulls against its tags; a dropped game with
 // no rating weighs -0.8
@@ -334,7 +335,7 @@ export async function buildPicks({
     similarIds: [...new Set(similarIds)].slice(0, 200),
     genreIds: topIdsOfType(baseProfile, "genre", 2),
     themeIds: topIdsOfType(baseProfile, "theme", 3),
-    keywordIds: topIdsOfType(baseProfile, "keyword", 6),
+    keywordIds: searchKeywordIds(baseProfile),
     studioIds: likedKeys(links.byStudio, 3),
     seriesKeys: likedKeys(links.bySeries, 1),
     platformIds,

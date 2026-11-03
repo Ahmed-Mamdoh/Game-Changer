@@ -539,15 +539,18 @@ export async function getRecommendationCandidates({
           limit 80;`,
       ),
     );
-  if (keywordIds.length)
-    queries.push(
+  // One query per keyword, so a niche tag (soulslike) gets its own slots
+  // instead of losing them to a broad one that matches far more games. They
+  // run after the others: IGDB allows only 8 open requests at a time.
+  const keywordQueries = () =>
+    keywordIds.map((id) =>
       igdbFetch(
         "games",
         `fields ${CANDIDATE_FIELDS};
-          where keywords = (${keywordIds.join(",")}) &
+          where keywords = (${id}) &
             total_rating_count > 25 & ${candidateWhere(platformIds)};
           sort total_rating_count desc;
-          limit 80;`,
+          limit 30;`,
       ),
     );
   // More from the studios and series the player keeps coming back to
@@ -586,7 +589,10 @@ export async function getRecommendationCandidates({
           limit 60;`,
       ),
     );
-  const results = await Promise.all(queries);
+  const results = [
+    ...(await Promise.all(queries)),
+    ...(await Promise.all(keywordQueries())),
+  ];
   return withoutBlockedGames(
     results.flatMap((result) => (Array.isArray(result) ? result : [])),
   );

@@ -98,7 +98,13 @@ export function buildTasteProfile(entries) {
   }
   for (const type in norms) norms[type] = Math.sqrt(norms[type]);
 
-  return { taste, norms, names, topTags: topTagsOf(taste, names) };
+  return {
+    taste,
+    norms,
+    names,
+    signature: signatureOf(taste, names),
+    topTags: topTagsOf(taste, names),
+  };
 }
 
 // The tags that define this player, for prompts and the page
@@ -142,6 +148,38 @@ export function withRarity(profile, pool) {
     topTags: topTagsOf(taste, profile.names),
   };
 }
+
+// Keywords that match a huge share of IGDB, or repeat what genres, themes and
+// perspectives already say. They still count toward fit, but searching on
+// "3d" fills the pool with any popular 3D game.
+const BROAD_KEYWORD =
+  /^(2d|2\.5d|3d|story rich|magic|atmospheric|great soundtrack|singleplayer|single-player|multiplayer|customizable characters|character customization|female protagonist|male protagonist|pixel art|pixel graphics|first-person|third person|third-person|fantasy|sci-fi|action|adventure|violence|death|blood)$/i;
+
+const SIGNATURE_COUNT = 5;
+
+// The player's signature keywords (soulslike, boss fight), each with a 0-1
+// strength: the strongest library keywords, minus the broad ones. Measured on
+// the library, not the candidate pool, because the pool is searched by these
+// very tags and would make them look common.
+function signatureOf(taste, names) {
+  const top = [...taste]
+    .filter(
+      ([key, value]) =>
+        typeOf(key) === "keyword" &&
+        value > 0 &&
+        !BROAD_KEYWORD.test(names.get(key) || ""),
+    )
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, SIGNATURE_COUNT);
+  const strongest = top[0]?.[1] || 1;
+  return new Map(top.map(([key, value]) => [key, value / strongest]));
+}
+
+// Keyword ids worth searching IGDB for
+export const searchKeywordIds = (profile) =>
+  [...profile.signature.keys()].map((key) =>
+    Number(key.slice("keyword:".length)),
+  );
 
 export function topIdsOfType(profile, type, count) {
   return [...profile.taste]
@@ -258,9 +296,10 @@ export function scoreCandidate(profile, candidate, links) {
   const liked = (sources) => sources.filter((s) => s.weight > 0);
   const disliked = (sources) => sources.filter((s) => s.weight < 0);
 
-  // One liked game in a series is enough for a sequel to matter
+  // One liked game in a series is enough for a sequel to matter, but kept
+  // small so a sequel wins only when it also fits the player's taste
   const seriesBoost =
-    Math.min(sumWeights(liked(series)) / 2, 1) * 0.3 -
+    Math.min(sumWeights(liked(series)) / 2, 1) * 0.15 -
     Math.min(-sumWeights(disliked(series)) / 2, 1) * 0.2;
   // A studio counts once the player liked two or more of its games
   const studioBoost =
@@ -271,9 +310,23 @@ export function scoreCandidate(profile, candidate, links) {
   const similarBoost =
     Math.min(sumWeights(liked(similar)), 4) * 0.04 -
     disliked(similar).length * 0.08;
+  // Cosine spreads one keyword across hundreds, so a soulslike fan's
+  // soulslikes barely stand out; sharing about three signature tags in full
+  // gives the whole bonus
+  let signatureMatch = 0;
+  for (const key of gameFeatures(candidate).keys())
+    signatureMatch += profile.signature?.get(key) || 0;
+  const signatureBoost = Math.min(signatureMatch / 3, 1) * 0.2;
 
   const fit = Math.min(
-    Math.max(similarity * 0.7 + seriesBoost + studioBoost + similarBoost, 0),
+    Math.max(
+      similarity * 0.7 +
+        seriesBoost +
+        studioBoost +
+        similarBoost +
+        signatureBoost,
+      0,
+    ),
     1,
   );
   const score =
