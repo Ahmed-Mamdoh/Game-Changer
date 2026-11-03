@@ -45,6 +45,13 @@ import {
   GiTank,
   GiTrebuchet,
   GiWorld,
+  GiBullets,
+  GiCardPlay,
+  GiCycle,
+  GiModernCity,
+  GiRollingDices,
+  GiSkullCrossedBones,
+  GiTreasureMap,
 } from "react-icons/gi";
 
 // Keyed by IGDB id; genres and themes share ids, so they're kept apart
@@ -96,6 +103,17 @@ export const THEME_ICONS = {
   41: GiPlanetConquest, // 4X
   43: GiMagnifyingGlass, // Mystery
   44: GiHearts, // Romance
+};
+
+// Keyed by SUBGENRES id in useGetFiltersParams
+export const SUBGENRE_ICONS = {
+  1: GiRollingDices, // Roguelike
+  2: GiCycle, // Roguelite
+  3: GiSkullCrossedBones, // Soulslike
+  4: GiTreasureMap, // Metroidvania
+  5: GiCardPlay, // Deckbuilder
+  6: GiBullets, // Bullet hell
+  7: GiModernCity, // City builder
 };
 
 export const PLATFORM_ICONS = {

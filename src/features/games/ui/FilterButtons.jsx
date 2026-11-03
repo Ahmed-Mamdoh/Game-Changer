@@ -4,14 +4,18 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Check, ChevronDown, Search } from "lucide-react";
-import { useEffect, useId, useRef, useState } from "react";
+import { Fragment, useEffect, useId, useRef, useState } from "react";
 import { useFilterParams, useActiveItems } from "../hooks/useFilterParams";
 
 const keyOf = (item) => `${item.param || ""}${item.id}`;
 
+// Sorting keeps grouped items together, in the order the groups first appear
 function sorted(category, sort) {
-  return [...category].sort((a, b) =>
-    sort ? a.name.localeCompare(b.name) : 0,
+  const groups = [...new Set(category.map((item) => item.group))];
+  return [...category].sort(
+    (a, b) =>
+      groups.indexOf(a.group) - groups.indexOf(b.group) ||
+      (sort ? a.name.localeCompare(b.name) : 0),
   );
 }
 
@@ -260,7 +264,24 @@ export function FilterOptions({
             className="border-stroke-subtle mx-2.5 my-1 shrink-0 border-t"
           />
         )}
-        {rest.map((item, i) => renderOption(item, top.length + i))}
+        {rest.map((item, i) => {
+          // Group headings only while browsing; search results stay flat
+          const heading =
+            !q && item.group && item.group !== rest[i - 1]?.group;
+          return heading ? (
+            <Fragment key={`group-${item.group}`}>
+              <div
+                role="presentation"
+                className="text-text-dim shrink-0 px-2.5 pt-2 pb-1 text-xs font-semibold"
+              >
+                {item.group}
+              </div>
+              {renderOption(item, top.length + i)}
+            </Fragment>
+          ) : (
+            renderOption(item, top.length + i)
+          );
+        })}
         {matches.length === 0 && (
           <p className="text-text-muted px-2.5 py-2 text-sm">No matches</p>
         )}

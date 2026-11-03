@@ -32,8 +32,13 @@ import {
 } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import { STAGES } from "@/utils/gameStage";
-import { GENRE_ICONS, PLATFORM_ICONS, THEME_ICONS } from "../ui/filterIcons";
-import { parseReleased } from "./useGetFiltersParams";
+import {
+  GENRE_ICONS,
+  PLATFORM_ICONS,
+  SUBGENRE_ICONS,
+  THEME_ICONS,
+} from "../ui/filterIcons";
+import { parseReleased, SUBGENRES } from "./useGetFiltersParams";
 import { useGetGameModes } from "./useGetGameModes";
 import { useGetGenres } from "./useGetGenres";
 import { useGetThemes } from "./useGetThemes";
@@ -164,15 +169,30 @@ export function useFilterMenus({
   // Players don't know IGDB's genre/theme split ("Adventure" is a genre,
   // "Action" a theme), so both live in one menu; each keeps its own URL param.
   // Theme 42 is excluded from every query, so it isn't offered either.
+  // Subgenres come first in their own group, like store tag lists.
+  const broad = "Genres & themes";
   const genreAndTheme = [
+    ...SUBGENRES.map(({ id, name }) => ({
+      id,
+      name,
+      param: "tag",
+      icon: SUBGENRE_ICONS[id],
+      group: "Subgenres",
+    })),
     ...(genres || []).map((g) => ({
       ...g,
       param: "genre",
       icon: GENRE_ICONS[g.id],
+      group: broad,
     })),
     ...(themes || [])
       .filter((t) => t.id !== 42)
-      .map((t) => ({ ...t, param: "theme", icon: THEME_ICONS[t.id] })),
+      .map((t) => ({
+        ...t,
+        param: "theme",
+        icon: THEME_ICONS[t.id],
+        group: broad,
+      })),
   ];
 
   const menus = [

@@ -6,7 +6,23 @@ import { useSearchParams } from "react-router-dom";
 // URL values go straight into the IGDB query, so only digits get through
 const ids = (value) => (value || "").split("-").filter((v) => /^\d+$/.test(v));
 
-const yearStart = (year) => Math.floor(Date.UTC(year, 0, 1) / 1000);
+// Players search by subgenre ("Soulslike"), which IGDB only has as community
+// keywords, often several per idea. The URL keeps the small id, the query
+// uses the keyword ids behind it.
+export const SUBGENRES = [
+  { id: 1, name: "Roguelike", keywords: [416, 41781, 27419] },
+  { id: 2, name: "Roguelite", keywords: [17292] },
+  { id: 3, name: "Soulslike", keywords: [17326] },
+  { id: 4, name: "Metroidvania", keywords: [477] },
+  { id: 5, name: "Deckbuilder", keywords: [38865, 25826, 27419] },
+  { id: 6, name: "Bullet hell", keywords: [911] },
+  { id: 7, name: "City builder", keywords: [3533] },
+];
+
+const keywordsOf = (tagIds) =>
+  SUBGENRES.filter((s) => tagIds.includes(String(s.id))).map((s) => s.keywords);
+
+const yearStart =(year) => Math.floor(Date.UTC(year, 0, 1) / 1000);
 
 // `released` is "from..to" in years, both ends included
 export function parseReleased(value) {
@@ -36,6 +52,7 @@ const STAGE_CLAUSES = {
 export function filtersFromParams(searchParams, libraryIds = []) {
   const genre = ids(searchParams.get("genre"));
   const theme = ids(searchParams.get("theme"));
+  const tags = keywordsOf(ids(searchParams.get("tag")));
   const gameMode = ids(searchParams.get("gameMode"));
   const rating = ids(searchParams.get("rating"))[0];
   const released = parseReleased(searchParams.get("released"));
@@ -53,14 +70,16 @@ export function filtersFromParams(searchParams, libraryIds = []) {
   const filters = [];
 
   // Picks inside one menu widen the results unless "Match all" is on.
-  // Genre and theme share a menu, so "any" spans both.
+  // Genre, theme and subgenre share a menu, so "any" spans all three.
   if (searchParams.get("genreMatch") === "all") {
     if (genre.length) filters.push(`genres = [${genre}]`);
     if (theme.length) filters.push(`themes = [${theme}]`);
+    for (const keywords of tags) filters.push(`keywords = (${keywords})`);
   } else {
     const anyOf = [
       genre.length && `genres = (${genre})`,
       theme.length && `themes = (${theme})`,
+      tags.length && `keywords = (${[...new Set(tags.flat())]})`,
     ].filter(Boolean);
     if (anyOf.length) filters.push(`(${anyOf.join(" | ")})`);
   }
