@@ -3,20 +3,22 @@ import { Play } from "lucide-react";
 import RowScrollButtons from "@/ui/RowScrollButtons";
 import { useRowScroll } from "@/hooks/useRowScroll";
 import { formatIGDBImage } from "@/utils/igdbImage";
+import { pickVideos } from "@/utils/pickVideos";
 import MediaLightbox from "./MediaLightbox";
 
-// Trailers first, then screenshots, in one snapping 16:9 rail. Any slide opens
+// Gameplay and official trailers first, then screenshots, in one snapping 16:9 rail. Any slide opens
 // the lightbox at that item, and closing it brings the rail to wherever the
 // viewer was left.
 function GameDetailsMedia({ data }) {
-  const { screenshots, videos, name } = data[0];
+  const { screenshots, name } = data[0];
+  const videos = pickVideos(data[0].videos);
   const [openIndex, setOpenIndex] = useState(null);
   const lastIndex = useRef(0);
-  const row = useRowScroll((videos?.length || 0) + (screenshots?.length || 0));
-  if (!screenshots?.length && !videos?.length) return null;
+  const row = useRowScroll(videos.length + (screenshots?.length || 0));
+  if (!screenshots?.length && !videos.length) return null;
 
   const items = [
-    ...(videos ?? []).map((video) => ({
+    ...videos.map((video) => ({
       type: "video",
       id: video.id,
       videoId: video.video_id,
