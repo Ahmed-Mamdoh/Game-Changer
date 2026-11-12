@@ -36,7 +36,7 @@ function refetchGames(queryClient, user_id) {
 }
 
 // The player's "Never show" list: genres, themes, tags and studios that are
-// left out of browse, home rows, For You and the chat's picks
+// left out of For You and the chat's picks
 export function useBlockedTags() {
   const user_id = UserToken()?.user?.id;
   const queryClient = useQueryClient();

@@ -231,9 +231,7 @@ function PageHeader({
         )}
       </div>
       <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
-        {onReset && (
-          <ResetForYou hiddenCount={hiddenCount} onReset={onReset} />
-        )}
+        {onReset && <ResetForYou hiddenCount={hiddenCount} onReset={onReset} />}
         {hiddenCount > 0 && (
           <Link
             to="/games/forYou/hidden"
@@ -341,7 +339,7 @@ function NotForMeMenu({ game, onDismiss, onBlock }) {
           {blockOptions.length > 0 && (
             <>
               <p className="text-text-dim border-stroke-subtle mt-1 border-t px-2.5 pt-2 pb-1 text-xs font-semibold">
-                Never show anywhere
+                Never recommend
               </p>
               {blockOptions.map((item) => (
                 <button
@@ -352,7 +350,7 @@ function NotForMeMenu({ game, onDismiss, onBlock }) {
                     setOpen(false);
                     onBlock(item);
                   }}
-                  aria-label={`Never show ${item.name} (${item.kind === "genre" ? "genre" : "theme"}) anywhere`}
+                  aria-label={`Never show ${item.name} (${item.kind === "genre" ? "genre" : "theme"}) in picks`}
                   className="hover:bg-bg-chip focus-visible:bg-bg-chip flex w-full cursor-pointer items-center gap-2.5 rounded-sm px-2.5 py-2 text-left text-sm outline-none"
                 >
                   <Ban
@@ -937,7 +935,7 @@ function ForYouPage() {
       (t) => (
         <span className="flex items-center gap-3">
           <span>
-            {item.name} games won't show anywhere.
+            {item.name} games won't be recommended.
             <span className="text-text-dim block text-xs">
               Change it any time under Never show.
             </span>

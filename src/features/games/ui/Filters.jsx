@@ -1,10 +1,7 @@
 import { memo } from "react";
-import { Ban } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import { DEFAULT_BROWSE_SORT } from "@/api/igdbApi";
 import { UserToken } from "@/hooks/useUserToken";
-import NeverShowDialog from "../components/NeverShowDialog";
-import { useBlockedTags } from "../hooks/useBlockedTags";
 import { sortOptions, useFilterMenus } from "../hooks/useFilterMenus";
 import { withoutFilters } from "../hooks/useFilterParams";
 import ActiveFilterChips from "./ActiveFilterChips";
@@ -30,31 +27,6 @@ function Toggle({ param, label }) {
       />
       {label}
     </label>
-  );
-}
-
-// Opens the player's "Never show" list, with how many are on it
-function NeverShowButton() {
-  const { blocked } = useBlockedTags();
-  return (
-    <NeverShowDialog
-      trigger={
-        <button
-          type="button"
-          className={`flex h-10 cursor-pointer items-center gap-2 rounded-md border px-3 text-sm whitespace-nowrap ${
-            blocked.length
-              ? "border-stroke-brand text-text-main"
-              : "border-stroke-subtle text-text-dim hover:text-text-main"
-          }`}
-        >
-          <Ban className="h-4 w-4" aria-hidden="true" />
-          Never show
-          {blocked.length > 0 && (
-            <span className="text-text-dim tabular">{blocked.length}</span>
-          )}
-        </button>
-      }
-    />
   );
 }
 
@@ -108,7 +80,6 @@ function Filters({
         {!isAccount && isSignedIn && (
           <Toggle param="hideLibrary" label="Hide my library" />
         )}
-        {!isAccount && isSignedIn && <NeverShowButton />}
       </div>
 
       <ActiveFilterChips menus={menus} className="mt-3" />

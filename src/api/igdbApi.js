@@ -30,18 +30,16 @@ const UNOFFICIAL_KEYWORDS = [
 ];
 
 // Shared where-clause so the list and the result count always agree.
-// Lists leave out the player's "Never show" genres, themes and keywords;
-// name searches (withBlocked) still find them.
+// Browse, home rows and search show every game; "Never show" only shapes
+// For You and the chat's picks.
 function buildGamesWhere({
   filters = [],
   platform,
   player_perspectives,
   isUpcoming,
   isReleased,
-  withBlocked = false,
 }) {
-  const all = withBlocked ? filters : [...filters, ...blockedClauses(filters)];
-  const filtersString = all.length !== 0 ? " & " + all.join(" & ") : "";
+  const filtersString = filters.length !== 0 ? " & " + filters.join(" & ") : "";
   const platformString =
     platform === "all" || !platform
       ? "& platforms = (6,48,167,49,169,130)"
@@ -112,7 +110,7 @@ export async function getAllGames({
       ${sortByString}
       ${buildGamesWhere({ platform, player_perspectives, isUpcoming, isReleased, ...scope })}`,
   );
-  return withoutBlockedGames(games);
+  return games;
 }
 
 // Only games out within this window count as "popular now", so evergreen
@@ -150,7 +148,7 @@ export async function getPopularNowGames(limit) {
   if (!Array.isArray(games)) throw new Error("Failed to load popular games");
 
   const rank = new Map(ids.map((id, i) => [id, i]));
-  const shown = withoutBlockedGames(games);
+  const shown = [...games];
   shown.sort((a, b) => rank.get(a.id) - rank.get(b.id));
   return pickAcrossGenres(shown, limit).sort(
     (a, b) => rank.get(a.id) - rank.get(b.id),
@@ -223,7 +221,7 @@ export async function searchGames({
     `search "${escapeIgdbString(search)}";
       fields ${LIST_FIELDS};
       limit ${poolSize};
-      ${buildGamesWhere({ filters, platform, player_perspectives, isUpcoming, isReleased, withBlocked: true })}`,
+      ${buildGamesWhere({ filters, platform, player_perspectives, isUpcoming, isReleased })}`,
   );
   return rankSearchResults(response, search);
 }
@@ -235,7 +233,7 @@ const QUICK_FIELDS =
 
 export async function quickSearchGames(search, poolSize = 50) {
   const escaped = escapeIgdbString(search);
-  const where = buildGamesWhere({ withBlocked: true });
+  const where = buildGamesWhere({});
   const [searched, contains] = await Promise.all([
     igdbFetch(
       "games",

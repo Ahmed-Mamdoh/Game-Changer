@@ -313,8 +313,8 @@ function NeverShowDialog({ trigger }) {
               </span>
             </div>
             <DialogDescription className="text-text-dim mt-1 text-sm text-pretty">
-              Hidden from browse, home rows, For You and chat picks. Searching a
-              game by name still finds it.
+              Left out of For You and chat picks. Browse and search still show
+              every game.
             </DialogDescription>
           </div>
           <BlockCombobox has={has} onPick={block} isFull={isFull} />
